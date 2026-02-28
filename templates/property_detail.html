@@ -1,19 +1,11 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <title>{{ property.title }} | Zambia Rentals</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="{% static 'css/global.css' %}">
-</head>
+{% block title %}{{ property.title }} | Zambia Rentals{% endblock %}
 
-<body class="bg-slate-50 min-h-screen">
-    {% include 'navbar.html' %}
-
-    <main class="max-w-4xl mx-auto px-4 py-12">
-        <div class="glass-card rounded-3xl overflow-hidden shadow-2xl">
+{% block content %}
+<div class="max-w-4xl mx-auto animate-[fadeIn_0.5s_ease-out]">
+        <div class="glass-card rounded-3xl overflow-hidden shadow-2xl bg-white/60">
             <div class="h-96 bg-slate-200">
                 <img src="https://via.placeholder.com/800x400?text={{ property.title }}"
                     class="w-full h-full object-cover">
@@ -76,7 +68,5 @@
                 </div>
             </div>
         </div>
-    </main>
-</body>
-
-</html>
+</div>
+{% endblock %}

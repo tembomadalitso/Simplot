@@ -1,17 +1,11 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Finalize Rental Agreement | Zambia Rentals</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="{% static 'css/global.css' %}">
-</head>
-<body class="bg-slate-50 min-h-screen">
-    {% include 'navbar.html' %}
 
-    <main class="max-w-2xl mx-auto px-4 py-12">
-        <div class="glass-card p-8 rounded-3xl">
+{% block title %}Finalize Rental Agreement | Zambia Rentals{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 py-12 animate-[fadeIn_0.5s_ease-out]">
+        <div class="glass-card p-8 rounded-3xl shadow-xl bg-white/60">
             <h1 class="text-2xl font-bold mb-2">Finalize Agreement</h1>
             <p class="text-slate-500 mb-8">Confirm occupancy details for Ministry records.</p>
 
@@ -46,7 +40,9 @@
             </form>
             <div id="formStatus" class="mt-4 text-center hidden"></div>
         </div>
-    </main>
-    <script src="{% static 'js/apply.js' %}"></script>
-</body>
-</html>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{% static 'js/apply.js' %}"></script>
+{% endblock %}

@@ -1,18 +1,10 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Post New Listing | Zambia Rentals</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="{% static 'css/global.css' %}">
-</head>
-<body class="bg-slate-50 min-h-screen pb-12">
-    
-    {% include 'navbar.html' %}
 
-    <main class="max-w-3xl mx-auto px-4 mt-8">
+{% block title %}Post New Listing | Zambia Rentals{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 mt-8 animate-[fadeIn_0.5s_ease-out]">
         <div class="glass-card rounded-3xl p-8 shadow-xl">
             <header class="mb-8">
                 <h1 class="text-3xl font-bold text-slate-900">List Your Property</h1>
@@ -69,8 +61,9 @@
             </form>
             <div id="formStatus" class="mt-4 text-center hidden"></div>
         </div>
-    </main>
+</div>
+{% endblock %}
 
-    <script src="{% static 'js/add_property.js' %}"></script>
-</body>
-</html>
+{% block extra_scripts %}
+<script src="{% static 'js/add_property.js' %}"></script>
+{% endblock %}

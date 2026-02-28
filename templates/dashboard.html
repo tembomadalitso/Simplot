@@ -1,17 +1,10 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Landlord Dashboard | Zambia Rentals</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="{% static 'css/global.css' %}">
-</head>
-<body class="bg-slate-50 min-h-screen text-slate-900">
-    {% include 'navbar.html' %}
 
-    <main class="max-w-6xl mx-auto px-4 py-8">
+{% block title %}Landlord Dashboard | Zambia Rentals{% endblock %}
+
+{% block content %}
+<div class="animate-[fadeIn_0.5s_ease-out]">
         <header class="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
                 <h1 class="text-3xl font-bold text-slate-900">Owner Dashboard</h1>
@@ -148,8 +141,9 @@
                 </section>
             </div>
         </div>
-    </main>
+</div>
+{% endblock %}
 
-    <script src="{% static 'js/dashboard.js' %}"></script>
-</body>
-</html>
+{% block extra_scripts %}
+<script src="{% static 'js/dashboard.js' %}"></script>
+{% endblock %}
