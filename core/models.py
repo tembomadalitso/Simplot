@@ -54,14 +54,25 @@ class Property(models.Model):
         if not policy: return 0.00
         return round((annual_income * policy.percentage) / 100, 2)
 
-    def estimated_annual_tax(self):
-        annual_income = self.price * 12
-        policy = TaxPolicy.objects.first()
-        if not policy: return 0.00
-        return round((annual_income * policy.percentage) / 100, 2)
-
 class RentalAgreement(models.Model):
+    STATUS_CHOICES = (
+        ('PENDING', 'Pending'),
+        ('APPROVED', 'Approved'),
+        ('REJECTED', 'Rejected'),
+    )
     property = models.ForeignKey(Property, on_delete=models.CASCADE)
     tenant = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='PENDING')
     is_active = models.BooleanField(default=True)
     number_of_occupants = models.PositiveIntegerField(default=1)
+    start_date = models.DateField(null=True, blank=True)
+    end_date = models.DateField(null=True, blank=True)
+
+class Expense(models.Model):
+    property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='expenses')
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    description = models.CharField(max_length=255)
+    date = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.property.title} - {self.description} ({self.amount})"
