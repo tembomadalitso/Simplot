@@ -1,0 +1,45 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Landlord Dashboard | Zambia Rentals</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{% static 'css/global.css' %}">
+</head>
+<body class="bg-slate-50 min-h-screen">
+    {% include 'navbar.html' %}
+
+    <main class="max-w-6xl mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="glass-card p-6 rounded-3xl text-center">
+                <p class="text-slate-500 text-sm">Total Properties</p>
+                <h2 class="text-3xl font-bold">{{ property_count }}</h2>
+            </div>
+            <div class="glass-card p-6 rounded-3xl text-center border-emerald-200">
+                <p class="text-slate-500 text-sm">Est. Annual ZRA Tax</p>
+                <h2 class="text-3xl font-bold text-emerald-600">K{{ total_tax }}</h2>
+            </div>
+            <div class="glass-card p-6 rounded-3xl text-center">
+                <a href="/properties/add/" class="inline-block mt-2 bg-indigo-600 text-white px-6 py-2 rounded-xl font-bold">Add New</a>
+            </div>
+        </div>
+
+        <h3 class="text-xl font-bold mb-6">Your Managed Listings</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {% for prop in properties %}
+            <div class="glass-card p-6 rounded-3xl flex justify-between items-center">
+                <div>
+                    <h4 class="font-bold text-lg">{{ prop.title }}</h4>
+                    <p class="text-slate-500 text-sm">{{ prop.district }}, {{ prop.area_name }}</p>
+                </div>
+                <div class="text-right">
+                    <p class="font-bold text-indigo-600">K{{ prop.price }}</p>
+                    <button class="text-red-500 text-xs mt-2 hover:underline" onclick="deleteProperty({{ prop.id }})">Remove</button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </main>
+</body>
+</html>

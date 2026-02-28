@@ -1,0 +1,12 @@
+{% load static %} 
+<nav class="glass sticky top-0 z-50 p-4 mb-6">
+    <div class="max-w-6xl mx-auto flex justify-between items-center">
+        <a href="/" class="text-xl font-bold text-indigo-600">ZAMBIA RENTALS</a>
+        <div class="space-x-4 flex items-center" id="navLinks">
+            <a href="/admin" class="text-sm font-semibold">Admin</a>
+            <a href="/auth/login/" id="authBtn" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm">Login</a>
+        </div>
+    </div>
+</nav>
+
+<script src="{% static 'js/logout.js' %}"></script>

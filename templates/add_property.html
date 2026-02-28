@@ -1,0 +1,76 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post New Listing | Zambia Rentals</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{% static 'css/global.css' %}">
+</head>
+<body class="bg-slate-50 min-h-screen pb-12">
+    
+    {% include 'navbar.html' %}
+
+    <main class="max-w-3xl mx-auto px-4 mt-8">
+        <div class="glass-card rounded-3xl p-8 shadow-xl">
+            <header class="mb-8">
+                <h1 class="text-3xl font-bold text-slate-900">List Your Property</h1>
+                <p class="text-slate-500">Provide details to reach thousands of potential tenants.</p>
+            </header>
+
+            <form id="propertyForm" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Property Title</label>
+                        <input type="text" id="title" placeholder="e.g. Modern 2BR Apartment in Meanwood" required 
+                               class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Category</label>
+                        <select id="category" class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="RESIDENTIAL">Residential</option>
+                            <option value="BOARDING">Boarding House</option>
+                            <option value="LODGE">Lodge/Short-stay</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Monthly Rent (ZMW)</label>
+                        <input type="number" id="price" placeholder="5000" required 
+                               class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                </div>
+
+                <hr class="border-slate-100">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">District</label>
+                        <input type="text" id="district" placeholder="e.g. Lusaka" required 
+                               class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Area Name</label>
+                        <input type="text" id="area_name" placeholder="e.g. Silverest" required 
+                               class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Street Address</label>
+                        <input type="text" id="street_address" placeholder="Plot number and street" 
+                               class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-4 rounded-2xl hover:bg-indigo-700 transition shadow-lg shadow-indigo-100">
+                    Publish Listing
+                </button>
+            </form>
+            <div id="formStatus" class="mt-4 text-center hidden"></div>
+        </div>
+    </main>
+
+    <script src="{% static 'js/add_property.js' %}"></script>
+</body>
+</html>
