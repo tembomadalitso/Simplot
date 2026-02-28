@@ -1,13 +1,13 @@
 # core/views.py
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.db.models import Sum, Count
-from rest_framework import viewsets, permissions
+from django.db.models import Sum, Count, Q
+from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from .models import Property, RentalAgreement, User
-from .serializers import PropertySerializer, RentalAgreementSerializer
+from .models import Property, RentalAgreement, User, Expense
+from .serializers import PropertySerializer, RentalAgreementSerializer, ExpenseSerializer
 
 # --- FRONTEND VIEWS ---
 
@@ -89,8 +89,37 @@ class PropertyViewSet(viewsets.ModelViewSet):
     serializer_class = PropertySerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        # Optional search filtering
+        search = self.request.query_params.get('search', None)
+        if search:
+            queryset = queryset.filter(
+                Q(district__icontains=search) |
+                Q(area_name__icontains=search) |
+                Q(title__icontains=search)
+            )
+
+        # Optional category filtering
+        category = self.request.query_params.get('category', None)
+        if category:
+            queryset = queryset.filter(category=category)
+
+        return queryset
+
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def toggle_compliance(self, request, pk=None):
+        if request.user.user_type != 'OFFICIAL':
+            return Response({'error': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
+
+        property_obj = self.get_object()
+        property_obj.is_tax_compliant = not property_obj.is_tax_compliant
+        property_obj.save()
+        return Response({'status': 'Tax compliance toggled', 'is_tax_compliant': property_obj.is_tax_compliant})
 
     @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated])
     def zra_report(self, request):
@@ -140,6 +169,50 @@ class RentalAgreementViewSet(viewsets.ModelViewSet):
     serializer_class = RentalAgreementSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_queryset(self):
+        user = self.request.user
+        if user.user_type == 'TENANT':
+            return RentalAgreement.objects.filter(tenant=user)
+        elif user.user_type == 'LANDLORD':
+            return RentalAgreement.objects.filter(property__owner=user)
+        return RentalAgreement.objects.all()
+
     def perform_create(self, serializer):
         # Automatically set the tenant to the logged-in user
         serializer.save(tenant=self.request.user)
+
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def approve(self, request, pk=None):
+        agreement = self.get_object()
+        if agreement.property.owner != request.user:
+            return Response({'error': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
+
+        agreement.status = 'APPROVED'
+        agreement.save()
+        return Response({'status': 'Approved'})
+
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def reject(self, request, pk=None):
+        agreement = self.get_object()
+        if agreement.property.owner != request.user:
+            return Response({'error': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
+
+        agreement.status = 'REJECTED'
+        agreement.save()
+        return Response({'status': 'Rejected'})
+
+
+class ExpenseViewSet(viewsets.ModelViewSet):
+    queryset = Expense.objects.all()
+    serializer_class = ExpenseSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Expense.objects.filter(property__owner=self.request.user)
+
+    def perform_create(self, serializer):
+        property_id = self.request.data.get('property')
+        prop = get_object_or_404(Property, id=property_id)
+        if prop.owner != self.request.user:
+            raise permissions.PermissionDenied("You don't own this property.")
+        serializer.save()

@@ -25,24 +25,25 @@ class PropertySerializer(serializers.ModelSerializer):
 # core/serializers.py
 class RentalAgreementSerializer(serializers.ModelSerializer):
     property_details = PropertySerializer(source='property', read_only=True)
+    tenant_name = serializers.ReadOnlyField(source='tenant.username')
 
     class Meta:
         model = RentalAgreement
         fields = [
-            'id', 'property', 'property_details', 'tenant', 
-            'is_active', 'number_of_occupants'
+            'id', 'property', 'property_details', 'tenant', 'tenant_name',
+            'start_date', 'end_date', 'status', 'is_active', 'number_of_occupants'
         ]
-        # Tenant should be handled by the backend during creation
-        read_only_fields = ['tenant']
+        read_only_fields = ['tenant', 'status']
 
-    class Meta:
-        model = RentalAgreement
-        fields = [
-            'id', 'property', 'property_details', 'tenant', 'start_date', 
-            'end_date', 'is_active', 'number_of_occupants'
-        ]
 
 class TaxPolicySerializer(serializers.ModelSerializer):
     class Meta:
         model = TaxPolicy
         fields = '__all__'
+
+from .models import Expense
+
+class ExpenseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Expense
+        fields = ['id', 'property', 'amount', 'description', 'date']
