@@ -32,7 +32,7 @@ INSTALLED_APPS = [
     'djoser',
     
     # Local App
-    'core',
+    'core', # Ensure 'core' has an __init__.py and models.py
 ]
 
 MIDDLEWARE = [
