@@ -109,7 +109,27 @@ class PropertyViewSet(viewsets.ModelViewSet):
         return queryset
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        property_obj = serializer.save(owner=self.request.user)
+        # Handle multiple file uploads manually since they aren't part of standard drf nesting easily
+        images = self.request.FILES.getlist('images')
+        captions = self.request.POST.getlist('captions')
+        main_index = self.request.POST.get('main_image_index', '0')
+
+        try:
+            main_index = int(main_index)
+        except ValueError:
+            main_index = 0
+
+        from .models import PropertyImage
+        for i, image in enumerate(images):
+            caption = captions[i] if i < len(captions) else ''
+            is_main = (i == main_index)
+            PropertyImage.objects.create(
+                property=property_obj,
+                image=image,
+                caption=caption,
+                is_main=is_main
+            )
 
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def toggle_compliance(self, request, pk=None):

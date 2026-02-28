@@ -39,11 +39,32 @@ authForm.addEventListener('submit', async (e) => {
 
         if (response.ok) {
             if (isLogin) {
-                // Save token and redirect
+                // Save token and set cookie for Django views to use
                 localStorage.setItem('auth_token', data.auth_token);
+                document.cookie = `auth_token=${data.auth_token}; path=/; max-age=86400; SameSite=Lax`;
+
                 messageDiv.innerText = "Success! Redirecting...";
                 messageDiv.classList.add('text-emerald-500');
-                setTimeout(() => window.location.href = '/', 1000);
+
+                // Fetch user data to determine where to redirect
+                try {
+                    const meRes = await fetch('/auth/users/me/', {
+                        headers: { 'Authorization': `Token ${data.auth_token}` }
+                    });
+                    if (meRes.ok) {
+                        const userData = await meRes.json();
+                        if (userData.user_type === 'OFFICIAL') {
+                            setTimeout(() => window.location.href = '/gov/oversight/', 500);
+                            return;
+                        } else if (userData.user_type === 'LANDLORD') {
+                            setTimeout(() => window.location.href = '/dashboard/', 500);
+                            return;
+                        }
+                    }
+                } catch (e) {
+                    console.error("Failed to fetch user role for redirection");
+                }
+                setTimeout(() => window.location.href = '/', 500);
             } else {
                 messageDiv.innerText = "Account created! Please sign in.";
                 messageDiv.classList.add('text-emerald-500');
