@@ -6,18 +6,26 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username', 'email', 'user_type', 'full_name', 'phone_number']
 
+from .models import PropertyImage
+
+class PropertyImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PropertyImage
+        fields = ['id', 'image', 'caption', 'is_main']
+
 class PropertySerializer(serializers.ModelSerializer):
     # These fields help the frontend display readable names instead of IDs
     owner_name = serializers.ReadOnlyField(source='owner.username')
     category_display = serializers.CharField(source='get_category_display', read_only=True)
     estimated_tax = serializers.ReadOnlyField(source='estimated_annual_tax')
+    images = PropertyImageSerializer(many=True, read_only=True)
 
     class Meta:
         model = Property
         fields = [
             'id', 'owner', 'owner_name', 'title', 'category', 'category_display', 
             'price', 'province', 'district', 'area_name', 'street_address', 
-            'is_tax_compliant', 'estimated_tax', 'created_at'
+            'is_tax_compliant', 'estimated_tax', 'created_at', 'images'
         ]
         # 'owner' is read-only because we set it automatically in views.py
         read_only_fields = ['owner', 'is_tax_compliant']
