@@ -7,17 +7,8 @@
 <div class="max-w-4xl mx-auto animate-[fadeIn_0.5s_ease-out]">
         <div class="glass-card rounded-3xl overflow-hidden shadow-2xl bg-white/60">
             <div class="h-96 bg-slate-200 relative">
-                {% if property.images.exists %}
-                    {% with main_img=property.images.first %}
-                        {% for img in property.images.all %}
-                            {% if img.is_main %}
-                                <img src="{{ img.image.url }}" class="w-full h-full object-cover">
-                            {% endif %}
-                        {% endfor %}
-                        {% if not property.images.all.0.is_main %}
-                            <img src="{{ property.images.all.0.image.url }}" class="w-full h-full object-cover">
-                        {% endif %}
-                    {% endwith %}
+                {% if property.main_image_url %}
+                    <img src="{{ property.main_image_url }}" class="w-full h-full object-cover">
                 {% else %}
                     <img src="https://via.placeholder.com/800x400?text={{ property.title|urlencode }}" class="w-full h-full object-cover">
                 {% endif %}
@@ -84,7 +75,7 @@
                     <h3 class="font-bold text-2xl mb-6 text-slate-800">Property Gallery</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         {% for img in property.images.all %}
-                            {% if not img.is_main %}
+                            {% if img.image.url != property.main_image_url %}
                                 <div class="glass-card rounded-2xl overflow-hidden group">
                                     <div class="h-48 overflow-hidden bg-slate-200">
                                         <img src="{{ img.image.url }}" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-500">

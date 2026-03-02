@@ -74,6 +74,10 @@ DATABASES = {
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
+# Media files configuration
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 # Authentication Settings
 AUTH_USER_MODEL = 'core.User'
 
@@ -87,3 +91,9 @@ REST_FRAMEWORK = {
 }
 
 LOGIN_URL = '/auth/login/'
+
+DJOSER = {
+    'SERIALIZERS': {
+        'user_create': 'core.serializers.UserCreateSerializer',
+    }
+}

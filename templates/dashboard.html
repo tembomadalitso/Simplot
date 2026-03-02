@@ -57,18 +57,8 @@
                         {% for prop in properties %}
                         <div class="glass-card rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition overflow-hidden">
                             <div class="h-40 bg-slate-200 relative">
-                                {% if prop.images.exists %}
-                                    {% with main_img=prop.images.first %}
-                                        {% for img in prop.images.all %}
-                                            {% if img.is_main %}
-                                                <img src="{{ img.image.url }}" class="w-full h-full object-cover">
-                                            {% endif %}
-                                        {% endfor %}
-                                        {# fallback if no main image explicitly set #}
-                                        {% if not prop.images.all.0.is_main %}
-                                            <img src="{{ prop.images.all.0.image.url }}" class="w-full h-full object-cover">
-                                        {% endif %}
-                                    {% endwith %}
+                                {% if prop.main_image_url %}
+                                    <img src="{{ prop.main_image_url }}" class="w-full h-full object-cover">
                                 {% else %}
                                     <img src="https://via.placeholder.com/400x300?text={{ prop.title|urlencode }}" class="w-full h-full object-cover">
                                 {% endif %}

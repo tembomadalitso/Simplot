@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     // Set Role Badge
                     if (userRoleEl) {
                         const roles = {
-                            'TENANT': { text: 'Tenant', class: 'bg-blue-100 text-blue-700' },
+                            'TENANT': { text: 'Tenant/Seeker', class: 'bg-blue-100 text-blue-700' },
                             'LANDLORD': { text: 'Landlord', class: 'bg-amber-100 text-amber-700' },
                             'OFFICIAL': { text: 'Gov Official', class: 'bg-emerald-100 text-emerald-700' }
                         };

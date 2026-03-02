@@ -55,3 +55,9 @@ class ExpenseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Expense
         fields = ['id', 'property', 'amount', 'description', 'date']
+from djoser.serializers import UserCreateSerializer as BaseUserCreateSerializer
+
+class UserCreateSerializer(BaseUserCreateSerializer):
+    class Meta(BaseUserCreateSerializer.Meta):
+        model = User
+        fields = ('id', 'email', 'username', 'password', 'user_type')

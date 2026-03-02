@@ -1,5 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include 
+from django.conf import settings
+from django.conf.urls.static import static
 from core.views import index_page, auth_page, add_property_page, dashboard_page, property_detail_page, official_dashboard_page, apply_page
 
 urlpatterns = [
@@ -15,3 +17,6 @@ urlpatterns = [
     path('gov/oversight/', official_dashboard_page, name='gov-dashboard'),
     path('property/<int:pk>/apply/', apply_page, name='apply-property')
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
