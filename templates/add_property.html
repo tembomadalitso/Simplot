@@ -1,18 +1,10 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Post New Listing | Zambia Rentals</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="{% static 'css/global.css' %}">
-</head>
-<body class="bg-slate-50 min-h-screen pb-12">
-    
-    {% include 'navbar.html' %}
 
-    <main class="max-w-3xl mx-auto px-4 mt-8">
+{% block title %}Post New Listing | Zambia Rentals{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 mt-8 animate-[fadeIn_0.5s_ease-out]">
         <div class="glass-card rounded-3xl p-8 shadow-xl">
             <header class="mb-8">
                 <h1 class="text-3xl font-bold text-slate-900">List Your Property</h1>
@@ -63,14 +55,44 @@
                     </div>
                 </div>
 
-                <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-4 rounded-2xl hover:bg-indigo-700 transition shadow-lg shadow-indigo-100">
-                    Publish Listing
+                <hr class="border-slate-100">
+
+                <div>
+                    <div class="flex justify-between items-center mb-4">
+                        <label class="block text-sm font-semibold text-slate-700">Property Images</label>
+                        <button type="button" id="addImageBtn" class="text-sm bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-lg font-bold hover:bg-indigo-100 transition"><i class="fas fa-plus mr-1"></i> Add Image</button>
+                    </div>
+                    <p class="text-xs text-slate-500 mb-4">Upload multiple images. Select one to be the main cover image.</p>
+
+                    <div id="imageUploadsContainer" class="space-y-4">
+                        <!-- Initial image upload row -->
+                        <div class="glass p-4 rounded-xl border border-slate-200 flex flex-col md:flex-row gap-4 items-start image-upload-row">
+                            <div class="flex-1 w-full">
+                                <input type="file" accept="image/*" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" required>
+                            </div>
+                            <div class="flex-1 w-full">
+                                <input type="text" placeholder="Caption (e.g. Master Bedroom)" class="w-full px-3 py-2 rounded-lg border border-slate-200 outline-none focus:ring-2 focus:ring-indigo-500 text-sm image-caption">
+                            </div>
+                            <div class="flex items-center gap-3 w-full md:w-auto mt-2 md:mt-0 pt-2 md:pt-0 border-t md:border-t-0 border-slate-100">
+                                <label class="flex items-center text-sm font-medium text-slate-700 cursor-pointer">
+                                    <input type="radio" name="main_image" value="0" class="mr-2 text-indigo-600 focus:ring-indigo-500 h-4 w-4" checked>
+                                    Main Image
+                                </label>
+                                <button type="button" class="text-red-500 hover:text-red-700 p-2 hidden remove-image-btn" title="Remove"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" id="submitBtn" class="w-full bg-indigo-600 text-white font-bold py-4 rounded-2xl hover:bg-indigo-700 transition shadow-lg shadow-indigo-100 mt-8 flex justify-center items-center">
+                    <span>Publish Listing</span>
                 </button>
             </form>
             <div id="formStatus" class="mt-4 text-center hidden"></div>
         </div>
-    </main>
+</div>
+{% endblock %}
 
-    <script src="{% static 'js/add_property.js' %}"></script>
-</body>
-</html>
+{% block extra_scripts %}
+<script src="{% static 'js/add_property.js' %}"></script>
+{% endblock %}

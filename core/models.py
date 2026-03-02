@@ -76,3 +76,12 @@ class Expense(models.Model):
 
     def __str__(self):
         return f"{self.property.title} - {self.description} ({self.amount})"
+class PropertyImage(models.Model):
+    property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='property_images/')
+    caption = models.CharField(max_length=255, blank=True)
+    is_main = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Image for {self.property.title} - Main: {self.is_main}"

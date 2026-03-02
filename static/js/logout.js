@@ -18,6 +18,7 @@ async function handleLogout() {
 
         // 2. Clear local storage regardless of server response
         localStorage.removeItem('auth_token');
+        document.cookie = "auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
         
         // 3. Redirect to home
         window.location.href = '/';
@@ -26,6 +27,7 @@ async function handleLogout() {
         console.error('Logout failed:', error);
         // Fallback cleanup
         localStorage.removeItem('auth_token');
+        document.cookie = "auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
         window.location.href = '/';
     }
 }

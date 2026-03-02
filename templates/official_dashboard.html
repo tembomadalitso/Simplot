@@ -1,19 +1,10 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <title>Gov Official Dashboard | Zambia Rentals</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="{% static 'css/global.css' %}">
-</head>
+{% block title %}Gov Official Dashboard | Zambia Rentals{% endblock %}
 
-<body class="bg-slate-50 min-h-screen text-slate-900">
-    {% include 'navbar.html' %}
-
-    <main class="max-w-6xl mx-auto px-4 py-8">
+{% block content %}
+<div class="animate-[fadeIn_0.5s_ease-out]">
         <header class="mb-10">
             <h1 class="text-3xl font-bold text-slate-900">National Rental Oversight</h1>
             <p class="text-slate-500 mt-2">Official Portal for ZRA and Ministry of Home Affairs data tracking and tax compliance verification.</p>
@@ -107,8 +98,9 @@
                 </div>
             </section>
         </div>
-    </main>
-    <script src="{% static 'js/official_dashboard.js' %}"></script>
-</body>
+</div>
+{% endblock %}
 
-</html>
+{% block extra_scripts %}
+<script src="{% static 'js/official_dashboard.js' %}"></script>
+{% endblock %}

@@ -1,53 +1,42 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zambia Rentals | Modern Housing</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="{% static 'css/global.css' %}">
-</head>
-<body class="bg-slate-50 text-slate-900 min-h-screen">
-    
-    {% include 'navbar.html' %}
 
-    <main class="max-w-6xl mx-auto px-4 py-12">
-        <header class="glass-card rounded-3xl p-10 mb-12 text-center">
-            <h1 class="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-emerald-600 bg-clip-text text-transparent">
-                Find Your Next Home in Zambia
-            </h1>
-            <p class="mt-4 text-slate-600">Secure, compliant, and modern rental listings at your fingertips.</p>
-        </header>
+{% block content %}
+<header class="glass-card rounded-3xl p-10 mb-12 text-center animate-[fadeIn_0.8s_ease-out]">
+    <h1 class="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-indigo-600 via-indigo-500 to-emerald-500 bg-clip-text text-transparent pb-2">
+        Find Your Next Home in Zambia
+    </h1>
+    <p class="mt-4 text-slate-600 text-lg max-w-2xl mx-auto">Secure, compliant, and modern rental listings at your fingertips.</p>
+</header>
 
-        <section class="glass p-6 rounded-2xl mb-8">
-            <div class="flex flex-col md:flex-row gap-4">
-                <div class="relative flex-1">
-                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                    <input type="text" id="searchInput" placeholder="Search by district or area..." 
-                           class="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none transition">
-                </div>
-                <select id="categoryFilter" class="rounded-xl border border-slate-200 px-4 py-3 outline-none">
-                    <option value="">All Categories</option>
-                    <option value="RESIDENTIAL">Residential</option>
-                    <option value="BOARDING">Boarding</option>
-                    <option value="LODGE">Lodge</option>
-                </select>
-            </div>
-        </section>
-
-        <div id="property-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div class="text-center col-span-full py-12 text-slate-500">
-                <i class="fas fa-spinner fa-spin text-3xl mb-4"></i>
-                <p>Loading the latest listings...</p>
-            </div>
+<section class="glass p-6 rounded-2xl mb-12 shadow-sm animate-[fadeIn_1s_ease-out]">
+    <div class="flex flex-col md:flex-row gap-4">
+        <div class="relative flex-1 group">
+            <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors"></i>
+            <input type="text" id="searchInput" placeholder="Search by district or area..."
+                   class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 focus:border-indigo-300 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all text-slate-700 font-medium">
         </div>
-    </main>
+        <div class="relative min-w-[200px] group">
+            <i class="fas fa-filter absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors pointer-events-none"></i>
+            <select id="categoryFilter" class="w-full pl-10 pr-10 py-3.5 rounded-xl border border-slate-200 focus:border-indigo-300 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all appearance-none bg-white text-slate-700 font-medium cursor-pointer">
+                <option value="">All Categories</option>
+                <option value="RESIDENTIAL">Residential</option>
+                <option value="BOARDING">Boarding</option>
+                <option value="LODGE">Lodge</option>
+            </select>
+            <i class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-sm"></i>
+        </div>
+    </div>
+</section>
 
-    {% include 'footer.html' %}
+<div id="property-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div class="text-center col-span-full py-20 text-slate-500">
+        <i class="fas fa-spinner fa-spin text-4xl mb-4 text-indigo-400"></i>
+        <p class="text-lg animate-pulse">Loading the latest listings...</p>
+    </div>
+</div>
+{% endblock %}
 
-    <script src="{% static 'js/main.js' %}"></script>
-    <script src="{% static 'js/app.js' %}"></script>
-</body>
-</html>
+{% block extra_scripts %}
+<script src="{% static 'js/app.js' %}"></script>
+{% endblock %}
