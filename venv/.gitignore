@@ -1,0 +1,15 @@
+# Virtual Environments
+venv/
+env/
+.env/
+
+# Django Database
+db.sqlite3
+
+# Python Cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Static media uploads (don't commit user property images to git!)
+media/

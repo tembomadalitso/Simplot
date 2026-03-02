@@ -9,12 +9,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Check if user is logged in
     if (token && authBtn) {
-        // Change login button to Dashboard link
-        authBtn.innerHTML = '<i class="fas fa-columns"></i> Dashboard';
-        authBtn.href = '/dashboard/';
-        authBtn.className = "bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-emerald-200 transition-all hover:-translate-y-0.5 flex items-center gap-2";
-
-        // Show logout button
+        // Show logout button immediately
         if (logoutBtn) {
             logoutBtn.classList.remove('hidden');
             logoutBtn.addEventListener('click', async (e) => {
@@ -78,14 +73,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                     }
                 }
 
-                // Update Dashboard link based on role
+                // Update Auth button based strictly on role
                 if (userData.user_type === 'OFFICIAL') {
+                    authBtn.innerHTML = '<i class="fas fa-columns"></i> Gov Portal';
                     authBtn.href = '/gov/oversight/';
+                    authBtn.className = "bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-emerald-200 transition-all hover:-translate-y-0.5 flex items-center gap-2";
                 } else if (userData.user_type === 'LANDLORD') {
+                    authBtn.innerHTML = '<i class="fas fa-columns"></i> Dashboard';
                     authBtn.href = '/dashboard/';
+                    authBtn.className = "bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-indigo-200 transition-all hover:-translate-y-0.5 flex items-center gap-2";
                 } else {
-                    // Tenant dashboard doesn't exist yet, link to home or profile
-                    authBtn.href = '/';
+                    // Tenant: Hide the dashboard button entirely
+                    authBtn.classList.add('hidden');
                 }
             } else {
                 // Token invalid, clear it

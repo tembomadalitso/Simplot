@@ -86,4 +86,12 @@ REST_FRAMEWORK = {
     ],
 }
 
+# Djoser Configuration
+DJOSER = {
+    'SERIALIZERS': {
+        'user': 'core.serializers.UserSerializer',
+        'current_user': 'core.serializers.UserSerializer',
+    }
+}
+
 LOGIN_URL = '/auth/login/'

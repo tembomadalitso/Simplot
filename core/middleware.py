@@ -10,7 +10,6 @@ class TokenAuthMiddleware(MiddlewareMixin):
                 token_key = auth_header.split(' ')[1]
                 try:
                     token = Token.objects.get(key=token_key)
-                    # For simple pages rendered using request.user directly
                     request.user = token.user
                 except Token.DoesNotExist:
                     pass
@@ -18,7 +17,13 @@ class TokenAuthMiddleware(MiddlewareMixin):
                 token_key = request.COOKIES['auth_token']
                 try:
                     token = Token.objects.get(key=token_key)
-                    # For simple pages rendered using request.user directly
                     request.user = token.user
+                    
+                    # CRITICAL FIX: Tell Django which backend to use before logging in
+                    token.user.backend = 'django.contrib.auth.backends.ModelBackend'
+                    
+                    # Now it is safe to create the session
+                    login(request, token.user) 
+                    
                 except Token.DoesNotExist:
                     pass
