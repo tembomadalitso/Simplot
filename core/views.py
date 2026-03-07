@@ -51,9 +51,9 @@ def dashboard_page(request):
     return render(request, 'dashboard.html', context)
 
 @login_required
-def official_dashboard_page(request):
-    """Unified Oversight for ZRA and Ministry of Home Affairs"""
-    if request.user.user_type != 'OFFICIAL':
+def zra_dashboard_page(request):
+    """Oversight for ZRA Tax Trackers"""
+    if request.user.user_type != 'ZRA':
         return render(request, '403.html')
 
     all_properties = Property.objects.all()
@@ -62,6 +62,19 @@ def official_dashboard_page(request):
     total_annual_tax_potential = sum(p.estimated_annual_tax() for p in all_properties)
     compliant_count = all_properties.filter(is_tax_compliant=True).count()
     non_compliant_count = all_properties.filter(is_tax_compliant=False).count()
+
+    context = {
+        'total_tax': total_annual_tax_potential,
+        'compliance_rate': (compliant_count / all_properties.count() * 100) if all_properties.count() > 0 else 0,
+        'non_compliant_count': non_compliant_count,
+    }
+    return render(request, 'zra_dashboard.html', context)
+
+@login_required
+def occupancy_dashboard_page(request):
+    """Oversight for Ministry of Home Affairs"""
+    if request.user.user_type != 'MINISTRY':
+        return render(request, '403.html')
 
     # Goal 2: Ministry of Home Affairs - Occupancy and Density
     occupancy_stats = (
@@ -75,12 +88,9 @@ def official_dashboard_page(request):
     )
 
     context = {
-        'total_tax': total_annual_tax_potential,
-        'compliance_rate': (compliant_count / all_properties.count() * 100) if all_properties.count() > 0 else 0,
-        'non_compliant_count': non_compliant_count,
         'occupancy_stats': occupancy_stats,
     }
-    return render(request, 'official_dashboard.html', context)
+    return render(request, 'ministry_dashboard.html', context)
 
 # --- API VIEWSETS ---
 
@@ -133,7 +143,7 @@ class PropertyViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def toggle_compliance(self, request, pk=None):
-        if request.user.user_type != 'OFFICIAL':
+        if request.user.user_type != 'ZRA':
             return Response({'error': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
 
         property_obj = self.get_object()
@@ -144,7 +154,7 @@ class PropertyViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated])
     def zra_report(self, request):
         """ZRA specific API endpoint"""
-        if request.user.user_type != 'OFFICIAL':
+        if request.user.user_type != 'ZRA':
             return Response({'error': 'Unauthorized'}, status=403)
         
         landlords = User.objects.filter(user_type='LANDLORD')
@@ -162,7 +172,7 @@ class PropertyViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated])
     def census_report(self, request):
         """Ministry of Home Affairs API for population density statistics"""
-        if request.user.user_type != 'OFFICIAL':
+        if request.user.user_type != 'MINISTRY':
             return Response({'error': 'Unauthorized'}, status=403) 
             
         agreements = RentalAgreement.objects.filter(is_active=True) 

@@ -6,15 +6,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     const userNameEl = document.getElementById('userName');
     const userRoleEl = document.getElementById('userRoleBadge');
     const userInitialsEl = document.getElementById('userInitials');
+    const navDashboardLink = document.getElementById('navDashboardLink');
 
     // Check if user is logged in
-    if (token && authBtn) {
-        // Change login button to Dashboard link
-        authBtn.innerHTML = '<i class="fas fa-columns"></i> Dashboard';
-        authBtn.href = '/dashboard/';
-        authBtn.className = "bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-emerald-200 transition-all hover:-translate-y-0.5 flex items-center gap-2";
+    if (token) {
+        // Hide login button
+        if (authBtn) authBtn.classList.add('hidden');
 
-        // Show logout button
+        // Show dashboard link in main nav and logout button
+        if (navDashboardLink) navDashboardLink.classList.remove('hidden');
+
         if (logoutBtn) {
             logoutBtn.classList.remove('hidden');
             logoutBtn.addEventListener('click', async (e) => {
@@ -69,7 +70,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                         const roles = {
                             'TENANT': { text: 'Tenant/Seeker', class: 'bg-blue-100 text-blue-700' },
                             'LANDLORD': { text: 'Landlord', class: 'bg-amber-100 text-amber-700' },
-                            'OFFICIAL': { text: 'Gov Official', class: 'bg-emerald-100 text-emerald-700' }
+                            'ZRA': { text: 'ZRA Official', class: 'bg-emerald-100 text-emerald-700' },
+                            'MINISTRY': { text: 'Ministry Official', class: 'bg-indigo-100 text-indigo-700' }
                         };
 
                         const roleData = roles[userData.user_type] || { text: 'User', class: 'bg-slate-100 text-slate-700' };
@@ -79,13 +81,17 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
 
                 // Update Dashboard link based on role
-                if (userData.user_type === 'OFFICIAL') {
-                    authBtn.href = '/gov/oversight/';
-                } else if (userData.user_type === 'LANDLORD') {
-                    authBtn.href = '/dashboard/';
-                } else {
-                    // Tenant dashboard doesn't exist yet, link to home or profile
-                    authBtn.href = '/';
+                if (navDashboardLink) {
+                    if (userData.user_type === 'ZRA') {
+                        navDashboardLink.href = '/gov/zra/';
+                    } else if (userData.user_type === 'MINISTRY') {
+                        navDashboardLink.href = '/gov/occupancy/';
+                    } else if (userData.user_type === 'LANDLORD') {
+                        navDashboardLink.href = '/dashboard/';
+                    } else {
+                        // Tenant dashboard doesn't exist yet
+                        navDashboardLink.href = '/';
+                    }
                 }
             } else {
                 // Token invalid, clear it

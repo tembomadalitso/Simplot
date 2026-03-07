@@ -6,9 +6,26 @@
 {% block content %}
 <div class="max-w-4xl mx-auto animate-[fadeIn_0.5s_ease-out]">
         <div class="glass-card rounded-3xl overflow-hidden shadow-2xl bg-white/60">
-            <div class="h-96 bg-slate-200 relative">
-                {% if property.main_image_url %}
-                    <img src="{{ property.main_image_url }}" class="w-full h-full object-cover">
+            <div class="h-96 bg-slate-900 relative group" id="slideshow-container">
+                {% if property.images.exists %}
+                    {% for img in property.images.all %}
+                        <div class="slide absolute inset-0 transition-opacity duration-700 {% if forloop.first %}opacity-100 z-10{% else %}opacity-0 z-0{% endif %}">
+                            <img src="{{ img.image.url }}" class="w-full h-full object-contain bg-black/50 backdrop-blur-sm">
+                            {% if img.caption %}
+                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 pt-12">
+                                <p class="text-white text-lg font-medium text-center">{{ img.caption }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    {% if property.images.count > 1 %}
+                        <button id="prevSlide" class="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/40 backdrop-blur-md text-white w-12 h-12 rounded-full flex items-center justify-center transition opacity-0 group-hover:opacity-100 focus:opacity-100">
+                            <i class="fas fa-chevron-left text-xl"></i>
+                        </button>
+                        <button id="nextSlide" class="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/40 backdrop-blur-md text-white w-12 h-12 rounded-full flex items-center justify-center transition opacity-0 group-hover:opacity-100 focus:opacity-100">
+                            <i class="fas fa-chevron-right text-xl"></i>
+                        </button>
+                    {% endif %}
                 {% else %}
                     <img src="https://via.placeholder.com/800x400?text={{ property.title|urlencode }}" class="w-full h-full object-cover">
                 {% endif %}
@@ -36,11 +53,10 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-10 border-t border-slate-100 pt-8">
                     <div>
                         <h3 class="font-bold text-lg mb-4">Description</h3>
-                        <p class="text-slate-600 leading-relaxed">
-                            This is a prime {{ property.get_category_display|lower }} located in the heart of {{
-                            property.district }}.
-                            It is currently listed as {% if property.is_tax_compliant %}tax compliant{% else %}pending
-                            verification{% endif %}.
+                        <p class="text-slate-600 leading-relaxed whitespace-pre-line">
+                            {% if property.description %}{{ property.description }}{% else %}This is a prime {{ property.get_category_display|lower }} located in the heart of {{ property.district }}.{% endif %}
+
+                            It is currently listed as {% if property.is_tax_compliant %}<span class="text-emerald-600 font-bold">tax compliant <i class="fas fa-check-circle"></i></span>{% else %}<span class="text-amber-600 font-bold">pending verification <i class="fas fa-clock"></i></span>{% endif %}.
                         </p>
                     </div>
                     <div class="glass p-6 rounded-2xl">
@@ -70,28 +86,48 @@
                     </div>
                 </div>
 
-                {% if property.images.count > 1 %}
-                <div class="mt-12 pt-8 border-t border-slate-100">
-                    <h3 class="font-bold text-2xl mb-6 text-slate-800">Property Gallery</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        {% for img in property.images.all %}
-                            {% if img.image.url != property.main_image_url %}
-                                <div class="glass-card rounded-2xl overflow-hidden group">
-                                    <div class="h-48 overflow-hidden bg-slate-200">
-                                        <img src="{{ img.image.url }}" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-500">
-                                    </div>
-                                    {% if img.caption %}
-                                        <div class="p-4 bg-white/80">
-                                            <p class="text-sm font-semibold text-slate-700">{{ img.caption }}</p>
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-                </div>
-                {% endif %}
             </div>
         </div>
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const slides = document.querySelectorAll('.slide');
+        if (slides.length <= 1) return;
+
+        let currentSlide = 0;
+        const btnNext = document.getElementById('nextSlide');
+        const btnPrev = document.getElementById('prevSlide');
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                if (i === index) {
+                    slide.classList.remove('opacity-0', 'z-0');
+                    slide.classList.add('opacity-100', 'z-10');
+                } else {
+                    slide.classList.remove('opacity-100', 'z-10');
+                    slide.classList.add('opacity-0', 'z-0');
+                }
+            });
+        }
+
+        btnNext.addEventListener('click', () => {
+            currentSlide = (currentSlide + 1) % slides.length;
+            showSlide(currentSlide);
+        });
+
+        btnPrev.addEventListener('click', () => {
+            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+            showSlide(currentSlide);
+        });
+
+        // Auto-advance every 5 seconds
+        setInterval(() => {
+            currentSlide = (currentSlide + 1) % slides.length;
+            showSlide(currentSlide);
+        }, 5000);
+    });
+</script>
 {% endblock %}
