@@ -6,10 +6,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     const userNameEl = document.getElementById('userName');
     const userRoleEl = document.getElementById('userRoleBadge');
     const userInitialsEl = document.getElementById('userInitials');
+    const navDashboardLink = document.getElementById('navDashboardLink');
 
     // Check if user is logged in
+<<<<<<< HEAD
     if (token && authBtn) {
         // Show logout button immediately
+=======
+    if (token) {
+        // Hide login button
+        if (authBtn) authBtn.classList.add('hidden');
+
+        // Show dashboard link in main nav and logout button
+        if (navDashboardLink) navDashboardLink.classList.remove('hidden');
+
+>>>>>>> feature/simplot-proptech-platform-4136760008759981879
         if (logoutBtn) {
             logoutBtn.classList.remove('hidden');
             logoutBtn.addEventListener('click', async (e) => {
@@ -62,9 +73,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                     // Set Role Badge
                     if (userRoleEl) {
                         const roles = {
-                            'TENANT': { text: 'Tenant', class: 'bg-blue-100 text-blue-700' },
+                            'TENANT': { text: 'Tenant/Seeker', class: 'bg-blue-100 text-blue-700' },
                             'LANDLORD': { text: 'Landlord', class: 'bg-amber-100 text-amber-700' },
-                            'OFFICIAL': { text: 'Gov Official', class: 'bg-emerald-100 text-emerald-700' }
+                            'ZRA': { text: 'ZRA Official', class: 'bg-emerald-100 text-emerald-700' },
+                            'MINISTRY': { text: 'Ministry Official', class: 'bg-indigo-100 text-indigo-700' }
                         };
 
                         const roleData = roles[userData.user_type] || { text: 'User', class: 'bg-slate-100 text-slate-700' };
@@ -73,6 +85,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     }
                 }
 
+<<<<<<< HEAD
                 // Update Auth button based strictly on role
                 if (userData.user_type === 'OFFICIAL') {
                     authBtn.innerHTML = '<i class="fas fa-columns"></i> Gov Portal';
@@ -85,6 +98,20 @@ document.addEventListener('DOMContentLoaded', async () => {
                 } else {
                     // Tenant: Hide the dashboard button entirely
                     authBtn.classList.add('hidden');
+=======
+                // Update Dashboard link based on role
+                if (navDashboardLink) {
+                    if (userData.user_type === 'ZRA') {
+                        navDashboardLink.href = '/gov/zra/';
+                    } else if (userData.user_type === 'MINISTRY') {
+                        navDashboardLink.href = '/gov/occupancy/';
+                    } else if (userData.user_type === 'LANDLORD') {
+                        navDashboardLink.href = '/dashboard/';
+                    } else {
+                        // Tenant dashboard doesn't exist yet
+                        navDashboardLink.href = '/';
+                    }
+>>>>>>> feature/simplot-proptech-platform-4136760008759981879
                 }
             } else {
                 // Token invalid, clear it

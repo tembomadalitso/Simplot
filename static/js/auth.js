@@ -53,8 +53,11 @@ authForm.addEventListener('submit', async (e) => {
                     });
                     if (meRes.ok) {
                         const userData = await meRes.json();
-                        if (userData.user_type === 'OFFICIAL') {
-                            setTimeout(() => window.location.href = '/gov/oversight/', 500);
+                        if (userData.user_type === 'ZRA') {
+                            setTimeout(() => window.location.href = '/gov/zra/', 500);
+                            return;
+                        } else if (userData.user_type === 'MINISTRY') {
+                            setTimeout(() => window.location.href = '/gov/occupancy/', 500);
                             return;
                         } else if (userData.user_type === 'LANDLORD') {
                             setTimeout(() => window.location.href = '/dashboard/', 500);

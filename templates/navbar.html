@@ -5,7 +5,8 @@
             <i class="fas fa-home text-indigo-600"></i> ZAMBIA RENTALS
         </a>
         <div class="hidden md:flex space-x-8 items-center text-sm font-medium text-slate-600" id="desktopNavLinks">
-            <a href="/" class="hover:text-indigo-600 transition-colors">Find Homes</a>
+            <a href="/" class="hover:text-indigo-600 transition-colors font-semibold">Home</a>
+            <a href="/dashboard/" id="navDashboardLink" class="hidden hover:text-indigo-600 transition-colors font-semibold">Dashboard</a>
             <a href="/admin" class="hover:text-indigo-600 transition-colors">Admin</a>
         </div>
         <div class="flex items-center space-x-4" id="authSection">
@@ -23,8 +24,8 @@
                 <i class="fas fa-sign-in-alt"></i> Login
             </a>
 
-            <button id="logoutBtn" class="hidden text-slate-500 hover:text-red-500 p-2 rounded-lg hover:bg-red-50 transition-colors" title="Logout">
-                <i class="fas fa-sign-out-alt text-xl"></i>
+            <button id="logoutBtn" class="hidden text-slate-500 hover:text-red-500 p-2 rounded-lg hover:bg-red-50 transition-colors font-bold text-sm flex items-center gap-2" title="Logout">
+                <i class="fas fa-sign-out-alt"></i> Logout
             </button>
         </div>
     </div>

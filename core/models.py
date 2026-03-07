@@ -6,7 +6,8 @@ class User(AbstractUser):
     TYPE_CHOICES = (
         ('TENANT', 'Tenant/Seeker'),
         ('LANDLORD', 'Landlord/Property Owner'),
-        ('OFFICIAL', 'Government Official (ZRA/Ministry)'),
+        ('ZRA', 'ZRA Tax Official'),
+        ('MINISTRY', 'Ministry of Home Affairs'),
     )
     user_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='TENANT')
     tpin_number = models.CharField(max_length=20, blank=True, null=True, help_text="Required for Landlords")
@@ -30,6 +31,17 @@ class TaxPolicy(models.Model):
 # core/models.py
 
 class Property(models.Model):
+
+    @property
+    def main_image_url(self):
+        main_img = self.images.filter(is_main=True).first()
+        if main_img and main_img.image:
+            return main_img.image.url
+        first_img = self.images.first()
+        if first_img and first_img.image:
+            return first_img.image.url
+        return None
+
     CATEGORY_CHOICES = (
         ('RESIDENTIAL', 'Residential House/Apartment'),
         ('BOARDING', 'Student Boarding House'),
@@ -38,6 +50,7 @@ class Property(models.Model):
     
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='properties')
     title = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
     # Added fields referenced by the serializer
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='RESIDENTIAL') 
     province = models.CharField(max_length=50, default="Lusaka") 

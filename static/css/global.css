@@ -33,6 +33,52 @@ body {
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
+/* Splash Screen Animation */
+#splash-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: #4f46e5;
+    background: linear-gradient(135deg, #4f46e5 0%, #10b981 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+
+#splash-screen.hidden-splash {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.splash-logo {
+    font-size: 3rem;
+    font-weight: 900;
+    letter-spacing: -1px;
+    animation: pulse 1.5s infinite alternate;
+}
+
+.splash-loader {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s ease-in-out infinite;
+    margin-top: 2rem;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.05); }
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
 /* Animations */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }

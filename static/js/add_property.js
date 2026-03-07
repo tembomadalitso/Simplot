@@ -79,6 +79,7 @@ document.getElementById('propertyForm').addEventListener('submit', async (e) => 
     // We use FormData for multipart file uploads
     const formData = new FormData();
     formData.append('title', document.getElementById('title').value);
+    formData.append('description', document.getElementById('description').value || '');
     formData.append('category', document.getElementById('category').value);
     formData.append('price', document.getElementById('price').value);
     formData.append('district', document.getElementById('district').value);

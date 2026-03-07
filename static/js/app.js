@@ -55,7 +55,8 @@ async function fetchProperties() {
                 </div>
                 <div class="p-6 flex-1 flex flex-col">
                     <h3 class="font-bold text-xl mb-1 text-slate-900">${prop.title}</h3>
-                    <p class="text-slate-500 text-sm mb-6"><i class="fas fa-map-marker-alt mr-2 text-indigo-400"></i>${prop.area_name}, ${prop.district}</p>
+                    <p class="text-slate-500 text-sm mb-2"><i class="fas fa-map-marker-alt mr-2 text-indigo-400"></i>${prop.area_name}, ${prop.district}</p>
+                    <p class="text-slate-600 text-sm mb-6 line-clamp-2">${prop.description ? prop.description : 'A beautiful ' + prop.category_display.toLowerCase() + ' located in ' + prop.district + '.'}</p>
                     <div class="flex justify-between items-end mt-auto">
                         <div>
                             <span class="text-2xl font-black text-slate-900">K${parseFloat(prop.price).toLocaleString()}</span>

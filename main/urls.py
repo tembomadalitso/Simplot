@@ -1,8 +1,14 @@
 from django.contrib import admin
 from django.urls import path, include 
+<<<<<<< HEAD
 from core.views import index_page, auth_page, add_property_page, dashboard_page, property_detail_page, official_dashboard_page, apply_page
 from django.conf import settings
 from django.conf.urls.static import static
+=======
+from django.conf import settings
+from django.conf.urls.static import static
+from core.views import index_page, auth_page, add_property_page, dashboard_page, property_detail_page, zra_dashboard_page, occupancy_dashboard_page, apply_page
+>>>>>>> feature/simplot-proptech-platform-4136760008759981879
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -14,6 +20,14 @@ urlpatterns = [
     path('properties/add/', add_property_page, name='add-property'),
     path('dashboard/', dashboard_page, name='dashboard'),
     path('property/<int:pk>/', property_detail_page, name='property-detail'),
-    path('gov/oversight/', official_dashboard_page, name='gov-dashboard'),
+    path('gov/zra/', zra_dashboard_page, name='zra-dashboard'),
+    path('gov/occupancy/', occupancy_dashboard_page, name='occupancy-dashboard'),
     path('property/<int:pk>/apply/', apply_page, name='apply-property')
+<<<<<<< HEAD
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+=======
+]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+>>>>>>> feature/simplot-proptech-platform-4136760008759981879

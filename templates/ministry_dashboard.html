@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gov Occupancy Portal | Zambia Rentals{% endblock %}
+
+{% block content %}
+<div class="animate-[fadeIn_0.5s_ease-out]">
+        <header class="mb-10">
+            <h1 class="text-3xl font-bold text-indigo-700"><i class="fas fa-users-rays mr-3"></i>Ministry Occupancy Intelligence</h1>
+            <p class="text-slate-500 mt-2">Official Portal for Ministry of Home Affairs data tracking and density mapping.</p>
+        </header>
+
+        <div class="mt-8">
+            <section>
+                <div class="glass-card rounded-3xl overflow-hidden border border-slate-200 shadow-sm">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-50">
+                            <tr class="text-slate-500 text-xs uppercase tracking-widest border-b border-slate-100">
+                                <th class="p-5">District</th>
+                                <th class="p-5">Resident Count</th>
+                                <th class="p-5">Units Tracked</th>
+                                <th class="p-5 w-1/4">Density Index</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            {% for stat in occupancy_stats %}
+                            <tr class="hover:bg-indigo-50/30 transition">
+                                <td class="p-5 font-bold text-slate-900">{{ stat.property__district }}</td>
+                                <td class="p-5">
+                                    <span class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm font-bold">
+                                        {{ stat.total_people }} People
+                                    </span>
+                                </td>
+                                <td class="p-5 text-slate-600 font-medium">{{ stat.property_count }} Listings</td>
+                                <td class="p-5">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                                            <div class="bg-indigo-600 h-full" style="width: {% if stat.total_people > 50 %}85{% elif stat.total_people > 20 %}50{% else %}20{% endif %}%"></div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="p-8 text-center text-slate-500">No active rental agreements found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+</div>
+{% endblock %}

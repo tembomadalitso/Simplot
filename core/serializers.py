@@ -23,7 +23,7 @@ class PropertySerializer(serializers.ModelSerializer):
     class Meta:
         model = Property
         fields = [
-            'id', 'owner', 'owner_name', 'title', 'category', 'category_display', 
+            'id', 'owner', 'owner_name', 'title', 'description', 'category', 'category_display',
             'price', 'province', 'district', 'area_name', 'street_address', 
             'is_tax_compliant', 'estimated_tax', 'created_at', 'images'
         ]
@@ -55,3 +55,9 @@ class ExpenseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Expense
         fields = ['id', 'property', 'amount', 'description', 'date']
+from djoser.serializers import UserCreateSerializer as BaseUserCreateSerializer
+
+class UserCreateSerializer(BaseUserCreateSerializer):
+    class Meta(BaseUserCreateSerializer.Meta):
+        model = User
+        fields = ('id', 'email', 'username', 'password', 'user_type')
