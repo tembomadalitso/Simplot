@@ -15,7 +15,7 @@ async function authFetch(url, options = {}) {
 async function fetchPendingProperties() {
     const container = document.getElementById('taxQueueList');
     try {
-        const response = await authFetch('/api/properties/');
+        const response = await authFetch(window.URLS.apiProperties);
         if (!response.ok) throw new Error('Failed to fetch properties');
 
         const data = await response.json();
@@ -67,7 +67,8 @@ window.toggleCompliance = async (id) => {
     if(!confirm("Are you sure you want to mark this property as tax compliant?")) return;
 
     try {
-        const response = await authFetch(`/api/properties/${id}/toggle_compliance/`, { method: 'POST' });
+        const url = `${window.URLS.apiProperties}${id}/toggle_compliance/`;
+        const response = await authFetch(url, { method: 'POST' });
         if (response.ok) {
             // Optional: refresh page to update the stats headers too, or just fetch list again
             window.location.reload();

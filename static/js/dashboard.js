@@ -18,7 +18,7 @@ async function authFetch(url, options = {}) {
 async function fetchApplications() {
     const container = document.getElementById('applicationsContainer');
     try {
-        const response = await authFetch('/api/rentals/');
+        const response = await authFetch(window.URLS.apiRentals);
         if (!response.ok) throw new Error('Failed to fetch applications');
 
         const data = await response.json();
@@ -64,11 +64,29 @@ function getStatusBadge(status) {
 
 window.updateApplicationStatus = async (id, action) => {
     try {
-        const response = await authFetch(`/api/rentals/${id}/${action}/`, { method: 'POST' });
+        const url = `${window.URLS.apiRentals}${id}/${action}/`;
+        const response = await authFetch(url, { method: 'POST' });
         if (response.ok) {
             fetchApplications();
         } else {
             alert(`Failed to ${action} application.`);
+        }
+    } catch (error) {
+        console.error(error);
+        alert('An error occurred.');
+    }
+}
+
+window.deleteProperty = async (id) => {
+    if(!confirm("Are you sure you want to delete this property? This will also remove associated images and applications.")) return;
+
+    try {
+        const url = `${window.URLS.apiProperties}${id}/`;
+        const response = await authFetch(url, { method: 'DELETE' });
+        if (response.ok) {
+            window.location.reload(); // Refresh to update counts
+        } else {
+            alert('Failed to delete property.');
         }
     } catch (error) {
         console.error(error);
@@ -91,7 +109,7 @@ document.getElementById('expenseForm')?.addEventListener('submit', async (e) => 
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
 
     try {
-        const response = await authFetch('/api/expenses/', {
+        const response = await authFetch(window.URLS.apiExpenses, {
             method: 'POST',
             body: JSON.stringify(payload)
         });
@@ -116,7 +134,7 @@ async function fetchExpenses() {
     const totalEl = document.getElementById('totalExpenses');
 
     try {
-        const response = await authFetch('/api/expenses/');
+        const response = await authFetch(window.URLS.apiExpenses);
         if (!response.ok) throw new Error('Failed to fetch expenses');
 
         const data = await response.json();
@@ -157,7 +175,8 @@ window.deleteExpense = async (id) => {
     if(!confirm("Are you sure you want to delete this expense?")) return;
 
     try {
-        const response = await authFetch(`/api/expenses/${id}/`, { method: 'DELETE' });
+        const url = `${window.URLS.apiExpenses}${id}/`;
+        const response = await authFetch(url, { method: 'DELETE' });
         if (response.ok) {
             fetchExpenses();
         } else {

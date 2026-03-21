@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const token = localStorage.getItem('auth_token');
     const authBtn = document.getElementById('authBtn');
+    const adminLink = document.getElementById('adminLink');
     const logoutBtn = document.getElementById('logoutBtn');
     const userProfileBadge = document.getElementById('userProfileBadge');
     const userNameEl = document.getElementById('userName');
@@ -18,14 +19,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                     await handleLogout();
                 } else {
                     localStorage.removeItem('auth_token');
-                    window.location.href = '/auth/login/';
+                    window.location.href = window.URLS.login;
                 }
             });
         }
 
         // Fetch User Info
         try {
-            const response = await fetch('/auth/users/me/', {
+            const response = await fetch(window.URLS.authMe, {
                 headers: {
                     'Authorization': `Token ${token}`
                 }
@@ -76,15 +77,28 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // Update Auth button based strictly on role
                 if (userData.user_type === 'OFFICIAL') {
                     authBtn.innerHTML = '<i class="fas fa-columns"></i> Gov Portal';
-                    authBtn.href = '/gov/oversight/';
+                    authBtn.href = window.URLS.govDashboard;
                     authBtn.className = "bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-emerald-200 transition-all hover:-translate-y-0.5 flex items-center gap-2";
+
+                    if (adminLink) {
+                        adminLink.href = window.URLS.govDashboard;
+                        adminLink.textContent = "Official Portal";
+                        adminLink.classList.remove('hidden');
+                    }
                 } else if (userData.user_type === 'LANDLORD') {
                     authBtn.innerHTML = '<i class="fas fa-columns"></i> Dashboard';
-                    authBtn.href = '/dashboard/';
+                    authBtn.href = window.URLS.dashboard;
                     authBtn.className = "bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-indigo-200 transition-all hover:-translate-y-0.5 flex items-center gap-2";
+
+                    if (adminLink) {
+                        adminLink.href = window.URLS.dashboard;
+                        adminLink.textContent = "My Dashboard";
+                        adminLink.classList.remove('hidden');
+                    }
                 } else {
                     // Tenant: Hide the dashboard button entirely
                     authBtn.classList.add('hidden');
+                    if (adminLink) adminLink.classList.add('hidden');
                 }
             } else {
                 // Token invalid, clear it

@@ -25,7 +25,7 @@ async function fetchProperties() {
         if (searchInput) queryParams.append('search', searchInput);
         if (categoryFilter) queryParams.append('category', categoryFilter);
 
-        const url = `${API_BASE}/properties/${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+        const url = `${window.URLS.apiProperties}${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
         const response = await fetch(url);
         const data = await response.json();
         
@@ -61,7 +61,7 @@ async function fetchProperties() {
                             <span class="text-2xl font-black text-slate-900">K${parseFloat(prop.price).toLocaleString()}</span>
                             <span class="text-slate-500 text-sm">/mo</span>
                         </div>
-                        <a href="/property/${prop.id}" class="text-indigo-600 font-semibold hover:text-indigo-800 transition-colors">View Details &rarr;</a>
+                        <a href="/property/${prop.id}/" class="text-indigo-600 font-semibold hover:text-indigo-800 transition-colors">View Details &rarr;</a>
                     </div>
                 </div>
             </div>
