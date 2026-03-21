@@ -38,3 +38,18 @@ function ce(tag, classes = '', content = '', attributes = {}) {
 function icon(classes) {
     return ce('i', classes);
 }
+
+// Splash Screen Handler
+document.addEventListener('DOMContentLoaded', () => {
+    const splash = document.getElementById('splash-screen');
+    if (splash) {
+        // Hide after a short delay to allow fonts/assets to load
+        setTimeout(() => {
+            splash.style.opacity = '0';
+            splash.style.transition = 'opacity 0.5s ease';
+            setTimeout(() => {
+                splash.style.display = 'none';
+            }, 500); // Wait for fade-out to complete
+        }, 1200); // Show splash for 1.2 seconds
+    }
+});
