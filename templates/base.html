@@ -21,6 +21,23 @@
 
     {% include 'footer.html' %}
 
+    <script>
+        window.URLS = {
+            index: "{% url 'index' %}",
+            login: "{% url 'login' %}",
+            dashboard: "{% url 'dashboard' %}",
+            govDashboard: "{% url 'gov-dashboard' %}",
+            addProperty: "{% url 'add-property' %}",
+            apiProperties: "/api/properties/",
+            apiRentals: "/api/rentals/",
+            apiExpenses: "/api/expenses/",
+            authLogin: "/auth/token/login/",
+            authUsers: "/auth/users/",
+            authMe: "/auth/users/me/",
+            authLogout: "/auth/token/logout/",
+            propertyDetail: "{% url 'property-detail' 0 %}",
+        };
+    </script>
     <script src="{% static 'js/main.js' %}"></script>
     <script src="{% static 'js/logout.js' %}"></script>
     {% block extra_scripts %}{% endblock %}

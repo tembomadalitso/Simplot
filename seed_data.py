@@ -12,7 +12,7 @@ from core.models import User, Property, RentalAgreement, TaxPolicy
 def seed():
     # 1. Setup Tax Policy
     policy, _ = TaxPolicy.objects.get_or_create(
-        name="Turnover Tax", 
+        name="Turnover Tax",
         defaults={'percentage': 4.0}
     )
 
