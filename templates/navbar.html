@@ -1,13 +1,12 @@
 {% load static %} 
 <nav class="glass sticky top-0 z-50 p-4 border-b border-white/20 shadow-sm transition-all duration-300">
     <div class="max-w-7xl mx-auto flex justify-between items-center px-4 sm:px-6 lg:px-8">
-        <a href="/" class="text-2xl font-black bg-gradient-to-r from-indigo-600 to-indigo-800 bg-clip-text text-transparent flex items-center gap-2 hover:opacity-80 transition-opacity">
+        <a href="{% url 'index' %}" class="text-2xl font-black bg-gradient-to-r from-indigo-600 to-indigo-800 bg-clip-text text-transparent flex items-center gap-2 hover:opacity-80 transition-opacity">
             <i class="fas fa-home text-indigo-600"></i> ZAMBIA RENTALS
         </a>
         <div class="hidden md:flex space-x-8 items-center text-sm font-medium text-slate-600" id="desktopNavLinks">
-            <a href="/" class="hover:text-indigo-600 transition-colors font-semibold">Home</a>
-            <a href="/dashboard/" id="navDashboardLink" class="hidden hover:text-indigo-600 transition-colors font-semibold">Dashboard</a>
-            <a href="/admin" class="hover:text-indigo-600 transition-colors">Admin</a>
+            <a href="{% url 'index' %}" class="hover:text-indigo-600 transition-colors">Find Homes</a>
+            <a href="{% url 'gov-dashboard' %}" class="hidden hover:text-indigo-600 transition-colors" id="adminLink">Official Portal</a>
         </div>
         <div class="flex items-center space-x-4" id="authSection">
             <div id="userProfileBadge" class="hidden items-center gap-3 mr-4">
@@ -20,7 +19,7 @@
                 </div>
             </div>
 
-            <a href="/auth/login/" id="authBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-indigo-200 transition-all hover:-translate-y-0.5 flex items-center gap-2">
+            <a href="{% url 'login' %}" id="authBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-indigo-200 transition-all hover:-translate-y-0.5 flex items-center gap-2">
                 <i class="fas fa-sign-in-alt"></i> Login
             </a>
 

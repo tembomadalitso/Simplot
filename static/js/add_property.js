@@ -69,7 +69,7 @@ document.getElementById('propertyForm').addEventListener('submit', async (e) => 
 
     if (!token) {
         alert("You must be logged in to post a property.");
-        window.location.href = '/auth/login/';
+        window.location.href = window.URLS.login;
         return;
     }
 
@@ -102,7 +102,7 @@ document.getElementById('propertyForm').addEventListener('submit', async (e) => 
     formData.append('main_image_index', mainImageIndex);
 
     try {
-        const response = await fetch('/api/properties/', {
+        const response = await fetch(window.URLS.apiProperties, {
             method: 'POST',
             headers: {
                 'Authorization': `Token ${token}`
@@ -115,7 +115,7 @@ document.getElementById('propertyForm').addEventListener('submit', async (e) => 
             statusDiv.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Listing Published Successfully!';
             statusDiv.className = "mt-4 text-center text-emerald-600 font-bold p-3 bg-emerald-50 rounded-xl";
             statusDiv.classList.remove('hidden');
-            setTimeout(() => window.location.href = '/dashboard/', 1500);
+            setTimeout(() => window.location.href = window.URLS.dashboard, 1500);
         } else {
             const err = await response.json();
             statusDiv.innerText = "Error: " + JSON.stringify(err);

@@ -18,7 +18,7 @@ async function authFetch(url, options = {}) {
 async function fetchApplications() {
     const container = document.getElementById('applicationsContainer');
     try {
-        const response = await authFetch('/api/rentals/');
+        const response = await authFetch(window.URLS.apiRentals);
         if (!response.ok) throw new Error('Failed to fetch applications');
 
         const data = await response.json();
@@ -28,27 +28,42 @@ async function fetchApplications() {
             return;
         }
 
-        container.innerHTML = data.map(app => `
-            <div class="p-6 hover:bg-slate-50 transition">
-                <div class="flex justify-between items-start mb-2">
-                    <div>
-                        <h4 class="font-bold text-slate-900">${app.property_details.title}</h4>
-                        <p class="text-sm text-slate-500"><i class="fas fa-user text-indigo-400 mr-1"></i> Applicant: <span class="font-semibold text-slate-700">${app.tenant_name}</span></p>
-                    </div>
-                    ${getStatusBadge(app.status)}
-                </div>
-                <div class="grid grid-cols-2 gap-4 mt-4 text-sm bg-white p-3 rounded-lg border border-slate-100">
-                    <div><span class="text-slate-500">Occupants:</span> <span class="font-semibold">${app.number_of_occupants}</span></div>
-                    <div><span class="text-slate-500">Period:</span> <span class="font-semibold">${app.start_date} to ${app.end_date}</span></div>
-                </div>
-                ${app.status === 'PENDING' ? `
-                <div class="mt-4 flex gap-3">
-                    <button onclick="updateApplicationStatus(${app.id}, 'approve')" class="flex-1 bg-emerald-50 text-emerald-600 font-bold py-2 rounded-lg hover:bg-emerald-100 transition border border-emerald-200">Approve</button>
-                    <button onclick="updateApplicationStatus(${app.id}, 'reject')" class="flex-1 bg-red-50 text-red-600 font-bold py-2 rounded-lg hover:bg-red-100 transition border border-red-200">Reject</button>
-                </div>
-                ` : ''}
-            </div>
-        `).join('');
+        container.innerHTML = '';
+        data.forEach(app => {
+            const row = ce('div', 'p-6 hover:bg-slate-50 transition');
+
+            const header = ce('div', 'flex justify-between items-start mb-2');
+            const info = ce('div');
+            const title = ce('h4', 'font-bold text-slate-900', app.property_details.title);
+            const applicant = ce('p', 'text-sm text-slate-500');
+            applicant.append(icon('fas fa-user text-indigo-400 mr-1'), document.createTextNode(' Applicant: '));
+            applicant.append(ce('span', 'font-semibold text-slate-700', app.tenant_name));
+            info.append(title, applicant);
+            header.append(info);
+
+            header.append(getStatusBadge(app.status));
+
+            const details = ce('div', 'grid grid-cols-2 gap-4 mt-4 text-sm bg-white p-3 rounded-lg border border-slate-100');
+            const occupantsWrap = ce('div');
+            occupantsWrap.append(ce('span', 'text-slate-500', 'Occupants: '), ce('span', 'font-semibold', parseInt(app.number_of_occupants).toString()));
+            const periodWrap = ce('div');
+            periodWrap.append(ce('span', 'text-slate-500', 'Period: '), ce('span', 'font-semibold', `${app.start_date} to ${app.end_date}`));
+            details.append(occupantsWrap, periodWrap);
+
+            row.append(header, details);
+
+            if (app.status === 'PENDING') {
+                const actions = ce('div', 'mt-4 flex gap-3');
+                const approveBtn = ce('button', 'flex-1 bg-emerald-50 text-emerald-600 font-bold py-2 rounded-lg hover:bg-emerald-100 transition border border-emerald-200', 'Approve');
+                approveBtn.onclick = () => updateApplicationStatus(parseInt(app.id), 'approve');
+                const rejectBtn = ce('button', 'flex-1 bg-red-50 text-red-600 font-bold py-2 rounded-lg hover:bg-red-100 transition border border-red-200', 'Reject');
+                rejectBtn.onclick = () => updateApplicationStatus(parseInt(app.id), 'reject');
+                actions.append(approveBtn, rejectBtn);
+                row.append(actions);
+            }
+
+            container.appendChild(row);
+        });
 
     } catch (error) {
         console.error(error);
@@ -57,18 +72,45 @@ async function fetchApplications() {
 }
 
 function getStatusBadge(status) {
-    if (status === 'APPROVED') return `<span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold uppercase"><i class="fas fa-check mr-1"></i> Approved</span>`;
-    if (status === 'REJECTED') return `<span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-bold uppercase"><i class="fas fa-times mr-1"></i> Rejected</span>`;
-    return `<span class="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-xs font-bold uppercase"><i class="fas fa-clock mr-1"></i> Pending</span>`;
+    const badge = ce('span', 'px-3 py-1 rounded-full text-xs font-bold uppercase');
+    if (status === 'APPROVED') {
+        badge.className += ' bg-emerald-100 text-emerald-700';
+        badge.append(icon('fas fa-check mr-1'), document.createTextNode(' Approved'));
+    } else if (status === 'REJECTED') {
+        badge.className += ' bg-red-100 text-red-700';
+        badge.append(icon('fas fa-times mr-1'), document.createTextNode(' Rejected'));
+    } else {
+        badge.className += ' bg-amber-100 text-amber-700';
+        badge.append(icon('fas fa-clock mr-1'), document.createTextNode(' Pending'));
+    }
+    return badge;
 }
 
 window.updateApplicationStatus = async (id, action) => {
     try {
-        const response = await authFetch(`/api/rentals/${id}/${action}/`, { method: 'POST' });
+        const url = `${window.URLS.apiRentals}${id}/${action}/`;
+        const response = await authFetch(url, { method: 'POST' });
         if (response.ok) {
             fetchApplications();
         } else {
             alert(`Failed to ${action} application.`);
+        }
+    } catch (error) {
+        console.error(error);
+        alert('An error occurred.');
+    }
+}
+
+window.deleteProperty = async (id) => {
+    if(!confirm("Are you sure you want to delete this property? This will also remove associated images and applications.")) return;
+
+    try {
+        const url = `${window.URLS.apiProperties}${id}/`;
+        const response = await authFetch(url, { method: 'DELETE' });
+        if (response.ok) {
+            window.location.reload(); // Refresh to update counts
+        } else {
+            alert('Failed to delete property.');
         }
     } catch (error) {
         console.error(error);
@@ -91,7 +133,7 @@ document.getElementById('expenseForm')?.addEventListener('submit', async (e) => 
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
 
     try {
-        const response = await authFetch('/api/expenses/', {
+        const response = await authFetch(window.URLS.apiExpenses, {
             method: 'POST',
             body: JSON.stringify(payload)
         });
@@ -116,7 +158,7 @@ async function fetchExpenses() {
     const totalEl = document.getElementById('totalExpenses');
 
     try {
-        const response = await authFetch('/api/expenses/');
+        const response = await authFetch(window.URLS.apiExpenses);
         if (!response.ok) throw new Error('Failed to fetch expenses');
 
         const data = await response.json();
@@ -128,21 +170,27 @@ async function fetchExpenses() {
         }
 
         let total = 0;
-        list.innerHTML = data.map(exp => {
+        list.innerHTML = '';
+        data.forEach(exp => {
             total += parseFloat(exp.amount);
-            return `
-            <div class="p-4 hover:bg-slate-50 transition flex justify-between items-center group">
-                <div>
-                    <p class="font-semibold text-sm text-slate-800">${exp.description}</p>
-                    <p class="text-xs text-slate-500 mt-1">${new Date(exp.date).toLocaleDateString()}</p>
-                </div>
-                <div class="text-right">
-                    <p class="font-bold text-slate-900 text-sm">K${parseFloat(exp.amount).toLocaleString()}</p>
-                    <button onclick="deleteExpense(${exp.id})" class="text-red-500 text-xs opacity-0 group-hover:opacity-100 transition mt-1"><i class="fas fa-trash"></i></button>
-                </div>
-            </div>
-            `;
-        }).join('');
+            const item = ce('div', 'p-4 hover:bg-slate-50 transition flex justify-between items-center group');
+
+            const info = ce('div');
+            const desc = ce('p', 'font-semibold text-sm text-slate-800', exp.description);
+            const date = ce('p', 'text-xs text-slate-500 mt-1', new Date(exp.date).toLocaleDateString());
+            info.append(desc, date);
+
+            const meta = ce('div', 'text-right');
+            const amt = ce('p', 'font-bold text-slate-900 text-sm', `K${parseFloat(exp.amount).toLocaleString()}`);
+            const delBtn = ce('button', 'text-red-500 text-xs opacity-0 group-hover:opacity-100 transition mt-1', '', {
+                onclick: () => deleteExpense(parseInt(exp.id))
+            });
+            delBtn.append(icon('fas fa-trash'));
+            meta.append(amt, delBtn);
+
+            item.append(info, meta);
+            list.appendChild(item);
+        });
 
         totalEl.textContent = `K${total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
 
@@ -157,7 +205,8 @@ window.deleteExpense = async (id) => {
     if(!confirm("Are you sure you want to delete this expense?")) return;
 
     try {
-        const response = await authFetch(`/api/expenses/${id}/`, { method: 'DELETE' });
+        const url = `${window.URLS.apiExpenses}${id}/`;
+        const response = await authFetch(url, { method: 'DELETE' });
         if (response.ok) {
             fetchExpenses();
         } else {

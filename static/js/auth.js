@@ -28,7 +28,7 @@ authForm.addEventListener('submit', async (e) => {
     }
 
     try {
-        const endpoint = isLogin ? '/auth/token/login/' : '/auth/users/';
+        const endpoint = isLogin ? window.URLS.authLogin : window.URLS.authUsers;
         const response = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -48,26 +48,23 @@ authForm.addEventListener('submit', async (e) => {
 
                 // Fetch user data to determine where to redirect
                 try {
-                    const meRes = await fetch('/auth/users/me/', {
+                    const meRes = await fetch(window.URLS.authMe, {
                         headers: { 'Authorization': `Token ${data.auth_token}` }
                     });
                     if (meRes.ok) {
                         const userData = await meRes.json();
-                        if (userData.user_type === 'ZRA') {
-                            setTimeout(() => window.location.href = '/gov/zra/', 500);
-                            return;
-                        } else if (userData.user_type === 'MINISTRY') {
-                            setTimeout(() => window.location.href = '/gov/occupancy/', 500);
+                        if (userData.user_type === 'OFFICIAL') {
+                            setTimeout(() => window.location.href = window.URLS.govDashboard, 500);
                             return;
                         } else if (userData.user_type === 'LANDLORD') {
-                            setTimeout(() => window.location.href = '/dashboard/', 500);
+                            setTimeout(() => window.location.href = window.URLS.dashboard, 500);
                             return;
                         }
                     }
                 } catch (e) {
                     console.error("Failed to fetch user role for redirection");
                 }
-                setTimeout(() => window.location.href = '/', 500);
+                setTimeout(() => window.location.href = window.URLS.index, 500);
             } else {
                 messageDiv.innerText = "Account created! Please sign in.";
                 messageDiv.classList.add('text-emerald-500');

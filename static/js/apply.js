@@ -4,13 +4,11 @@ document.getElementById('agreementForm').addEventListener('submit', async (e) =>
     const statusDiv = document.getElementById('formStatus');
     const submitBtn = e.target.querySelector('button[type="submit"]');
     
-    // Improved URL parsing to get the ID from /property/1/apply/
-    const pathParts = window.location.pathname.split('/');
-    const propertyId = pathParts[pathParts.indexOf('property') + 1];
+    const propertyId = e.target.dataset.propertyId;
 
     if (!token) {
         alert("Session expired. Please login again.");
-        window.location.href = '/auth/login/';
+        window.location.href = window.URLS.login;
         return;
     }
 
@@ -35,7 +33,7 @@ document.getElementById('agreementForm').addEventListener('submit', async (e) =>
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Submitting...';
 
     try {
-        const response = await fetch('/api/rentals/', {
+        const response = await fetch(window.URLS.apiRentals, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -48,7 +46,7 @@ document.getElementById('agreementForm').addEventListener('submit', async (e) =>
             statusDiv.innerHTML = `<span class="text-emerald-500 font-bold"><i class="fas fa-check-circle mr-2"></i> Application submitted successfully! Redirecting...</span>`;
             statusDiv.classList.remove('hidden');
             setTimeout(() => {
-                window.location.href = '/';
+                window.location.href = window.URLS.index;
             }, 2000);
         } else {
             const errorData = await response.json();
