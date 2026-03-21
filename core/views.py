@@ -45,6 +45,7 @@ def dashboard_page(request):
     
     context = {
         'properties': user_properties,
+        'user_properties': user_properties,
         'total_tax': total_tax,
         'property_count': user_properties.count()
     }
