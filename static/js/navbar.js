@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // Update Auth button based strictly on role
                 if (userData.user_type === 'OFFICIAL') {
                     authBtn.innerHTML = '<i class="fas fa-columns"></i> Gov Portal';
-                    authBtn.href = window.URLS.govDashboard;
+                    authBtn.href = window.URLS.zraDashboard;
                     authBtn.className = "bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-emerald-200 transition-all hover:-translate-y-0.5 flex items-center gap-2";
 
                     if (adminLink) {
