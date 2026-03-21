@@ -32,19 +32,19 @@ async function fetchApplications() {
             <div class="p-6 hover:bg-slate-50 transition">
                 <div class="flex justify-between items-start mb-2">
                     <div>
-                        <h4 class="font-bold text-slate-900">${app.property_details.title}</h4>
-                        <p class="text-sm text-slate-500"><i class="fas fa-user text-indigo-400 mr-1"></i> Applicant: <span class="font-semibold text-slate-700">${app.tenant_name}</span></p>
+                        <h4 class="font-bold text-slate-900">${escapeHTML(app.property_details.title)}</h4>
+                        <p class="text-sm text-slate-500"><i class="fas fa-user text-indigo-400 mr-1"></i> Applicant: <span class="font-semibold text-slate-700">${escapeHTML(app.tenant_name)}</span></p>
                     </div>
                     ${getStatusBadge(app.status)}
                 </div>
                 <div class="grid grid-cols-2 gap-4 mt-4 text-sm bg-white p-3 rounded-lg border border-slate-100">
-                    <div><span class="text-slate-500">Occupants:</span> <span class="font-semibold">${app.number_of_occupants}</span></div>
-                    <div><span class="text-slate-500">Period:</span> <span class="font-semibold">${app.start_date} to ${app.end_date}</span></div>
+                    <div><span class="text-slate-500">Occupants:</span> <span class="font-semibold">${parseInt(app.number_of_occupants)}</span></div>
+                    <div><span class="text-slate-500">Period:</span> <span class="font-semibold">${escapeHTML(app.start_date)} to ${escapeHTML(app.end_date)}</span></div>
                 </div>
                 ${app.status === 'PENDING' ? `
                 <div class="mt-4 flex gap-3">
-                    <button onclick="updateApplicationStatus(${app.id}, 'approve')" class="flex-1 bg-emerald-50 text-emerald-600 font-bold py-2 rounded-lg hover:bg-emerald-100 transition border border-emerald-200">Approve</button>
-                    <button onclick="updateApplicationStatus(${app.id}, 'reject')" class="flex-1 bg-red-50 text-red-600 font-bold py-2 rounded-lg hover:bg-red-100 transition border border-red-200">Reject</button>
+                    <button onclick="updateApplicationStatus(${parseInt(app.id)}, 'approve')" class="flex-1 bg-emerald-50 text-emerald-600 font-bold py-2 rounded-lg hover:bg-emerald-100 transition border border-emerald-200">Approve</button>
+                    <button onclick="updateApplicationStatus(${parseInt(app.id)}, 'reject')" class="flex-1 bg-red-50 text-red-600 font-bold py-2 rounded-lg hover:bg-red-100 transition border border-red-200">Reject</button>
                 </div>
                 ` : ''}
             </div>
@@ -151,12 +151,12 @@ async function fetchExpenses() {
             return `
             <div class="p-4 hover:bg-slate-50 transition flex justify-between items-center group">
                 <div>
-                    <p class="font-semibold text-sm text-slate-800">${exp.description}</p>
-                    <p class="text-xs text-slate-500 mt-1">${new Date(exp.date).toLocaleDateString()}</p>
+                    <p class="font-semibold text-sm text-slate-800">${escapeHTML(exp.description)}</p>
+                    <p class="text-xs text-slate-500 mt-1">${escapeHTML(new Date(exp.date).toLocaleDateString())}</p>
                 </div>
                 <div class="text-right">
                     <p class="font-bold text-slate-900 text-sm">K${parseFloat(exp.amount).toLocaleString()}</p>
-                    <button onclick="deleteExpense(${exp.id})" class="text-red-500 text-xs opacity-0 group-hover:opacity-100 transition mt-1"><i class="fas fa-trash"></i></button>
+                    <button onclick="deleteExpense(${parseInt(exp.id)})" class="text-red-500 text-xs opacity-0 group-hover:opacity-100 transition mt-1"><i class="fas fa-trash"></i></button>
                 </div>
             </div>
             `;

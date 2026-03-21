@@ -44,24 +44,24 @@ async function fetchProperties() {
             <div class="glass-card rounded-3xl overflow-hidden flex flex-col transition-transform hover:-translate-y-1 hover:shadow-xl duration-300">
                 <div class="h-48 bg-slate-200 relative">
                     <span class="absolute top-4 left-4 bg-white/90 px-3 py-1 rounded-full text-xs font-bold text-indigo-600 shadow-sm">
-                        ${prop.category_display}
+                        ${escapeHTML(prop.category_display)}
                     </span>
                     ${prop.is_tax_compliant ?
                         `<span class="absolute top-4 right-4 bg-emerald-500/90 text-white px-2 py-1 rounded-md text-xs font-bold shadow-sm">
                             <i class="fas fa-check-circle mr-1"></i> Verified
                         </span>` : ''
                     }
-                    <img src="${mainImageUrl}" class="w-full h-full object-cover">
+                    <img src="${encodeURI(mainImageUrl)}" class="w-full h-full object-cover" alt="${escapeHTML(prop.title)}">
                 </div>
                 <div class="p-6 flex-1 flex flex-col">
-                    <h3 class="font-bold text-xl mb-1 text-slate-900">${prop.title}</h3>
-                    <p class="text-slate-500 text-sm mb-6"><i class="fas fa-map-marker-alt mr-2 text-indigo-400"></i>${prop.area_name}, ${prop.district}</p>
+                    <h3 class="font-bold text-xl mb-1 text-slate-900">${escapeHTML(prop.title)}</h3>
+                    <p class="text-slate-500 text-sm mb-6"><i class="fas fa-map-marker-alt mr-2 text-indigo-400"></i>${escapeHTML(prop.area_name)}, ${escapeHTML(prop.district)}</p>
                     <div class="flex justify-between items-end mt-auto">
                         <div>
                             <span class="text-2xl font-black text-slate-900">K${parseFloat(prop.price).toLocaleString()}</span>
                             <span class="text-slate-500 text-sm">/mo</span>
                         </div>
-                        <a href="/property/${prop.id}/" class="text-indigo-600 font-semibold hover:text-indigo-800 transition-colors">View Details &rarr;</a>
+                        <a href="${window.URLS.propertyDetail.replace('0', parseInt(prop.id))}" class="text-indigo-600 font-semibold hover:text-indigo-800 transition-colors">View Details &rarr;</a>
                     </div>
                 </div>
             </div>

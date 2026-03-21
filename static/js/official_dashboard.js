@@ -38,8 +38,8 @@ async function fetchPendingProperties() {
             <div class="p-6 hover:bg-slate-50 transition border-b border-slate-100 last:border-0 group">
                 <div class="flex justify-between items-start mb-3">
                     <div>
-                        <h4 class="font-bold text-slate-900">${prop.title}</h4>
-                        <p class="text-sm text-slate-500"><i class="fas fa-user-tie text-indigo-400 mr-1"></i> Owner: <span class="font-semibold text-slate-700">${prop.owner_name}</span></p>
+                        <h4 class="font-bold text-slate-900">${escapeHTML(prop.title)}</h4>
+                        <p class="text-sm text-slate-500"><i class="fas fa-user-tie text-indigo-400 mr-1"></i> Owner: <span class="font-semibold text-slate-700">${escapeHTML(prop.owner_name)}</span></p>
                     </div>
                     <span class="bg-amber-100 text-amber-700 px-2 py-1 rounded text-xs font-bold uppercase whitespace-nowrap"><i class="fas fa-clock mr-1"></i> Pending</span>
                 </div>
@@ -50,7 +50,7 @@ async function fetchPendingProperties() {
                 </div>
 
                 <div class="mt-4 flex justify-end">
-                    <button onclick="toggleCompliance(${prop.id})" class="bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-emerald-700 transition shadow-sm text-sm flex items-center">
+                    <button onclick="toggleCompliance(${parseInt(prop.id)})" class="bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-emerald-700 transition shadow-sm text-sm flex items-center">
                         <i class="fas fa-check mr-2"></i> Verify Compliance
                     </button>
                 </div>

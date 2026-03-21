@@ -10,3 +10,11 @@ function getAuthHeaders() {
         'Authorization': token ? `Token ${token}` : ''
     };
 }
+
+// Utility to safely escape HTML strings and prevent XSS
+function escapeHTML(str) {
+    if (!str) return '';
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
