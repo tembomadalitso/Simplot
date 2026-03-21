@@ -42,23 +42,32 @@ async function fetchPendingProperties() {
             const info = ce('div');
             const title = ce('h4', 'font-bold text-slate-900', prop.title);
             const owner = ce('p', 'text-sm text-slate-500');
-            owner.innerHTML = `<i class="fas fa-user-tie text-indigo-400 mr-1"></i> Owner: <span class="font-semibold text-slate-700">${escapeHTML(prop.owner_name)}</span>`;
+            owner.append(icon('fas fa-user-tie text-indigo-400 mr-1'), document.createTextNode(' Owner: '));
+            owner.append(ce('span', 'font-semibold text-slate-700', prop.owner_name));
             info.append(title, owner);
 
             const badge = ce('span', 'bg-amber-100 text-amber-700 px-2 py-1 rounded text-xs font-bold uppercase whitespace-nowrap');
-            badge.innerHTML = '<i class="fas fa-clock mr-1"></i> Pending';
+            badge.append(icon('fas fa-clock mr-1'), document.createTextNode(' Pending'));
             header.append(info, badge);
 
             const details = ce('div', 'grid grid-cols-2 gap-4 mt-4 text-sm bg-white p-3 rounded-lg border border-slate-100 shadow-sm');
             const priceWrap = ce('div');
-            priceWrap.innerHTML = `<span class="text-slate-500 block text-xs uppercase font-bold tracking-wider mb-1">Declared Price</span> <span class="font-black text-indigo-600">K${parseFloat(prop.price).toLocaleString()}</span><span class="text-xs text-slate-400">/mo</span>`;
+            const priceTitle = ce('span', 'text-slate-500 block text-xs uppercase font-bold tracking-wider mb-1', 'Declared Price');
+            const priceVal = ce('span', 'font-black text-indigo-600', `K${parseFloat(prop.price).toLocaleString()}`);
+            const mo = ce('span', 'text-xs text-slate-400', '/mo');
+            priceWrap.append(priceTitle, priceVal, mo);
+
             const taxWrap = ce('div');
-            taxWrap.innerHTML = `<span class="text-slate-500 block text-xs uppercase font-bold tracking-wider mb-1">Est. Annual Tax</span> <span class="font-black text-emerald-600">K${parseFloat(prop.estimated_tax).toLocaleString()}</span>`;
+            const taxTitle = ce('span', 'text-slate-500 block text-xs uppercase font-bold tracking-wider mb-1', 'Est. Annual Tax');
+            const taxVal = ce('span', 'font-black text-emerald-600', `K${parseFloat(prop.estimated_tax).toLocaleString()}`);
+            taxWrap.append(taxTitle, taxVal);
             details.append(priceWrap, taxWrap);
 
             const action = ce('div', 'mt-4 flex justify-end');
-            const verifyBtn = ce('button', 'bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-emerald-700 transition shadow-sm text-sm flex items-center', 'Verify Compliance');
-            verifyBtn.innerHTML = '<i class="fas fa-check mr-2"></i> Verify Compliance';
+            const verifyBtn = ce('button', 'bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-emerald-700 transition shadow-sm text-sm flex items-center', '', {
+                onclick: () => toggleCompliance(parseInt(prop.id))
+            });
+            verifyBtn.append(icon('fas fa-check mr-2'), document.createTextNode(' Verify Compliance'));
             verifyBtn.onclick = () => toggleCompliance(parseInt(prop.id));
             action.append(verifyBtn);
 

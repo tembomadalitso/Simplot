@@ -24,6 +24,17 @@ function ce(tag, classes = '', content = '', attributes = {}) {
     const el = document.createElement(tag);
     if (classes) el.className = classes;
     if (content) el.textContent = content;
-    Object.keys(attributes).forEach(key => el.setAttribute(key, attributes[key]));
+    Object.keys(attributes).forEach(key => {
+        if (key === 'onclick') {
+            el.onclick = attributes[key];
+        } else {
+            el.setAttribute(key, attributes[key]);
+        }
+    });
     return el;
+}
+
+// Utility to create icons safely
+function icon(classes) {
+    return ce('i', classes);
 }

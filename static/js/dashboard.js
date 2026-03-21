@@ -36,19 +36,18 @@ async function fetchApplications() {
             const info = ce('div');
             const title = ce('h4', 'font-bold text-slate-900', app.property_details.title);
             const applicant = ce('p', 'text-sm text-slate-500');
-            applicant.innerHTML = `<i class="fas fa-user text-indigo-400 mr-1"></i> Applicant: <span class="font-semibold text-slate-700">${escapeHTML(app.tenant_name)}</span>`;
+            applicant.append(icon('fas fa-user text-indigo-400 mr-1'), document.createTextNode(' Applicant: '));
+            applicant.append(ce('span', 'font-semibold text-slate-700', app.tenant_name));
             info.append(title, applicant);
             header.append(info);
 
-            const badge = document.createElement('span');
-            badge.innerHTML = getStatusBadge(app.status);
-            header.append(badge);
+            header.append(getStatusBadge(app.status));
 
             const details = ce('div', 'grid grid-cols-2 gap-4 mt-4 text-sm bg-white p-3 rounded-lg border border-slate-100');
             const occupantsWrap = ce('div');
-            occupantsWrap.innerHTML = `<span class="text-slate-500">Occupants:</span> <span class="font-semibold">${parseInt(app.number_of_occupants)}</span>`;
+            occupantsWrap.append(ce('span', 'text-slate-500', 'Occupants: '), ce('span', 'font-semibold', parseInt(app.number_of_occupants).toString()));
             const periodWrap = ce('div');
-            periodWrap.innerHTML = `<span class="text-slate-500">Period:</span> <span class="font-semibold">${escapeHTML(app.start_date)} to ${escapeHTML(app.end_date)}</span>`;
+            periodWrap.append(ce('span', 'text-slate-500', 'Period: '), ce('span', 'font-semibold', `${app.start_date} to ${app.end_date}`));
             details.append(occupantsWrap, periodWrap);
 
             row.append(header, details);
@@ -73,9 +72,18 @@ async function fetchApplications() {
 }
 
 function getStatusBadge(status) {
-    if (status === 'APPROVED') return `<span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold uppercase"><i class="fas fa-check mr-1"></i> Approved</span>`;
-    if (status === 'REJECTED') return `<span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-bold uppercase"><i class="fas fa-times mr-1"></i> Rejected</span>`;
-    return `<span class="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-xs font-bold uppercase"><i class="fas fa-clock mr-1"></i> Pending</span>`;
+    const badge = ce('span', 'px-3 py-1 rounded-full text-xs font-bold uppercase');
+    if (status === 'APPROVED') {
+        badge.className += ' bg-emerald-100 text-emerald-700';
+        badge.append(icon('fas fa-check mr-1'), document.createTextNode(' Approved'));
+    } else if (status === 'REJECTED') {
+        badge.className += ' bg-red-100 text-red-700';
+        badge.append(icon('fas fa-times mr-1'), document.createTextNode(' Rejected'));
+    } else {
+        badge.className += ' bg-amber-100 text-amber-700';
+        badge.append(icon('fas fa-clock mr-1'), document.createTextNode(' Pending'));
+    }
+    return badge;
 }
 
 window.updateApplicationStatus = async (id, action) => {
@@ -174,9 +182,10 @@ async function fetchExpenses() {
 
             const meta = ce('div', 'text-right');
             const amt = ce('p', 'font-bold text-slate-900 text-sm', `K${parseFloat(exp.amount).toLocaleString()}`);
-            const delBtn = ce('button', 'text-red-500 text-xs opacity-0 group-hover:opacity-100 transition mt-1');
-            delBtn.innerHTML = '<i class="fas fa-trash"></i>';
-            delBtn.onclick = () => deleteExpense(parseInt(exp.id));
+            const delBtn = ce('button', 'text-red-500 text-xs opacity-0 group-hover:opacity-100 transition mt-1', '', {
+                onclick: () => deleteExpense(parseInt(exp.id))
+            });
+            delBtn.append(icon('fas fa-trash'));
             meta.append(amt, delBtn);
 
             item.append(info, meta);

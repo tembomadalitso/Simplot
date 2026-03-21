@@ -50,7 +50,7 @@ async function fetchProperties() {
 
             if (prop.is_tax_compliant) {
                 const verifiedBadge = ce('span', 'absolute top-4 right-4 bg-emerald-500/90 text-white px-2 py-1 rounded-md text-xs font-bold shadow-sm');
-                verifiedBadge.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Verified';
+                verifiedBadge.append(icon('fas fa-check-circle mr-1'), document.createTextNode(' Verified'));
                 imgContainer.appendChild(verifiedBadge);
             }
 
@@ -60,7 +60,7 @@ async function fetchProperties() {
             const content = ce('div', 'p-6 flex-1 flex flex-col');
             const title = ce('h3', 'font-bold text-xl mb-1 text-slate-900', prop.title);
             const location = ce('p', 'text-slate-500 text-sm mb-6');
-            location.innerHTML = `<i class="fas fa-map-marker-alt mr-2 text-indigo-400"></i>${escapeHTML(prop.area_name)}, ${escapeHTML(prop.district)}`;
+            location.append(icon('fas fa-map-marker-alt mr-2 text-indigo-400'), document.createTextNode(`${prop.area_name}, ${prop.district}`));
 
             const footer = ce('div', 'flex justify-between items-end mt-auto');
             const priceWrap = ce('div');
