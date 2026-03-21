@@ -18,3 +18,12 @@ function escapeHTML(str) {
     div.textContent = str;
     return div.innerHTML;
 }
+
+// Utility to create elements safely without innerHTML
+function ce(tag, classes = '', content = '', attributes = {}) {
+    const el = document.createElement(tag);
+    if (classes) el.className = classes;
+    if (content) el.textContent = content;
+    Object.keys(attributes).forEach(key => el.setAttribute(key, attributes[key]));
+    return el;
+}

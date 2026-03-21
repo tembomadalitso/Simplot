@@ -28,27 +28,43 @@ async function fetchApplications() {
             return;
         }
 
-        container.innerHTML = data.map(app => `
-            <div class="p-6 hover:bg-slate-50 transition">
-                <div class="flex justify-between items-start mb-2">
-                    <div>
-                        <h4 class="font-bold text-slate-900">${escapeHTML(app.property_details.title)}</h4>
-                        <p class="text-sm text-slate-500"><i class="fas fa-user text-indigo-400 mr-1"></i> Applicant: <span class="font-semibold text-slate-700">${escapeHTML(app.tenant_name)}</span></p>
-                    </div>
-                    ${getStatusBadge(app.status)}
-                </div>
-                <div class="grid grid-cols-2 gap-4 mt-4 text-sm bg-white p-3 rounded-lg border border-slate-100">
-                    <div><span class="text-slate-500">Occupants:</span> <span class="font-semibold">${parseInt(app.number_of_occupants)}</span></div>
-                    <div><span class="text-slate-500">Period:</span> <span class="font-semibold">${escapeHTML(app.start_date)} to ${escapeHTML(app.end_date)}</span></div>
-                </div>
-                ${app.status === 'PENDING' ? `
-                <div class="mt-4 flex gap-3">
-                    <button onclick="updateApplicationStatus(${parseInt(app.id)}, 'approve')" class="flex-1 bg-emerald-50 text-emerald-600 font-bold py-2 rounded-lg hover:bg-emerald-100 transition border border-emerald-200">Approve</button>
-                    <button onclick="updateApplicationStatus(${parseInt(app.id)}, 'reject')" class="flex-1 bg-red-50 text-red-600 font-bold py-2 rounded-lg hover:bg-red-100 transition border border-red-200">Reject</button>
-                </div>
-                ` : ''}
-            </div>
-        `).join('');
+        container.innerHTML = '';
+        data.forEach(app => {
+            const row = ce('div', 'p-6 hover:bg-slate-50 transition');
+
+            const header = ce('div', 'flex justify-between items-start mb-2');
+            const info = ce('div');
+            const title = ce('h4', 'font-bold text-slate-900', app.property_details.title);
+            const applicant = ce('p', 'text-sm text-slate-500');
+            applicant.innerHTML = `<i class="fas fa-user text-indigo-400 mr-1"></i> Applicant: <span class="font-semibold text-slate-700">${escapeHTML(app.tenant_name)}</span>`;
+            info.append(title, applicant);
+            header.append(info);
+
+            const badge = document.createElement('span');
+            badge.innerHTML = getStatusBadge(app.status);
+            header.append(badge);
+
+            const details = ce('div', 'grid grid-cols-2 gap-4 mt-4 text-sm bg-white p-3 rounded-lg border border-slate-100');
+            const occupantsWrap = ce('div');
+            occupantsWrap.innerHTML = `<span class="text-slate-500">Occupants:</span> <span class="font-semibold">${parseInt(app.number_of_occupants)}</span>`;
+            const periodWrap = ce('div');
+            periodWrap.innerHTML = `<span class="text-slate-500">Period:</span> <span class="font-semibold">${escapeHTML(app.start_date)} to ${escapeHTML(app.end_date)}</span>`;
+            details.append(occupantsWrap, periodWrap);
+
+            row.append(header, details);
+
+            if (app.status === 'PENDING') {
+                const actions = ce('div', 'mt-4 flex gap-3');
+                const approveBtn = ce('button', 'flex-1 bg-emerald-50 text-emerald-600 font-bold py-2 rounded-lg hover:bg-emerald-100 transition border border-emerald-200', 'Approve');
+                approveBtn.onclick = () => updateApplicationStatus(parseInt(app.id), 'approve');
+                const rejectBtn = ce('button', 'flex-1 bg-red-50 text-red-600 font-bold py-2 rounded-lg hover:bg-red-100 transition border border-red-200', 'Reject');
+                rejectBtn.onclick = () => updateApplicationStatus(parseInt(app.id), 'reject');
+                actions.append(approveBtn, rejectBtn);
+                row.append(actions);
+            }
+
+            container.appendChild(row);
+        });
 
     } catch (error) {
         console.error(error);
@@ -146,21 +162,26 @@ async function fetchExpenses() {
         }
 
         let total = 0;
-        list.innerHTML = data.map(exp => {
+        list.innerHTML = '';
+        data.forEach(exp => {
             total += parseFloat(exp.amount);
-            return `
-            <div class="p-4 hover:bg-slate-50 transition flex justify-between items-center group">
-                <div>
-                    <p class="font-semibold text-sm text-slate-800">${escapeHTML(exp.description)}</p>
-                    <p class="text-xs text-slate-500 mt-1">${escapeHTML(new Date(exp.date).toLocaleDateString())}</p>
-                </div>
-                <div class="text-right">
-                    <p class="font-bold text-slate-900 text-sm">K${parseFloat(exp.amount).toLocaleString()}</p>
-                    <button onclick="deleteExpense(${parseInt(exp.id)})" class="text-red-500 text-xs opacity-0 group-hover:opacity-100 transition mt-1"><i class="fas fa-trash"></i></button>
-                </div>
-            </div>
-            `;
-        }).join('');
+            const item = ce('div', 'p-4 hover:bg-slate-50 transition flex justify-between items-center group');
+
+            const info = ce('div');
+            const desc = ce('p', 'font-semibold text-sm text-slate-800', exp.description);
+            const date = ce('p', 'text-xs text-slate-500 mt-1', new Date(exp.date).toLocaleDateString());
+            info.append(desc, date);
+
+            const meta = ce('div', 'text-right');
+            const amt = ce('p', 'font-bold text-slate-900 text-sm', `K${parseFloat(exp.amount).toLocaleString()}`);
+            const delBtn = ce('button', 'text-red-500 text-xs opacity-0 group-hover:opacity-100 transition mt-1');
+            delBtn.innerHTML = '<i class="fas fa-trash"></i>';
+            delBtn.onclick = () => deleteExpense(parseInt(exp.id));
+            meta.append(amt, delBtn);
+
+            item.append(info, meta);
+            list.appendChild(item);
+        });
 
         totalEl.textContent = `K${total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
 

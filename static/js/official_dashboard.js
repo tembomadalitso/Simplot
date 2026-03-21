@@ -34,28 +34,37 @@ async function fetchPendingProperties() {
             return;
         }
 
-        container.innerHTML = pendingProperties.map(prop => `
-            <div class="p-6 hover:bg-slate-50 transition border-b border-slate-100 last:border-0 group">
-                <div class="flex justify-between items-start mb-3">
-                    <div>
-                        <h4 class="font-bold text-slate-900">${escapeHTML(prop.title)}</h4>
-                        <p class="text-sm text-slate-500"><i class="fas fa-user-tie text-indigo-400 mr-1"></i> Owner: <span class="font-semibold text-slate-700">${escapeHTML(prop.owner_name)}</span></p>
-                    </div>
-                    <span class="bg-amber-100 text-amber-700 px-2 py-1 rounded text-xs font-bold uppercase whitespace-nowrap"><i class="fas fa-clock mr-1"></i> Pending</span>
-                </div>
+        container.innerHTML = '';
+        pendingProperties.forEach(prop => {
+            const item = ce('div', 'p-6 hover:bg-slate-50 transition border-b border-slate-100 last:border-0 group');
 
-                <div class="grid grid-cols-2 gap-4 mt-4 text-sm bg-white p-3 rounded-lg border border-slate-100 shadow-sm">
-                    <div><span class="text-slate-500 block text-xs uppercase font-bold tracking-wider mb-1">Declared Price</span> <span class="font-black text-indigo-600">K${parseFloat(prop.price).toLocaleString()}</span><span class="text-xs text-slate-400">/mo</span></div>
-                    <div><span class="text-slate-500 block text-xs uppercase font-bold tracking-wider mb-1">Est. Annual Tax</span> <span class="font-black text-emerald-600">K${parseFloat(prop.estimated_tax).toLocaleString()}</span></div>
-                </div>
+            const header = ce('div', 'flex justify-between items-start mb-3');
+            const info = ce('div');
+            const title = ce('h4', 'font-bold text-slate-900', prop.title);
+            const owner = ce('p', 'text-sm text-slate-500');
+            owner.innerHTML = `<i class="fas fa-user-tie text-indigo-400 mr-1"></i> Owner: <span class="font-semibold text-slate-700">${escapeHTML(prop.owner_name)}</span>`;
+            info.append(title, owner);
 
-                <div class="mt-4 flex justify-end">
-                    <button onclick="toggleCompliance(${parseInt(prop.id)})" class="bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-emerald-700 transition shadow-sm text-sm flex items-center">
-                        <i class="fas fa-check mr-2"></i> Verify Compliance
-                    </button>
-                </div>
-            </div>
-        `).join('');
+            const badge = ce('span', 'bg-amber-100 text-amber-700 px-2 py-1 rounded text-xs font-bold uppercase whitespace-nowrap');
+            badge.innerHTML = '<i class="fas fa-clock mr-1"></i> Pending';
+            header.append(info, badge);
+
+            const details = ce('div', 'grid grid-cols-2 gap-4 mt-4 text-sm bg-white p-3 rounded-lg border border-slate-100 shadow-sm');
+            const priceWrap = ce('div');
+            priceWrap.innerHTML = `<span class="text-slate-500 block text-xs uppercase font-bold tracking-wider mb-1">Declared Price</span> <span class="font-black text-indigo-600">K${parseFloat(prop.price).toLocaleString()}</span><span class="text-xs text-slate-400">/mo</span>`;
+            const taxWrap = ce('div');
+            taxWrap.innerHTML = `<span class="text-slate-500 block text-xs uppercase font-bold tracking-wider mb-1">Est. Annual Tax</span> <span class="font-black text-emerald-600">K${parseFloat(prop.estimated_tax).toLocaleString()}</span>`;
+            details.append(priceWrap, taxWrap);
+
+            const action = ce('div', 'mt-4 flex justify-end');
+            const verifyBtn = ce('button', 'bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-emerald-700 transition shadow-sm text-sm flex items-center', 'Verify Compliance');
+            verifyBtn.innerHTML = '<i class="fas fa-check mr-2"></i> Verify Compliance';
+            verifyBtn.onclick = () => toggleCompliance(parseInt(prop.id));
+            action.append(verifyBtn);
+
+            item.append(header, details, action);
+            container.appendChild(item);
+        });
 
     } catch (error) {
         console.error(error);

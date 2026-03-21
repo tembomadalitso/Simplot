@@ -34,39 +34,49 @@ async function fetchProperties() {
             return;
         }
 
-        container.innerHTML = data.map(prop => {
+        container.innerHTML = '';
+        data.forEach(prop => {
             let mainImageUrl = "https://via.placeholder.com/400x300?text=Property";
             if (prop.images && prop.images.length > 0) {
                 const mainImage = prop.images.find(img => img.is_main) || prop.images[0];
                 mainImageUrl = mainImage.image;
             }
-            return `
-            <div class="glass-card rounded-3xl overflow-hidden flex flex-col transition-transform hover:-translate-y-1 hover:shadow-xl duration-300">
-                <div class="h-48 bg-slate-200 relative">
-                    <span class="absolute top-4 left-4 bg-white/90 px-3 py-1 rounded-full text-xs font-bold text-indigo-600 shadow-sm">
-                        ${escapeHTML(prop.category_display)}
-                    </span>
-                    ${prop.is_tax_compliant ?
-                        `<span class="absolute top-4 right-4 bg-emerald-500/90 text-white px-2 py-1 rounded-md text-xs font-bold shadow-sm">
-                            <i class="fas fa-check-circle mr-1"></i> Verified
-                        </span>` : ''
-                    }
-                    <img src="${encodeURI(mainImageUrl)}" class="w-full h-full object-cover" alt="${escapeHTML(prop.title)}">
-                </div>
-                <div class="p-6 flex-1 flex flex-col">
-                    <h3 class="font-bold text-xl mb-1 text-slate-900">${escapeHTML(prop.title)}</h3>
-                    <p class="text-slate-500 text-sm mb-6"><i class="fas fa-map-marker-alt mr-2 text-indigo-400"></i>${escapeHTML(prop.area_name)}, ${escapeHTML(prop.district)}</p>
-                    <div class="flex justify-between items-end mt-auto">
-                        <div>
-                            <span class="text-2xl font-black text-slate-900">K${parseFloat(prop.price).toLocaleString()}</span>
-                            <span class="text-slate-500 text-sm">/mo</span>
-                        </div>
-                        <a href="${window.URLS.propertyDetail.replace('0', parseInt(prop.id))}" class="text-indigo-600 font-semibold hover:text-indigo-800 transition-colors">View Details &rarr;</a>
-                    </div>
-                </div>
-            </div>
-        `;
-        }).join('');
+
+            const card = ce('div', 'glass-card rounded-3xl overflow-hidden flex flex-col transition-transform hover:-translate-y-1 hover:shadow-xl duration-300');
+
+            const imgContainer = ce('div', 'h-48 bg-slate-200 relative');
+            const categoryBadge = ce('span', 'absolute top-4 left-4 bg-white/90 px-3 py-1 rounded-full text-xs font-bold text-indigo-600 shadow-sm', prop.category_display);
+            imgContainer.appendChild(categoryBadge);
+
+            if (prop.is_tax_compliant) {
+                const verifiedBadge = ce('span', 'absolute top-4 right-4 bg-emerald-500/90 text-white px-2 py-1 rounded-md text-xs font-bold shadow-sm');
+                verifiedBadge.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Verified';
+                imgContainer.appendChild(verifiedBadge);
+            }
+
+            const img = ce('img', 'w-full h-full object-cover', '', { src: mainImageUrl, alt: prop.title });
+            imgContainer.appendChild(img);
+
+            const content = ce('div', 'p-6 flex-1 flex flex-col');
+            const title = ce('h3', 'font-bold text-xl mb-1 text-slate-900', prop.title);
+            const location = ce('p', 'text-slate-500 text-sm mb-6');
+            location.innerHTML = `<i class="fas fa-map-marker-alt mr-2 text-indigo-400"></i>${escapeHTML(prop.area_name)}, ${escapeHTML(prop.district)}`;
+
+            const footer = ce('div', 'flex justify-between items-end mt-auto');
+            const priceWrap = ce('div');
+            const price = ce('span', 'text-2xl font-black text-slate-900', `K${parseFloat(prop.price).toLocaleString()}`);
+            const perMo = ce('span', 'text-slate-500 text-sm', '/mo');
+            priceWrap.append(price, perMo);
+
+            const link = ce('a', 'text-indigo-600 font-semibold hover:text-indigo-800 transition-colors', 'View Details →', {
+                href: window.URLS.propertyDetail.replace('0', parseInt(prop.id))
+            });
+
+            footer.append(priceWrap, link);
+            content.append(title, location, footer);
+            card.append(imgContainer, content);
+            container.appendChild(card);
+        });
 
     } catch (error) {
         console.error('Error fetching properties:', error);
