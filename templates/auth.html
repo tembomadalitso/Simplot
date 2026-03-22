@@ -3,75 +3,288 @@
 
 {% block title %}Sign In | Zambia Rentals{% endblock %}
 
+{% block extra_head %}
+<style>
+    body.auth-page > main {
+        padding: 0 !important;
+        max-width: 100% !important;
+    }
+
+    .auth-bg {
+        position: relative;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+        overflow: hidden;
+    }
+
+    .auth-bg::before {
+        content: '';
+        position: absolute;
+        inset: -20px;
+        background-image: url("{% static 'images/login.png' %}");
+        background-size: cover;
+        background-position: center;
+        filter: blur(6px) brightness(0.55) saturate(0.8);
+        transform: scale(1.05);
+    }
+
+    .auth-bg::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            135deg,
+            rgba(15, 23, 42, 0.55) 0%,
+            rgba(79, 70, 229, 0.25) 60%,
+            rgba(15, 23, 42, 0.4) 100%
+        );
+    }
+
+    .auth-card-wrapper {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        max-width: 440px;
+        animation: fadeInUp 0.5s cubic-bezier(0.16,1,0.3,1) forwards;
+    }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Glass card — fully transparent */
+    .auth-glass-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 28px;
+        padding: 44px;
+        box-shadow:
+            0 0 0 1px rgba(255,255,255,0.08) inset,
+            0 32px 64px rgba(0,0,0,0.35);
+    }
+
+    /* Labels — white on glass */
+    .auth-label {
+        display: block;
+        font-size: 12px;
+        font-weight: 700;
+        color: rgba(255,255,255,0.7);
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        margin-bottom: 8px;
+    }
+
+    /* Inputs — frosted glass fields */
+    .auth-input {
+        width: 100%;
+        padding: 13px 16px 13px 44px;
+        background: rgba(255,255,255,0.12);
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 12px;
+        font-size: 15px;
+        font-family: inherit;
+        font-weight: 500;
+        color: #ffffff;
+        outline: none;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.1) inset;
+    }
+
+    .auth-input::placeholder { color: rgba(255,255,255,0.4); }
+
+    .auth-input:focus {
+        background: rgba(255,255,255,0.18);
+        border-color: rgba(255,255,255,0.45);
+        box-shadow: 0 0 0 3px rgba(255,255,255,0.1), 0 1px 2px rgba(0,0,0,0.1) inset;
+    }
+
+    .auth-input-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: rgba(255,255,255,0.4);
+        font-size: 13px;
+        pointer-events: none;
+        transition: color 0.2s;
+    }
+
+    .auth-input-wrap:focus-within .auth-input-icon {
+        color: rgba(255,255,255,0.75);
+    }
+
+    /* Select override */
+    .auth-select {
+        width: 100%;
+        padding: 13px 16px 13px 44px;
+        background: rgba(255,255,255,0.12);
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 12px;
+        font-size: 15px;
+        font-family: inherit;
+        font-weight: 600;
+        color: #ffffff;
+        outline: none;
+        cursor: pointer;
+        appearance: none;
+        transition: all 0.2s ease;
+    }
+
+    .auth-select:focus {
+        background: rgba(255,255,255,0.18);
+        border-color: rgba(255,255,255,0.45);
+    }
+
+    .auth-select option {
+        background: #1e293b;
+        color: #fff;
+    }
+
+    /* Submit button */
+    .auth-btn {
+        width: 100%;
+        padding: 15px;
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        color: #fff;
+        border: none;
+        border-radius: 14px;
+        font-size: 15px;
+        font-weight: 700;
+        font-family: inherit;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 16px rgba(79,70,229,0.4), 0 0 0 1px rgba(255,255,255,0.1) inset;
+        letter-spacing: -0.01em;
+    }
+
+    .auth-btn:hover {
+        background: linear-gradient(135deg, #4338ca, #6d28d9);
+        box-shadow: 0 8px 24px rgba(79,70,229,0.5), 0 0 0 1px rgba(255,255,255,0.15) inset;
+        transform: translateY(-1px);
+    }
+
+    .auth-btn:active { transform: scale(0.97); }
+
+    /* Toggle link */
+    .auth-toggle {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 13px;
+        color: rgba(255,255,255,0.65);
+        font-weight: 600;
+        font-family: inherit;
+        padding: 6px 12px;
+        border-radius: 8px;
+        transition: all 0.15s;
+    }
+
+    .auth-toggle:hover {
+        color: #fff;
+        background: rgba(255,255,255,0.1);
+    }
+
+    /* Alert */
+    .auth-alert {
+        padding: 12px 16px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 600;
+        margin-top: 14px;
+    }
+
+    .auth-alert-success {
+        background: rgba(16,185,129,0.2);
+        border: 1px solid rgba(16,185,129,0.35);
+        color: #6ee7b7;
+    }
+
+    .auth-alert-error {
+        background: rgba(239,68,68,0.2);
+        border: 1px solid rgba(239,68,68,0.35);
+        color: #fca5a5;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="max-w-md mx-auto py-12 animate-fade-in">
-    <div class="card p-12 shadow-2xl border-white/50 bg-white/70 backdrop-blur-xl">
+<div class="auth-bg">
+    <div class="auth-card-wrapper">
+        <div class="auth-glass-card">
 
-        <!-- Auth Header -->
-        <div class="text-center mb-10 space-y-4">
-            <div class="w-16 h-16 bg-indigo-600 rounded-[22px] flex items-center justify-center mx-auto shadow-xl shadow-indigo-100">
-                <i class="fas fa-home text-white text-2xl"></i>
-            </div>
-            <div>
-                <h2 id="authTitle" class="text-3xl font-black text-slate-900 tracking-tight">Welcome Back</h2>
-                <p id="authSubtitle" class="text-slate-400 font-bold text-sm mt-2">Sign in to manage your property journey</p>
-            </div>
-        </div>
-
-        <!-- Auth Form -->
-        <form id="authForm" class="space-y-6">
-            <div class="form-group !mb-0">
-                <label class="form-label">Username</label>
-                <div class="relative group">
-                    <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-indigo-600 transition-colors"></i>
-                    <input type="text" id="username" required class="form-input !pl-12 !py-4" placeholder="your_username">
+            <!-- Header -->
+            <div style="text-align:center;margin-bottom:32px">
+                <div style="width:54px;height:54px;background:linear-gradient(135deg,rgba(79,70,229,0.9),rgba(124,58,237,0.9));backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.25);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 8px 20px rgba(79,70,229,0.4)">
+                    <i class="fas fa-home" style="color:#fff;font-size:21px"></i>
                 </div>
+                <h2 id="authTitle" style="font-size:1.55rem;font-weight:900;letter-spacing:-0.04em;color:#ffffff;margin-bottom:6px;text-shadow:0 2px 8px rgba(0,0,0,0.2)">Welcome Back</h2>
+                <p id="authSubtitle" style="font-size:13px;font-weight:500;color:rgba(255,255,255,0.6)">Sign in to manage your property journey</p>
             </div>
 
-            <div id="extraFields" class="hidden space-y-6 animate-fade-in">
-                <div class="form-group !mb-0">
-                    <label class="form-label">Email Address</label>
-                    <div class="relative group">
-                        <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-indigo-600 transition-colors"></i>
-                        <input type="email" id="email" class="form-input !pl-12 !py-4" placeholder="you@example.com">
+            <!-- Form -->
+            <form id="authForm" style="display:flex;flex-direction:column;gap:16px">
+
+                <div>
+                    <label class="auth-label">Username</label>
+                    <div class="auth-input-wrap" style="position:relative">
+                        <i class="fas fa-user auth-input-icon"></i>
+                        <input type="text" id="username" required class="auth-input" placeholder="your_username">
                     </div>
                 </div>
-                <div class="form-group !mb-0">
-                    <label class="form-label">Account Type</label>
-                    <div class="relative group">
-                        <i class="fas fa-id-badge absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-indigo-600 transition-colors"></i>
-                        <select id="user_type" class="form-select !pl-12 !py-4 font-bold text-slate-700">
-                            <option value="TENANT">Tenant / Seeker</option>
-                            <option value="LANDLORD">Landlord / Owner</option>
-                            <option value="ZRA">ZRA Official</option>
-                            <option value="MINISTRY">Ministry Official</option>
-                        </select>
+
+                <div id="extraFields" style="display:none;flex-direction:column;gap:16px">
+                    <div>
+                        <label class="auth-label">Email Address</label>
+                        <div class="auth-input-wrap" style="position:relative">
+                            <i class="fas fa-envelope auth-input-icon"></i>
+                            <input type="email" id="email" class="auth-input" placeholder="you@example.com">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="auth-label">Account Type</label>
+                        <div class="auth-input-wrap" style="position:relative">
+                            <i class="fas fa-id-badge auth-input-icon"></i>
+                            <select id="user_type" class="auth-select">
+                                <option value="TENANT">Tenant / Seeker</option>
+                                <option value="LANDLORD">Landlord / Owner</option>
+                                <option value="ZRA">ZRA Official</option>
+                                <option value="MINISTRY">Ministry Official</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="form-group !mb-0">
-                <label class="form-label">Password</label>
-                <div class="relative group">
-                    <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-indigo-600 transition-colors"></i>
-                    <input type="password" id="password" required class="form-input !pl-12 !py-4" placeholder="••••••••">
+                <div>
+                    <label class="auth-label">Password</label>
+                    <div class="auth-input-wrap" style="position:relative">
+                        <i class="fas fa-lock auth-input-icon"></i>
+                        <input type="password" id="password" required class="auth-input" placeholder="••••••••">
+                    </div>
                 </div>
+
+                <button type="submit" class="auth-btn" style="margin-top:6px">
+                    <span id="btnText">Continue to Platform</span>
+                    <i class="fas fa-arrow-right" style="font-size:12px"></i>
+                </button>
+            </form>
+
+            <div style="text-align:center;margin-top:20px">
+                <button id="toggleAuth" class="auth-toggle">
+                    Don't have an account? Sign Up
+                </button>
             </div>
 
-            <button type="submit" class="btn btn-primary btn-full !py-4 !rounded-2xl !text-sm group">
-                <span id="btnText">Continue to Platform</span>
-                <i class="fas fa-arrow-right text-xs group-hover:translate-x-1 transition-transform ml-1"></i>
-            </button>
-        </form>
-
-        <div class="mt-10 text-center">
-            <button id="toggleAuth" class="text-indigo-600 hover:text-indigo-800 text-sm font-black transition-colors uppercase tracking-widest">
-                Don't have an account? Sign Up
-            </button>
-        </div>
-
-        <div id="authMessage" class="mt-8 hidden animate-fade-in">
-            <!-- Dynamic alerts from JS -->
+            <div id="authMessage" style="display:none"></div>
         </div>
     </div>
 </div>
@@ -80,27 +293,43 @@
 {% block extra_scripts %}
 <script src="{% static 'js/auth.js' %}"></script>
 <script>
-const _extraFields = document.getElementById('extraFields');
-const _authTitle = document.getElementById('authTitle');
-const _authSubtitle = document.getElementById('authSubtitle');
-const _btnText = document.getElementById('btnText');
-const _toggleAuth = document.getElementById('toggleAuth');
+document.addEventListener('DOMContentLoaded', () => {
+    document.body.classList.add('auth-page');
 
-_toggleAuth.addEventListener('click', () => {
-    const isLogin = _extraFields.classList.contains('hidden');
-    if (isLogin) {
-        _extraFields.classList.remove('hidden');
-        _authTitle.textContent = "Join the Platform";
-        _authSubtitle.textContent = "Start your premium real estate experience";
-        _btnText.textContent = "Create Account";
-        _toggleAuth.textContent = "Already have an account? Sign In";
-    } else {
-        _extraFields.classList.add('hidden');
-        _authTitle.textContent = "Welcome Back";
-        _authSubtitle.textContent = "Sign in to manage your property journey";
-        _btnText.textContent = "Continue to Platform";
-        _toggleAuth.textContent = "Don't have an account? Sign Up";
-    }
+    const extraFields = document.getElementById('extraFields');
+    const authTitle   = document.getElementById('authTitle');
+    const authSubtitle= document.getElementById('authSubtitle');
+    const btnText     = document.getElementById('btnText');
+    const toggleAuth  = document.getElementById('toggleAuth');
+    const msgDiv      = document.getElementById('authMessage');
+
+    // Override auth.js message styling to match glass theme
+    const origInnerText = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'innerText');
+    const observer = new MutationObserver(() => {
+        if (msgDiv.style.display !== 'none' && msgDiv.innerText) {
+            const isSuccess = msgDiv.classList.contains('text-emerald-500');
+            msgDiv.className = isSuccess ? 'auth-alert auth-alert-success' : 'auth-alert auth-alert-error';
+            msgDiv.style.display = 'block';
+        }
+    });
+    observer.observe(msgDiv, { attributes: true, childList: true, subtree: true });
+
+    toggleAuth.addEventListener('click', () => {
+        const isLogin = extraFields.style.display === 'none' || extraFields.style.display === '';
+        if (isLogin) {
+            extraFields.style.display = 'flex';
+            authTitle.textContent    = 'Join the Platform';
+            authSubtitle.textContent = 'Start your premium real estate experience';
+            btnText.textContent      = 'Create Account';
+            toggleAuth.textContent   = 'Already have an account? Sign In';
+        } else {
+            extraFields.style.display = 'none';
+            authTitle.textContent    = 'Welcome Back';
+            authSubtitle.textContent = 'Sign in to manage your property journey';
+            btnText.textContent      = 'Continue to Platform';
+            toggleAuth.textContent   = "Don't have an account? Sign Up";
+        }
+    });
 });
 </script>
 {% endblock %}
