@@ -5,10 +5,7 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Standard Django requirement to map your URL patterns
 ROOT_URLCONF = 'main.urls'
-
-# Standard Django requirement to point to your WSGI file
 WSGI_APPLICATION = 'main.wsgi.application'
 
 SECRET_KEY = 'django-insecure-mvi=9ekc^x-o_sds&6#*qif+s54(91vy7_369d#5f5(b=5f#xm'
@@ -24,14 +21,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
-    # Third Party
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
     'djoser',
-    
-    # Local App
     'core',
 ]
 
@@ -50,7 +43,7 @@ MIDDLEWARE = [
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'], 
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -70,15 +63,18 @@ DATABASES = {
     }
 }
 
-# Static files configuration
-STATIC_URL = 'static/'
+# 1. Where the browser looks in the URL
+STATIC_URL = '/static/'
+
+# 2. Where YOU write your custom code (The drafting room)
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
-# Media files configuration
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+# 3. Where DJANGO gathers everything for production (The warehouse)
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# Authentication Settings
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 AUTH_USER_MODEL = 'core.User'
 
 REST_FRAMEWORK = {
@@ -90,21 +86,13 @@ REST_FRAMEWORK = {
     ],
 }
 
-# Djoser Configuration
+# Single DJOSER block — all serializers in one place
 DJOSER = {
     'SERIALIZERS': {
         'user': 'core.serializers.UserSerializer',
         'current_user': 'core.serializers.UserSerializer',
-    }
-}
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-LOGIN_URL = '/auth/login/'
-
-DJOSER = {
-    'SERIALIZERS': {
         'user_create': 'core.serializers.UserCreateSerializer',
     }
 }
+
+LOGIN_URL = '/auth/login/'
