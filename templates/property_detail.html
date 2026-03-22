@@ -5,25 +5,6 @@
 
 {% block content %}
 <div class="max-w-4xl mx-auto animate-[fadeIn_0.5s_ease-out]">
-<<<<<<< HEAD
-    <div class="glass-card rounded-3xl overflow-hidden shadow-2xl bg-white/60">
-        <div class="h-96 bg-slate-200 relative">
-            {% if property.images.exists %}
-            {% with main_img=property.images.first %}
-            {% for img in property.images.all %}
-            {% if img.is_main %}
-            <img src="{{ img.image.url }}" class="w-full h-full object-cover">
-            {% endif %}
-            {% endfor %}
-            {% if not property.images.all.0.is_main %}
-            <img src="{{ property.images.all.0.image.url }}" class="w-full h-full object-cover">
-            {% endif %}
-            {% endwith %}
-            {% else %}
-            <img src="https://via.placeholder.com/800x400?text={{ property.title|urlencode }}"
-                class="w-full h-full object-cover">
-            {% endif %}
-=======
         <div class="glass-card rounded-3xl overflow-hidden shadow-2xl bg-white/60">
             <div class="h-96 bg-slate-900 relative group" id="slideshow-container">
                 {% if property.images.exists %}
@@ -106,7 +87,6 @@
                 </div>
 
             </div>
->>>>>>> feature/simplot-proptech-platform-4136760008759981879
         </div>
 
         <div class="p-8 md:p-12">

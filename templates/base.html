@@ -9,6 +9,25 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css/global.css' %}">
     {% block extra_head %}{% endblock %}
+
+    <script>
+        window.URLS = {
+            index: "{% url 'index' %}",
+            login: "{% url 'login' %}",
+            dashboard: "{% url 'dashboard' %}",
+            zraDashboard: "{% url 'zra-dashboard' %}",
+            occupancyDashboard: "{% url 'occupancy-dashboard' %}",
+            addProperty: "{% url 'add-property' %}",
+            apiProperties: "/api/properties/",
+            apiRentals: "/api/rentals/",
+            apiExpenses: "/api/expenses/",
+            authLogin: "/auth/token/login/",
+            authUsers: "/auth/users/",
+            authMe: "/auth/users/me/",
+            authLogout: "/auth/token/logout/",
+            propertyDetail: "{% url 'property-detail' 0 %}",
+        };
+    </script>
 </head>
 <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col animated-bg">
 
@@ -30,24 +49,7 @@
 
     {% include 'footer.html' %}
 
-    <script>
-        window.URLS = {
-            index: "{% url 'index' %}",
-            login: "{% url 'login' %}",
-            dashboard: "{% url 'dashboard' %}",
-            zraDashboard: "{% url 'zra-dashboard' %}",
-            occupancyDashboard: "{% url 'occupancy-dashboard' %}",
-            addProperty: "{% url 'add-property' %}",
-            apiProperties: "/api/properties/",
-            apiRentals: "/api/rentals/",
-            apiExpenses: "/api/expenses/",
-            authLogin: "/auth/token/login/",
-            authUsers: "/auth/users/",
-            authMe: "/auth/users/me/",
-            authLogout: "/auth/token/logout/",
-            propertyDetail: "{% url 'property-detail' 0 %}",
-        };
-    </script>
+   
     <script src="{% static 'js/main.js' %}"></script>
     <script src="{% static 'js/logout.js' %}"></script>
     {% block extra_scripts %}{% endblock %}

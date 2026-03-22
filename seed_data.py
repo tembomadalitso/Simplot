@@ -23,6 +23,27 @@ def seed():
     landlord.set_password('pass123')
     landlord.save()
 
+    # Create ZRA
+    zra, _ = User.objects.get_or_create(username="ZRAOfficial", defaults={
+        'user_type': 'ZRA', 'email': 'zra@gov.zm'
+    })
+    zra.set_password('pass123')
+    zra.save()
+
+    # Create Ministry
+    ministry, _ = User.objects.get_or_create(username="MinistryOfficial", defaults={
+        'user_type': 'MINISTRY', 'email': 'ministry@gov.zm'
+    })
+    ministry.set_password('pass123')
+    ministry.save()
+
+    # Create Tenant
+    tenant, _ = User.objects.get_or_create(username="MwaleJohn", defaults={
+        'user_type': 'TENANT', 'email': 'john@mwale.com'
+    })
+    tenant.set_password('pass123')
+    tenant.save()
+
     # 3. Create Properties (Using the new structure)
     Property.objects.get_or_create(
         owner=landlord,

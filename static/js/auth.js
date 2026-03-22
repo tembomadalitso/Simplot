@@ -53,13 +53,18 @@ authForm.addEventListener('submit', async (e) => {
                     });
                     if (meRes.ok) {
                         const userData = await meRes.json();
-                        if (userData.user_type === 'OFFICIAL') {
-                            setTimeout(() => window.location.href = window.URLS.govDashboard, 500);
-                            return;
-                        } else if (userData.user_type === 'LANDLORD') {
-                            setTimeout(() => window.location.href = window.URLS.dashboard, 500);
-                            return;
+                        let redirectUrl = window.URLS.index;
+                        
+                        if (userData.user_type === 'LANDLORD') {
+                            redirectUrl = window.URLS.dashboard;
+                        } else if (userData.user_type === 'ZRA') {
+                            redirectUrl = window.URLS.zraDashboard;
+                        } else if (userData.user_type === 'MINISTRY') {
+                            redirectUrl = window.URLS.occupancyDashboard;
                         }
+
+                        setTimeout(() => window.location.href = redirectUrl, 500);
+                        return;
                     }
                 } catch (e) {
                     console.error("Failed to fetch user role for redirection");

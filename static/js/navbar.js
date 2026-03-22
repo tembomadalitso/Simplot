@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const token = localStorage.getItem('auth_token');
     const authBtn = document.getElementById('authBtn');
-    const adminLink = document.getElementById('adminLink');
+    const dashboardBtn = document.getElementById('dashboardBtn');
     const logoutBtn = document.getElementById('logoutBtn');
     const userProfileBadge = document.getElementById('userProfileBadge');
     const userNameEl = document.getElementById('userName');
@@ -9,21 +9,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const userInitialsEl = document.getElementById('userInitials');
 
     // Check if user is logged in
-    if (token && authBtn) {
-        // Show logout button immediately
-        if (logoutBtn) {
-            logoutBtn.classList.remove('hidden');
-            logoutBtn.addEventListener('click', async (e) => {
-                e.preventDefault();
-                if (typeof handleLogout === "function") {
-                    await handleLogout();
-                } else {
-                    localStorage.removeItem('auth_token');
-                    window.location.href = window.URLS.login;
-                }
-            });
-        }
-
+    if (token) {
         try {
             const response = await fetch(window.URLS.authMe, {
                 headers: {
@@ -33,6 +19,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             if (response.ok) {
                 const userData = await response.json();
+
+                // Show logout button
+                if (logoutBtn) {
+                    logoutBtn.classList.remove('hidden');
+                    logoutBtn.addEventListener('click', async (e) => {
+                        e.preventDefault();
+                        if (typeof handleLogout === "function") {
+                            await handleLogout();
+                        } else {
+                            localStorage.removeItem('auth_token');
+                            window.location.href = window.URLS.login;
+                        }
+                    });
+                }
 
                 if (userProfileBadge) {
                     userProfileBadge.classList.remove('hidden');
@@ -58,7 +58,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                         const roles = {
                             'TENANT': { text: 'Tenant', class: 'bg-blue-100 text-blue-700' },
                             'LANDLORD': { text: 'Landlord', class: 'bg-amber-100 text-amber-700' },
-                            'OFFICIAL': { text: 'Gov Official', class: 'bg-emerald-100 text-emerald-700' }
+                            'ZRA': { text: 'ZRA Official', class: 'bg-emerald-100 text-emerald-700' },
+                            'MINISTRY': { text: 'Ministry Official', class: 'bg-indigo-100 text-indigo-700' }
                         };
                         const roleData = roles[userData.user_type] || { text: 'User', class: 'bg-slate-100 text-slate-700' };
                         userRoleEl.textContent = roleData.text;
@@ -66,31 +67,45 @@ document.addEventListener('DOMContentLoaded', async () => {
                     }
                 }
 
-                // Update Auth button based strictly on role
-                if (userData.user_type === 'OFFICIAL') {
-                    authBtn.innerHTML = '<i class="fas fa-columns"></i> Gov Portal';
-                    authBtn.href = window.URLS.zraDashboard;
-                    authBtn.className = "bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-emerald-200 transition-all hover:-translate-y-0.5 flex items-center gap-2";
+                // Hide login button if logged in
+                if (authBtn) authBtn.classList.add('hidden');
 
-                    if (adminLink) {
-                        adminLink.href = window.URLS.govDashboard;
-                        adminLink.textContent = "Official Portal";
-                        adminLink.classList.remove('hidden');
-                    }
-                } else if (userData.user_type === 'LANDLORD') {
-                    authBtn.innerHTML = '<i class="fas fa-columns"></i> Dashboard';
-                    authBtn.href = window.URLS.dashboard;
-                    authBtn.className = "bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-indigo-200 transition-all hover:-translate-y-0.5 flex items-center gap-2";
+                // Role-based dashboard button logic
+                if (dashboardBtn) {
+                    const dashboardConfigs = {
+                        'LANDLORD': {
+                            label: 'My Dashboard',
+                            url: window.URLS.dashboard,
+                            icon: 'fa-columns',
+                            class: 'bg-amber-500 hover:bg-amber-600 text-white shadow-amber-200'
+                        },
+                        'ZRA': {
+                            label: 'ZRA Portal',
+                            url: window.URLS.zraDashboard,
+                            icon: 'fa-file-invoice-dollar',
+                            class: 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-200'
+                        },
+                        'MINISTRY': {
+                            label: 'Ministry Portal',
+                            url: window.URLS.occupancyDashboard,
+                            icon: 'fa-users',
+                            class: 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-200'
+                        }
+                    };
 
-                    if (adminLink) {
-                        adminLink.href = window.URLS.dashboard;
-                        adminLink.textContent = "My Dashboard";
-                        adminLink.classList.remove('hidden');
+                    const config = dashboardConfigs[userData.user_type];
+                    if (config) {
+                        dashboardBtn.href = config.url;
+                        dashboardBtn.className = `flex px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md transition-all hover:-translate-y-0.5 items-center gap-2 ${config.class}`;
+                        
+                        dashboardBtn.textContent = ''; // Clear previous content
+                        const icon = document.createElement('i');
+                        icon.className = `fas ${config.icon}`;
+                        dashboardBtn.appendChild(icon);
+                        dashboardBtn.appendChild(document.createTextNode(config.label));
+                    } else {
+                        dashboardBtn.classList.add('hidden');
                     }
-                } else {
-                    // Tenant: hide dashboard button and admin link
-                    authBtn.classList.add('hidden');
-                    if (adminLink) adminLink.classList.add('hidden');
                 }
             } else {
                 localStorage.removeItem('auth_token');
