@@ -1,83 +1,122 @@
 # core/views.py
-from django.shortcuts import render, get_object_or_404
-from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Sum, Count, Q
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.authtoken.models import Token
 
 from .models import Property, RentalAgreement, User, Expense
 from .serializers import PropertySerializer, RentalAgreementSerializer, ExpenseSerializer
 
-# --- FRONTEND VIEWS ---
+
+# ---------------------------------------------------------------
+# HELPER: Resolve the real user from token (cookie or header)
+# This bypasses Django's unreliable session-based request.user
+# ---------------------------------------------------------------
+def get_user_from_request(request):
+    # 1. Try Authorization header
+    auth_header = request.META.get('HTTP_AUTHORIZATION', '')
+    if auth_header.startswith('Token '):
+        token_key = auth_header.split(' ')[1]
+        try:
+            return Token.objects.get(key=token_key).user
+        except Token.DoesNotExist:
+            pass
+
+    # 2. Try auth_token cookie
+    token_key = request.COOKIES.get('auth_token')
+    if token_key:
+        try:
+            return Token.objects.get(key=token_key).user
+        except Token.DoesNotExist:
+            pass
+
+    return None  # Not authenticated
+
+
+# ---------------------------------------------------------------
+# FRONTEND VIEWS
+# ---------------------------------------------------------------
 
 def index_page(request):
     return render(request, 'index.html')
 
+
 def auth_page(request):
     return render(request, 'auth.html')
 
-@login_required
-def apply_page(request, pk):
-    property_obj = get_object_or_404(Property, pk=pk)
-    return render(request, 'apply.html', {'property': property_obj})
-
-@login_required
-def add_property_page(request):
-    return render(request, 'add_property.html')
 
 def property_detail_page(request, pk):
     property_obj = get_object_or_404(Property, pk=pk)
-    # Goal: Ensure landlord contact is available for tenants
     landlord_phone = property_obj.owner.phone_number
     return render(request, 'property_detail.html', {
         'property': property_obj,
-        'landlord_phone': landlord_phone
+        'landlord_phone': landlord_phone,
     })
 
-@login_required
+
+def apply_page(request, pk):
+    user = get_user_from_request(request)
+    if not user:
+        return redirect('/auth/login/')
+    property_obj = get_object_or_404(Property, pk=pk)
+    return render(request, 'apply.html', {'property': property_obj})
+
+
+def add_property_page(request):
+    user = get_user_from_request(request)
+    if not user:
+        return redirect('/auth/login/')
+    return render(request, 'add_property.html')
+
+
 def dashboard_page(request):
-    """Restore the missing dashboard for Landlords"""
-    user_properties = Property.objects.filter(owner=request.user)
-    
-    # Goal 1: Landlords track their own earnings and tax obligations
+    """Landlord dashboard."""
+    user = get_user_from_request(request)
+    if not user:
+        return redirect('/auth/login/')
+
+    user_properties = Property.objects.filter(owner=user)
     total_tax = sum(p.estimated_annual_tax() for p in user_properties)
-    
-    context = {
+
+    return render(request, 'dashboard.html', {
         'properties': user_properties,
         'user_properties': user_properties,
         'total_tax': total_tax,
-        'property_count': user_properties.count()
-    }
-    return render(request, 'dashboard.html', context)
+        'property_count': user_properties.count(),
+    })
 
-@login_required
+
 def zra_dashboard_page(request):
-    """Oversight for ZRA Tax Trackers"""
-    if request.user.user_type != 'ZRA':
+    """ZRA Tax Compliance dashboard."""
+    user = get_user_from_request(request)
+    if not user:
+        return redirect('/auth/login/')
+    if user.user_type != 'ZRA':
         return render(request, '403.html')
 
     all_properties = Property.objects.all()
-    
-    # Goal 1: ZRA - Calculate Total Potential Tax Revenue
-    total_annual_tax_potential = sum(p.estimated_annual_tax() for p in all_properties)
+    total_tax = sum(p.estimated_annual_tax() for p in all_properties)
     compliant_count = all_properties.filter(is_tax_compliant=True).count()
     non_compliant_count = all_properties.filter(is_tax_compliant=False).count()
+    total_count = all_properties.count()
 
-    context = {
-        'total_tax': total_annual_tax_potential,
-        'compliance_rate': (compliant_count / all_properties.count() * 100) if all_properties.count() > 0 else 0,
+    return render(request, 'zra_dashboard.html', {
+        'total_tax': total_tax,
+        'compliance_rate': (compliant_count / total_count * 100) if total_count > 0 else 0,
         'non_compliant_count': non_compliant_count,
-    }
-    return render(request, 'zra_dashboard.html', context)
+    })
 
-@login_required
+
 def occupancy_dashboard_page(request):
-    """Oversight for Ministry of Home Affairs"""
-    if request.user.user_type != 'MINISTRY':
+    """Ministry of Home Affairs dashboard."""
+    user = get_user_from_request(request)
+    if not user:
+        return redirect('/auth/login/')
+    if user.user_type != 'MINISTRY':
         return render(request, '403.html')
 
-    # Goal 2: Ministry of Home Affairs - Occupancy and Density
     occupancy_stats = (
         RentalAgreement.objects.filter(is_active=True)
         .values('property__district')
@@ -88,12 +127,14 @@ def occupancy_dashboard_page(request):
         .order_by('-total_people')
     )
 
-    context = {
+    return render(request, 'ministry_dashboard.html', {
         'occupancy_stats': occupancy_stats,
-    }
-    return render(request, 'ministry_dashboard.html', context)
+    })
 
-# --- API VIEWSETS ---
+
+# ---------------------------------------------------------------
+# API VIEWSETS
+# ---------------------------------------------------------------
 
 class PropertyViewSet(viewsets.ModelViewSet):
     queryset = Property.objects.all()
@@ -102,98 +143,76 @@ class PropertyViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-
-        # Optional search filtering
-        search = self.request.query_params.get('search', None)
+        search = self.request.query_params.get('search')
         if search:
             queryset = queryset.filter(
                 Q(district__icontains=search) |
                 Q(area_name__icontains=search) |
                 Q(title__icontains=search)
             )
-
-        # Optional category filtering
-        category = self.request.query_params.get('category', None)
+        category = self.request.query_params.get('category')
         if category:
             queryset = queryset.filter(category=category)
-
         return queryset
 
     def perform_create(self, serializer):
         property_obj = serializer.save(owner=self.request.user)
-        # Handle multiple file uploads manually since they aren't part of standard drf nesting easily
         images = self.request.FILES.getlist('images')
         captions = self.request.POST.getlist('captions')
-        main_index = self.request.POST.get('main_image_index', '0')
-
         try:
-            main_index = int(main_index)
+            main_index = int(self.request.POST.get('main_image_index', '0'))
         except ValueError:
             main_index = 0
 
         from .models import PropertyImage
         for i, image in enumerate(images):
-            caption = captions[i] if i < len(captions) else ''
-            is_main = (i == main_index)
             PropertyImage.objects.create(
                 property=property_obj,
                 image=image,
-                caption=caption,
-                is_main=is_main
+                caption=captions[i] if i < len(captions) else '',
+                is_main=(i == main_index)
             )
 
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def toggle_compliance(self, request, pk=None):
         if request.user.user_type != 'ZRA':
             return Response({'error': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
-
         property_obj = self.get_object()
         property_obj.is_tax_compliant = not property_obj.is_tax_compliant
         property_obj.save()
-        return Response({'status': 'Tax compliance toggled', 'is_tax_compliant': property_obj.is_tax_compliant})
+        return Response({'is_tax_compliant': property_obj.is_tax_compliant})
 
     @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated])
     def zra_report(self, request):
-        """ZRA specific API endpoint"""
         if request.user.user_type != 'ZRA':
             return Response({'error': 'Unauthorized'}, status=403)
-        
         landlords = User.objects.filter(user_type='LANDLORD')
-        landlord_stats = []
+        stats = []
         for landlord in landlords:
-            landlord_properties = Property.objects.filter(owner=landlord)
-            annual_income = sum(float(p.price) * 12 for p in landlord_properties)
-            landlord_stats.append({
+            props = Property.objects.filter(owner=landlord)
+            stats.append({
                 'landlord_name': landlord.username,
-                'property_count': landlord_properties.count(),
-                'annual_income_estimate': annual_income
+                'property_count': props.count(),
+                'annual_income_estimate': sum(float(p.price) * 12 for p in props)
             })
-        return Response({'landlords': landlord_stats})
+        return Response({'landlords': stats})
 
     @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated])
     def census_report(self, request):
-        """Ministry of Home Affairs API for population density statistics"""
         if request.user.user_type != 'MINISTRY':
-            return Response({'error': 'Unauthorized'}, status=403) 
-            
-        agreements = RentalAgreement.objects.filter(is_active=True) 
+            return Response({'error': 'Unauthorized'}, status=403)
+        agreements = RentalAgreement.objects.filter(is_active=True)
         stats = {}
         for ag in agreements:
             dist = ag.property.district
-            cat = ag.property.category 
-            count = ag.number_of_occupants 
-            
             if dist not in stats:
-                stats[dist] = {
-                    'total_population': 0,
-                    'property_count': 0,
-                    'by_category': {}
-                }
-            
-            stats[dist]['total_population'] += count
+                stats[dist] = {'total_population': 0, 'property_count': 0, 'by_category': {}}
+            stats[dist]['total_population'] += ag.number_of_occupants
             stats[dist]['property_count'] += 1
-            stats[dist]['by_category'][cat] = stats[dist]['by_category'].get(cat, 0) + count
+            cat = ag.property.category
+            stats[dist]['by_category'][cat] = stats[dist]['by_category'].get(cat, 0) + ag.number_of_occupants
         return Response(stats)
+
 
 class RentalAgreementViewSet(viewsets.ModelViewSet):
     queryset = RentalAgreement.objects.all()
@@ -209,7 +228,6 @@ class RentalAgreementViewSet(viewsets.ModelViewSet):
         return RentalAgreement.objects.all()
 
     def perform_create(self, serializer):
-        # Automatically set the tenant to the logged-in user
         serializer.save(tenant=self.request.user)
 
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
@@ -217,7 +235,6 @@ class RentalAgreementViewSet(viewsets.ModelViewSet):
         agreement = self.get_object()
         if agreement.property.owner != request.user:
             return Response({'error': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
-
         agreement.status = 'APPROVED'
         agreement.save()
         return Response({'status': 'Approved'})
@@ -227,7 +244,6 @@ class RentalAgreementViewSet(viewsets.ModelViewSet):
         agreement = self.get_object()
         if agreement.property.owner != request.user:
             return Response({'error': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
-
         agreement.status = 'REJECTED'
         agreement.save()
         return Response({'status': 'Rejected'})
