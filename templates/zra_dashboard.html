@@ -3,81 +3,84 @@
 {% block title %}ZRA Tax Portal | Zambia Rentals{% endblock %}
 
 {% block content %}
-<div class="fade-in-up">
-    <!-- Page Header -->
-    <header style="margin-bottom:36px;display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:16px">
-        <div>
-            <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
-                <div style="width:40px;height:40px;background:linear-gradient(135deg,#059669,#10b981);border-radius:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(16,185,129,0.3)">
-                    <i class="fas fa-file-invoice-dollar" style="color:#fff;font-size:17px"></i>
-                </div>
-                <h1 style="font-size:1.6rem;font-weight:800;letter-spacing:-0.03em">ZRA Tax Compliance Portal</h1>
+<div class="animate-fade-in stagger-1">
+
+    <!-- Gov Header -->
+    <header class="mb-14 space-y-4">
+        <div class="flex flex-wrap items-center gap-4">
+            <div class="inline-flex items-center gap-2 bg-slate-900 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-lg">
+                <i class="fas fa-landmark"></i> ZRA Official Portal
             </div>
-            <p style="color:var(--color-text-secondary);font-size:14px">Official portal for ZRA tracking and tax compliance verification.</p>
+            <div class="inline-flex items-center gap-2 bg-emerald-50 text-emerald-600 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border border-emerald-100">
+                <i class="fas fa-shield-halved"></i> Revenue Registry
+            </div>
         </div>
-        <span class="badge badge-emerald" style="font-size:11px;padding:6px 14px">
-            <i class="fas fa-shield-alt"></i> ZRA Official
-        </span>
+        <h1 class="text-slate-900 font-black tracking-tight leading-none text-4xl">Tax Compliance Interface</h1>
+        <p class="text-slate-500 font-bold text-lg max-w-2xl">Monitor real estate turnover tax collection and property verification queues.</p>
     </header>
 
-    <!-- Stats Row -->
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:36px" class="stagger">
-        <div class="stat-card fade-in-up">
-            <div class="stat-icon stat-icon-primary"><i class="fas fa-chart-line"></i></div>
-            <div>
-                <div class="stat-label">Potential Tax Revenue</div>
-                <div class="stat-value" style="color:var(--color-primary)">K{{ total_tax|floatformat:2 }}</div>
-            </div>
-        </div>
-        <div class="stat-card fade-in-up">
-            <div class="stat-icon stat-icon-emerald"><i class="fas fa-check-double"></i></div>
-            <div>
-                <div class="stat-label">Compliance Rate</div>
-                <div class="stat-value" style="color:var(--color-emerald)">{{ compliance_rate|floatformat:1 }}%</div>
-            </div>
-        </div>
-        <div class="stat-card fade-in-up">
-            <div class="stat-icon stat-icon-amber"><i class="fas fa-exclamation-triangle"></i></div>
-            <div>
-                <div class="stat-label">Pending Verification</div>
-                <div class="stat-value" style="color:#b45309">{{ non_compliant_count }}</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Compliance Progress -->
-    <div class="card fade-in-up" style="padding:24px;margin-bottom:32px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-            <span style="font-size:13px;font-weight:600;color:var(--color-text-secondary)">Overall Compliance</span>
-            <span style="font-size:13px;font-weight:700;color:var(--color-emerald)">{{ compliance_rate|floatformat:1 }}%</span>
-        </div>
-        <div class="progress-bar">
-            <div class="progress-fill" style="width:{{ compliance_rate|floatformat:0 }}%"></div>
-        </div>
-    </div>
-
-    <!-- Verification Queue -->
-    <section>
-        <div class="section-header">
-            <div class="section-header-icon" style="background:var(--color-emerald-light);color:var(--color-emerald)">
-                <i class="fas fa-clipboard-check"></i>
-            </div>
-            <div>
-                <div class="section-title">Tax Verification Queue</div>
-                <div style="font-size:12px;color:var(--color-text-muted)">Properties pending ZRA verification</div>
-            </div>
-            <span class="badge badge-amber" style="margin-left:auto">{{ non_compliant_count }} Total</span>
-        </div>
-
-        <div class="card" style="overflow:hidden">
-            <div id="taxQueueList">
-                <div class="empty-state">
-                    <i class="fas fa-spinner fa-spin" style="color:var(--color-primary);opacity:1"></i>
-                    <p>Loading verification queue…</p>
+    <!-- Metrics Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="stat-card !bg-white group border-emerald-100">
+            <div class="flex items-center justify-between">
+                <div class="stat-label">Total Potential Revenue</div>
+                <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm transition-transform group-hover:scale-110">
+                    <i class="fas fa-money-bill-trend-up"></i>
                 </div>
             </div>
+            <div class="stat-value text-emerald-600">K{{ total_tax|floatformat:2 }}</div>
+            <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Aggregate Turnover Tax</div>
         </div>
-    </section>
+
+        <div class="stat-card !bg-white group border-indigo-100">
+            <div class="flex items-center justify-between">
+                <div class="stat-label">National Compliance Rate</div>
+                <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-sm transition-transform group-hover:scale-110">
+                    <i class="fas fa-check-double"></i>
+                </div>
+            </div>
+            <div class="stat-value text-indigo-600">{{ compliance_rate|floatformat:1 }}%</div>
+            <div class="mt-2 h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                <div class="h-full bg-indigo-500 transition-all duration-1000" style="width: {{ compliance_rate|floatformat:0 }}%"></div>
+            </div>
+        </div>
+
+        <div class="stat-card !bg-white group border-amber-100">
+            <div class="flex items-center justify-between">
+                <div class="stat-label">Awaiting Verification</div>
+                <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-sm transition-transform group-hover:scale-110">
+                    <i class="fas fa-list-check"></i>
+                </div>
+            </div>
+            <div class="stat-value text-amber-600">{{ non_compliant_count }}</div>
+            <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Pending Audit Action</div>
+        </div>
+    </div>
+
+    <!-- Section Header -->
+    <div class="flex items-center gap-4 mb-8">
+        <div class="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center text-lg shadow-xl shadow-indigo-100">
+            <i class="fas fa-file-shield"></i>
+        </div>
+        <div>
+            <h3 class="text-slate-900 font-black">Verification Backlog</h3>
+            <p class="text-slate-400 font-bold text-sm uppercase tracking-widest">Properties pending tax compliance approval</p>
+        </div>
+    </div>
+
+    <!-- Data Display -->
+    <div class="data-table-wrapper border-slate-100">
+        <div class="bg-slate-50 px-8 py-5 border-b border-slate-100 flex justify-between items-center">
+            <h4 class="font-black text-[11px] text-slate-400 uppercase tracking-widest">Turnover Tax Registry</h4>
+            <span class="badge badge-warning !text-[9px] shadow-sm">{{ non_compliant_count }} ENQUIRIES</span>
+        </div>
+        <div id="taxQueueList" class="divide-y divide-slate-50 max-h-[800px] overflow-y-auto">
+            <div class="p-32 text-center">
+                <i class="fas fa-circle-notch fa-spin text-4xl mb-6 text-indigo-400"></i>
+                <p class="text-slate-300 font-black uppercase tracking-[0.2em] text-sm">Synchronizing Registry...</p>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
 

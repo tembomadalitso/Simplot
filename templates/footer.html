@@ -1,29 +1,59 @@
-<footer style="margin-top:auto;background:var(--color-surface);border-top:1px solid var(--color-border);padding:32px 0">
+<footer class="mt-auto bg-white border-t border-slate-100 py-16">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:20px">
-            <div>
-                <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
-                    <div style="width:28px;height:28px;background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:8px;display:flex;align-items:center;justify-content:center">
-                        <i class="fas fa-home" style="color:#fff;font-size:12px"></i>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+
+            <div class="col-span-1 md:col-span-2">
+                <div class="flex items-center gap-3.5 mb-6">
+                    <div class="w-10 h-10 bg-indigo-600 rounded-[14px] flex items-center justify-center shadow-[0_8px_16px_-4px_rgba(79,70,229,0.3)]">
+                        <i class="fas fa-home text-white text-lg"></i>
                     </div>
-                    <span style="font-size:15px;font-weight:800;letter-spacing:-0.02em;color:var(--color-text-primary)">ZAMBIA RENTALS</span>
+                    <div class="flex flex-col">
+                        <span class="text-sm font-black tracking-tight text-slate-900 leading-none">ZAMBIA</span>
+                        <span class="text-[11px] font-bold tracking-[0.2em] text-indigo-600 leading-none mt-1">RENTALS</span>
+                    </div>
                 </div>
-                <p style="font-size:13px;color:var(--color-text-muted)">Modern housing and real estate in Zambia.</p>
+                <p class="text-slate-500 text-sm max-w-sm leading-relaxed">
+                    Setting the gold standard for property management and rental discovery in Zambia.
+                    Verified listings, compliant agreements, and world-class technology.
+                </p>
             </div>
 
-            <div style="display:flex;gap:16px">
-                <a href="#" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;border:1px solid var(--color-border);color:var(--color-text-secondary);font-size:15px;transition:all .15s" onmouseover="this.style.borderColor='#4f46e5';this.style.color='#4f46e5';this.style.background='#eef2ff'" onmouseout="this.style.borderColor='';this.style.color='';this.style.background=''">
+            <div>
+                <h4 class="text-slate-900 font-bold text-sm uppercase tracking-widest mb-6">Platform</h4>
+                <ul class="space-y-4">
+                    <li><a href="{% url 'index' %}" class="text-slate-500 hover:text-indigo-600 text-sm font-medium transition-colors">Find a Home</a></li>
+                    <li><a href="{% url 'login' %}" class="text-slate-500 hover:text-indigo-600 text-sm font-medium transition-colors">Partner with Us</a></li>
+                    <li><a href="#" class="text-slate-500 hover:text-indigo-600 text-sm font-medium transition-colors">How it Works</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-slate-900 font-bold text-sm uppercase tracking-widest mb-6">Support</h4>
+                <ul class="space-y-4">
+                    <li><a href="#" class="text-slate-500 hover:text-indigo-600 text-sm font-medium transition-colors">Help Center</a></li>
+                    <li><a href="#" class="text-slate-500 hover:text-indigo-600 text-sm font-medium transition-colors">Terms of Service</a></li>
+                    <li><a href="#" class="text-slate-500 hover:text-indigo-600 text-sm font-medium transition-colors">Privacy Policy</a></li>
+                </ul>
+            </div>
+
+        </div>
+
+        <div class="mt-16 pt-8 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-6">
+            <p class="text-slate-400 text-xs font-medium">
+                &copy; 2026 Zambia Rentals. All rights reserved. Built for the future of Zambian housing.
+            </p>
+
+            <div class="flex gap-4">
+                <a href="#" class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:bg-indigo-50 hover:text-indigo-600 transition-all duration-300">
                     <i class="fab fa-twitter"></i>
                 </a>
-                <a href="#" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;border:1px solid var(--color-border);color:var(--color-text-secondary);font-size:15px;transition:all .15s" onmouseover="this.style.borderColor='#4f46e5';this.style.color='#4f46e5';this.style.background='#eef2ff'" onmouseout="this.style.borderColor='';this.style.color='';this.style.background=''">
-                    <i class="fab fa-facebook"></i>
+                <a href="#" class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:bg-indigo-50 hover:text-indigo-600 transition-all duration-300">
+                    <i class="fab fa-facebook-f"></i>
                 </a>
-                <a href="#" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;border:1px solid var(--color-border);color:var(--color-text-secondary);font-size:15px;transition:all .15s" onmouseover="this.style.borderColor='#4f46e5';this.style.color='#4f46e5';this.style.background='#eef2ff'" onmouseout="this.style.borderColor='';this.style.color='';this.style.background=''">
+                <a href="#" class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:bg-indigo-50 hover:text-indigo-600 transition-all duration-300">
                     <i class="fab fa-instagram"></i>
                 </a>
             </div>
-
-            <p style="font-size:13px;color:var(--color-text-muted)">&copy; 2026 Zambia Rentals. All rights reserved.</p>
         </div>
     </div>
 </footer>

@@ -3,48 +3,93 @@
 {% block title %}Apply for Rental | Zambia Rentals{% endblock %}
 
 {% block content %}
-<div style="max-width:560px;margin:0 auto" class="fade-in-up">
-    <div style="margin-bottom:24px">
-        <a href="javascript:history.back()" class="btn btn-ghost btn-sm" style="margin-bottom:16px">
-            <i class="fas fa-arrow-left"></i> Back
-        </a>
-        <h1 style="font-size:1.5rem;font-weight:800;letter-spacing:-0.03em;margin-bottom:6px">Finalize Agreement</h1>
-        <p style="color:var(--color-text-secondary);font-size:14px">Confirm occupancy details for Ministry of Home Affairs records.</p>
-    </div>
+<div class="max-w-2xl mx-auto animate-fade-in stagger-1">
 
-    <div class="card" style="padding:36px">
-        <form id="agreementForm" data-property-id="{{ property.id }}" style="display:flex;flex-direction:column;gap:20px">
-
-            <div class="form-group">
-                <label class="form-label">Number of Occupants</label>
-                <input type="number" id="occupants" min="1" value="1" required class="form-input">
-                <p style="font-size:12px;color:var(--color-text-muted);margin-top:6px">
-                    <i class="fas fa-info-circle"></i> Shared with Ministry of Home Affairs for area statistics.
-                </p>
+    <!-- Form Header -->
+    <header class="mb-14 space-y-6">
+        <div class="flex items-center gap-4">
+            <a href="javascript:history.back()" class="w-10 h-10 rounded-full bg-slate-100 text-slate-500 hover:bg-white hover:text-indigo-600 border border-slate-200 transition-all flex items-center justify-center shadow-sm">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div class="inline-flex items-center gap-2 bg-indigo-50 text-indigo-600 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border border-indigo-100">
+                <i class="fas fa-file-contract"></i> Official Agreement
             </div>
+        </div>
+        <div class="space-y-2">
+            <h1 class="text-slate-900 font-black tracking-tight leading-none text-4xl">Secure Your Space</h1>
+            <p class="text-slate-500 font-bold text-lg max-w-xl">Finalize your occupancy details for Ministry of Home Affairs records.</p>
+        </div>
+    </header>
 
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-                <div class="form-group">
-                    <label class="form-label">Start Date</label>
-                    <input type="date" id="start_date" required class="form-input">
+    <div class="card p-12 shadow-2xl border-white/50 bg-white/70 backdrop-blur-xl">
+        <form id="agreementForm" data-property-id="{{ property.id }}" class="space-y-12">
+
+            <!-- Section: Resident Details -->
+            <section class="space-y-8">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center text-sm shadow-lg">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="text-slate-900 font-black text-xl">Occupancy Census</h3>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">End Date</label>
-                    <input type="date" id="end_date" required class="form-input">
+
+                <div class="form-group !mb-0">
+                    <label class="form-label">Number of Total Residents</label>
+                    <div class="relative group">
+                        <i class="fas fa-user-group absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-indigo-600 transition-colors"></i>
+                        <input type="number" id="occupants" min="1" value="1" required class="form-input !pl-12 !py-4 !bg-white !text-lg !font-black">
+                    </div>
+                    <div class="mt-6 p-5 bg-indigo-50/50 rounded-2xl border border-indigo-100 flex gap-4">
+                        <i class="fas fa-circle-info text-indigo-600 text-lg mt-0.5"></i>
+                        <p class="text-xs font-bold text-slate-500 leading-relaxed uppercase tracking-wide">
+                            Shared with Ministry of Home Affairs for demographic intelligence
+                            and public service planning.
+                        </p>
+                    </div>
                 </div>
-            </div>
+            </section>
 
-            <div class="alert alert-info">
-                <i class="fas fa-shield-alt" style="flex-shrink:0;margin-top:2px"></i>
-                <p style="margin:0;font-size:13px;color:inherit">By submitting, your application will be sent to the landlord for approval. You will be notified of the decision.</p>
-            </div>
+            <!-- Section: Lease Timeline -->
+            <section class="space-y-8">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center text-sm shadow-lg shadow-indigo-100">
+                        <i class="fas fa-calendar-days"></i>
+                    </div>
+                    <h3 class="text-slate-900 font-black text-xl">Tenancy Timeline</h3>
+                </div>
 
-            <button type="submit" class="btn btn-primary btn-full btn-lg">
-                <i class="fas fa-paper-plane"></i> Submit Application
-            </button>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="form-group !mb-0">
+                        <label class="form-label">Move-in Date</label>
+                        <input type="date" id="start_date" required class="form-input !py-4 !bg-white !font-black !text-slate-700">
+                    </div>
+                    <div class="form-group !mb-0">
+                        <label class="form-label">Renewal / End Date</label>
+                        <input type="date" id="end_date" required class="form-input !py-4 !bg-white !font-black !text-slate-700">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Formal Submission -->
+            <div class="pt-10 border-t border-slate-100 space-y-8">
+                <div class="flex items-start gap-4 p-6 bg-slate-50 rounded-2xl border border-slate-200">
+                    <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-indigo-600 shadow-sm shrink-0">
+                        <i class="fas fa-shield-halved"></i>
+                    </div>
+                    <p class="text-xs font-bold text-slate-500 leading-relaxed uppercase tracking-widest">
+                        By submitting this application, you authorize the platform to share your
+                        agreement details with relevant government bodies for official
+                        record-keeping.
+                    </p>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full !py-5 !rounded-2xl !text-lg group shadow-xl shadow-indigo-100">
+                    Submit Formal Application
+                    <i class="fas fa-paper-plane ml-3 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"></i>
+                </button>
+            </div>
         </form>
 
-        <div id="formStatus" class="alert hidden" style="margin-top:16px;display:none"></div>
+        <div id="formStatus" class="mt-8 hidden animate-fade-in"></div>
     </div>
 </div>
 {% endblock %}
