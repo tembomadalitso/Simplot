@@ -28,9 +28,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (logoutBtn) {
             // Use style.display — overrides any inline style or class
-            logoutBtn.style.display = 'flex';
-            logoutBtn.style.alignItems = 'center';
-            logoutBtn.style.gap = '6px';
+            logoutBtn.style.display = 'inline-flex';
             logoutBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 if (typeof handleLogout === 'function') {
@@ -113,33 +111,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                 dashboardBtn.appendChild(document.createTextNode(' ' + config.label));
 
                 // Apply styles directly — no class conflicts
-                dashboardBtn.style.cssText = `
-                    display: flex;
-                    align-items: center;
-                    gap: 7px;
-                    padding: 9px 18px;
-                    background: ${config.bg};
-                    color: #fff;
-                    border-radius: 11px;
-                    font-size: 13px;
-                    font-weight: 700;
-                    font-family: inherit;
-                    text-decoration: none;
-                    transition: all .18s;
-                    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-                    cursor: pointer;
-                    white-space: nowrap;
-                `;
+                dashboardBtn.className = 'nav-btn';
+                dashboardBtn.style.display = 'flex';
+                dashboardBtn.style.background = config.bg;
 
                 dashboardBtn.addEventListener('mouseenter', () => {
                     dashboardBtn.style.background = config.bgHover;
-                    dashboardBtn.style.transform = 'translateY(-1px)';
-                    dashboardBtn.style.boxShadow = '0 6px 16px rgba(0,0,0,0.25)';
                 });
                 dashboardBtn.addEventListener('mouseleave', () => {
                     dashboardBtn.style.background = config.bg;
-                    dashboardBtn.style.transform = '';
-                    dashboardBtn.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
                 });
 
             } else {

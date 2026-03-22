@@ -1,87 +1,86 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block title %}National Oversight | Zambia Rentals{% endblock %}
 
 {% block content %}
-<div class="animate-fade-in stagger-1">
+<div class="animate-fade-in delay-1">
 
     <!-- Gov Header -->
-    <header class="mb-14 space-y-4">
-        <div class="flex flex-wrap items-center gap-4">
-            <div class="inline-flex items-center gap-2 bg-slate-900 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-lg">
+    <header class="mb-6 flex-column gap-4">
+        <div class="flex-wrap items-center gap-4">
+            <div class="hero-badge" style="margin-bottom: 0; background: var(--bg-surface-solid);">
                 <i class="fas fa-landmark"></i> Government of Zambia
             </div>
-            <div class="inline-flex items-center gap-2 bg-indigo-50 text-indigo-600 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border border-indigo-100">
+            <div class="badge badge-primary">
                 <i class="fas fa-shield-halved"></i> Official Registry
             </div>
         </div>
-        <h1 class="text-slate-900 font-black tracking-tight leading-none">Rental Market Oversight</h1>
-        <p class="text-slate-500 font-bold text-lg max-w-2xl">Cross-departmental monitoring for ZRA tax compliance and Home Affairs occupancy mapping.</p>
+        <h1 class="font-black tracking-tighter">Rental Market Oversight</h1>
+        <p class="text-secondary font-bold" style="font-size: 1.125rem; max-width: 42rem;">Cross-departmental monitoring for ZRA tax compliance and Home Affairs occupancy mapping.</p>
     </header>
 
     <!-- Key Metrics Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-        <div class="card p-8 border-slate-100 hover:border-indigo-200 transition-colors">
-            <div class="flex items-center justify-between mb-6">
-                <div class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Potential Tax Yield</div>
-                <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-sm">
+    <div class="db-stat-grid" style="margin-bottom: 4rem;">
+        <div class="card p-8">
+            <div class="justify-between items-center mb-6 flex-row" style="display:flex;">
+                <div class="stat-label">Potential Tax Yield</div>
+                <div class="flex-center" style="width: 2.5rem; height: 2.5rem; border-radius: 0.75rem; background: var(--color-primary-light); color: var(--color-primary); font-size: 0.875rem;">
                     <i class="fas fa-chart-line"></i>
                 </div>
             </div>
-            <div class="text-4xl font-black text-indigo-600 tracking-tighter">K{{ total_tax|floatformat:2 }}</div>
-            <div class="mt-4 flex items-center gap-2">
-                <div class="h-1.5 flex-1 bg-slate-100 rounded-full overflow-hidden">
-                    <div class="h-full bg-indigo-500" style="width: 65%"></div>
+            <div class="font-black tracking-tighter" style="font-size: 2.25rem; color: var(--color-primary);">K{{ total_tax|floatformat:2 }}</div>
+            <div class="mt-4 items-center gap-2 flex-row" style="display:flex;">
+                <div class="flex-1" style="height: 0.375rem; background: var(--bg-body); border-radius: 9999px; overflow: hidden;">
+                    <div style="height: 100%; background: var(--color-primary); width: 65%"></div>
                 </div>
-                <span class="text-[10px] font-black text-slate-400">65% CAP</span>
+                <span class="stat-label" style="font-size: 0.625rem;">65% CAP</span>
             </div>
         </div>
 
-        <div class="card p-8 border-slate-100 hover:border-emerald-200 transition-colors">
-            <div class="flex items-center justify-between mb-6">
-                <div class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Compliance Health</div>
-                <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm">
+        <div class="card p-8">
+            <div class="justify-between items-center mb-6 flex-row" style="display:flex;">
+                <div class="stat-label">Compliance Health</div>
+                <div class="flex-center" style="width: 2.5rem; height: 2.5rem; border-radius: 0.75rem; background: var(--color-success-bg); color: var(--color-success); font-size: 0.875rem;">
                     <i class="fas fa-check-double"></i>
                 </div>
             </div>
-            <div class="text-4xl font-black text-emerald-600 tracking-tighter">{{ compliance_rate|floatformat:1 }}%</div>
-            <div class="mt-4 flex items-center gap-2">
-                <div class="h-1.5 flex-1 bg-slate-100 rounded-full overflow-hidden">
-                    <div class="h-full bg-emerald-500" style="width: {{ compliance_rate|floatformat:0 }}%"></div>
+            <div class="font-black tracking-tighter" style="font-size: 2.25rem; color: var(--color-success);">{{ compliance_rate|floatformat:1 }}%</div>
+            <div class="mt-4 items-center gap-2 flex-row" style="display:flex;">
+                <div class="flex-1" style="height: 0.375rem; background: var(--bg-body); border-radius: 9999px; overflow: hidden;">
+                    <div style="height: 100%; background: var(--color-success); width: {{ compliance_rate|floatformat:0 }}%"></div>
                 </div>
-                <span class="text-[10px] font-black text-slate-400">AVG RATE</span>
+                <span class="stat-label" style="font-size: 0.625rem;">AVG RATE</span>
             </div>
         </div>
 
-        <div class="card p-8 border-slate-100 hover:border-amber-200 transition-colors">
-            <div class="flex items-center justify-between mb-6">
-                <div class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Queue Backlog</div>
-                <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-sm">
+        <div class="card p-8">
+            <div class="justify-between items-center mb-6 flex-row" style="display:flex;">
+                <div class="stat-label">Queue Backlog</div>
+                <div class="flex-center" style="width: 2.5rem; height: 2.5rem; border-radius: 0.75rem; background: var(--color-warning-bg); color: var(--color-warning); font-size: 0.875rem;">
                     <i class="fas fa-clock-rotate-left"></i>
                 </div>
             </div>
-            <div class="text-4xl font-black text-amber-600 tracking-tighter">{{ non_compliant_count }}</div>
-            <div class="mt-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Pending Verification</div>
+            <div class="font-black tracking-tighter" style="font-size: 2.25rem; color: var(--color-warning);">{{ non_compliant_count }}</div>
+            <div class="mt-4 stat-label" style="font-size: 0.625rem;">Pending Verification</div>
         </div>
     </div>
 
     <!-- Oversight Modules -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+    <div class="md-grid-cols-2 gap-12" style="display:grid;">
 
         <!-- Home Affairs Module -->
-        <section class="space-y-8">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-2xl bg-slate-900 text-white flex items-center justify-center text-lg shadow-xl">
+        <section class="flex-column gap-8">
+            <div class="items-center gap-4 flex-row" style="display:flex;">
+                <div class="flex-center" style="width: 3rem; height: 3rem; border-radius: 1rem; background: var(--bg-surface-solid); color: var(--text-main); font-size: 1.125rem; box-shadow: var(--shadow-md);">
                     <i class="fas fa-users-viewfinder"></i>
                 </div>
                 <div>
-                    <h3 class="text-slate-900 font-black">Ministry Intelligence</h3>
-                    <p class="text-slate-400 font-bold text-sm uppercase tracking-widest">District Occupancy mapping</p>
+                    <h3 class="font-black">Ministry Intelligence</h3>
+                    <p class="stat-label" style="margin-bottom: 0;">District Occupancy mapping</p>
                 </div>
             </div>
 
-            <div class="data-table-wrapper border-slate-100">
+            <div class="data-table-wrapper">
                 <table class="data-table">
                     <thead>
                         <tr>
@@ -94,27 +93,27 @@
                     <tbody>
                         {% for stat in occupancy_stats %}
                         <tr>
-                            <td class="font-black text-slate-900">{{ stat.property__district }}</td>
+                            <td class="font-bold">{{ stat.property__district }}</td>
                             <td>
-                                <span class="bg-slate-100 text-slate-600 px-3 py-1 rounded-lg text-[10px] font-black uppercase">
+                                <span class="badge badge-neutral">
                                     {{ stat.total_people }} RESIDENTS
                                 </span>
                             </td>
-                            <td class="text-slate-400 font-bold text-xs">{{ stat.property_count }} Listings</td>
+                            <td class="text-muted font-bold" style="font-size: 0.75rem;">{{ stat.property_count }} Listings</td>
                             <td>
-                                <div class="flex items-center justify-end gap-3">
-                                    <div class="w-24 bg-slate-100 h-2 rounded-full overflow-hidden">
-                                        <div class="bg-indigo-600 h-full" style="width: {% if stat.total_people > 50 %}85{% elif stat.total_people > 20 %}50{% else %}20{% endif %}%"></div>
+                                <div class="justify-end items-center gap-3 flex-row" style="display:flex;">
+                                    <div style="width: 6rem; background: var(--bg-body); height: 0.5rem; border-radius: 9999px; overflow: hidden;">
+                                        <div style="background: var(--color-primary); height: 100%; width: {% if stat.total_people > 50 %}85{% elif stat.total_people > 20 %}50{% else %}20{% endif %}%"></div>
                                     </div>
-                                    <span class="text-[10px] font-black text-slate-400">{% if stat.total_people > 50 %}HIGH{% elif stat.total_people > 20 %}MED{% else %}LOW{% endif %}</span>
+                                    <span class="stat-label" style="font-size: 0.625rem; min-width: 2.5rem;">{% if stat.total_people > 50 %}HIGH{% elif stat.total_people > 20 %}MED{% else %}LOW{% endif %}</span>
                                 </div>
                             </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="4" class="p-20 text-center">
-                                <i class="fas fa-database text-slate-100 text-4xl mb-4"></i>
-                                <p class="text-slate-300 font-black uppercase tracking-[0.2em]">No Active Records</p>
+                            <td colspan="4" class="p-8 text-center">
+                                <i class="fas fa-database text-muted mb-4" style="font-size: 2.25rem; display:block;"></i>
+                                <p class="stat-label">No Active Records</p>
                             </td>
                         </tr>
                         {% endfor %}
@@ -124,26 +123,26 @@
         </section>
 
         <!-- ZRA Module -->
-        <section class="space-y-8">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center text-lg shadow-xl shadow-indigo-100">
+        <section class="flex-column gap-8">
+            <div class="items-center gap-4 flex-row" style="display:flex;">
+                <div class="flex-center" style="width: 3rem; height: 3rem; border-radius: 1rem; background: var(--color-primary); color: #fff; font-size: 1.125rem; box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.2);">
                     <i class="fas fa-file-shield"></i>
                 </div>
                 <div>
-                    <h3 class="text-slate-900 font-black">ZRA Compliance Queue</h3>
-                    <p class="text-slate-400 font-bold text-sm uppercase tracking-widest">Verification & Audit Log</p>
+                    <h3 class="font-black">ZRA Compliance Queue</h3>
+                    <p class="stat-label" style="margin-bottom: 0;">Verification & Audit Log</p>
                 </div>
             </div>
 
-            <div class="data-table-wrapper border-slate-100">
-                <div class="bg-slate-50 px-8 py-4 border-b border-slate-100 flex justify-between items-center">
-                    <h4 class="font-black text-[10px] text-slate-400 uppercase tracking-widest">Awaiting Verification</h4>
-                    <span class="badge badge-warning !text-[9px]">{{ non_compliant_count }} PROPERTIES</span>
+            <div class="data-table-wrapper">
+                <div class="justify-between items-center px-4 py-4 border-b flex-row" style="display:flex; background:var(--bg-body);">
+                    <h4 class="stat-label" style="margin-bottom: 0;">Awaiting Verification</h4>
+                    <span class="badge badge-warning" style="font-size: 9px;">{{ non_compliant_count }} PROPERTIES</span>
                 </div>
-                <div id="taxQueueList" class="divide-y divide-slate-50 max-h-[600px] overflow-y-auto">
-                    <div class="p-20 text-center">
-                        <i class="fas fa-circle-notch fa-spin text-3xl mb-4 text-indigo-400"></i>
-                        <p class="text-slate-400 font-bold uppercase tracking-widest text-xs">Syncing Queue...</p>
+                <div id="taxQueueList" style="max-height: 600px; overflow-y: auto;">
+                    <div class="text-center p-8">
+                        <i class="fas fa-circle-notch fa-spin text-muted mb-4" style="font-size: 1.875rem; color: var(--color-primary); display:block;"></i>
+                        <p class="stat-label">Syncing Queue...</p>
                     </div>
                 </div>
             </div>

@@ -2,55 +2,48 @@
 {% load static %}
 {% block title %}Post New Listing | Zambia Rentals{% endblock %}
 
-{% block extra_head %}
-<style>
-body.add-prop-page { background: linear-gradient(160deg,#0d0d2b 0%,#0a0e1f 50%,#07071a 100%) !important; }
-body.add-prop-page > main { background: transparent !important; }
-</style>
-{% endblock %}
-
 {% block content %}
-<div style="max-width:740px;margin:0 auto">
+<div class="fade-up delay-1" style="max-width:740px;margin:0 auto">
 
     <!-- Header -->
     <header style="margin-bottom:36px">
-        <div style="display:inline-flex;align-items:center;gap:7px;background:rgba(79,70,229,0.15);border:1px solid rgba(165,180,252,0.25);color:#a5b4fc;padding:5px 14px;border-radius:9999px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:14px">
-            <i class="fas fa-plus" style="font-size:9px"></i> New Listing
+        <div class="badge badge-primary" style="margin-bottom:14px">
+            <i class="fas fa-plus text-xs"></i> New Listing
         </div>
-        <h1 style="font-size:clamp(1.8rem,4vw,2.4rem);font-weight:900;letter-spacing:-0.04em;color:#fff;margin-bottom:6px;line-height:1.1">List Your Property</h1>
-        <p style="color:rgba(255,255,255,0.45);font-size:15px;font-weight:500">Share your space with thousands of verified tenants across Zambia.</p>
+        <h1 class="font-black tracking-tighter mb-2" style="font-size:clamp(1.8rem,4vw,2.4rem);line-height:1.1">List Your Property</h1>
+        <p class="text-sm font-medium" style="color:var(--text-secondary);">Share your space with thousands of verified tenants across Zambia.</p>
     </header>
 
-    <div style="background:rgba(255,255,255,0.06);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.1);border-radius:24px;padding:36px;box-shadow:0 24px 48px rgba(0,0,0,0.4)">
-        <form id="propertyForm" style="display:flex;flex-direction:column;gap:32px">
+    <div class="detail-card fade-up delay-2">
+        <form id="propertyForm" class="flex-column gap-8">
 
             <!-- General Info -->
             <section>
-                <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.07)">
-                    <div style="width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.6);font-size:14px"><i class="fas fa-info"></i></div>
-                    <h3 style="font-size:15px;font-weight:800;color:#fff">General Information</h3>
+                <div class="flex-row items-center gap-3 mb-6 pb-4 border-b">
+                    <div class="flex-center" style="width:36px;height:36px;border-radius:10px;background:var(--bg-body);color:var(--text-secondary);font-size:14px"><i class="fas fa-info"></i></div>
+                    <h3 class="font-extrabold" style="font-size:15px;">General Information</h3>
                 </div>
-                <div style="display:flex;flex-direction:column;gap:16px">
+                <div class="flex-column gap-4">
                     <div>
-                        <label style="display:block;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.4);margin-bottom:8px">Property Title</label>
-                        <input type="text" id="title" placeholder="e.g. Modern 2BR Apartment in Meanwood" required style="width:100%;padding:12px 16px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:12px;font-size:14px;font-family:inherit;font-weight:500;color:#fff;outline:none;transition:all .2s;box-sizing:border-box" onfocus="this.style.borderColor='rgba(165,180,252,0.5)';this.style.boxShadow='0 0 0 3px rgba(79,70,229,0.2)'" onblur="this.style.borderColor='rgba(255,255,255,0.12)';this.style.boxShadow='none'">
+                        <label class="form-label">Property Title</label>
+                        <input type="text" id="title" placeholder="e.g. Modern 2BR Apartment in Meanwood" required class="form-input">
                     </div>
                     <div>
-                        <label style="display:block;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.4);margin-bottom:8px">Description</label>
-                        <textarea id="description" placeholder="Describe amenities, nearby locations, unique features…" rows="4" style="width:100%;padding:12px 16px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:12px;font-size:14px;font-family:inherit;font-weight:500;color:#fff;outline:none;resize:vertical;box-sizing:border-box" onfocus="this.style.borderColor='rgba(165,180,252,0.5)';this.style.boxShadow='0 0 0 3px rgba(79,70,229,0.2)'" onblur="this.style.borderColor='rgba(255,255,255,0.12)';this.style.boxShadow='none'"></textarea>
+                        <label class="form-label">Description</label>
+                        <textarea id="description" placeholder="Describe amenities, nearby locations, unique features…" rows="4" class="form-textarea"></textarea>
                     </div>
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                    <div class="md-grid-cols-2 gap-4" style="display:grid;">
                         <div>
-                            <label style="display:block;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.4);margin-bottom:8px">Category</label>
-                            <select id="category" style="width:100%;padding:12px 16px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:12px;font-size:14px;font-family:inherit;font-weight:600;color:#fff;outline:none;appearance:none;cursor:pointer">
-                                <option value="RESIDENTIAL" style="background:#1e1b4b">Residential</option>
-                                <option value="BOARDING" style="background:#1e1b4b">Boarding House</option>
-                                <option value="LODGE" style="background:#1e1b4b">Lodge / Short-stay</option>
+                            <label class="form-label">Category</label>
+                            <select id="category" class="form-select">
+                                <option value="RESIDENTIAL">Residential</option>
+                                <option value="BOARDING">Boarding House</option>
+                                <option value="LODGE">Lodge / Short-stay</option>
                             </select>
                         </div>
                         <div>
-                            <label style="display:block;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.4);margin-bottom:8px">Monthly Rent (ZMW)</label>
-                            <input type="number" id="price" placeholder="5000" required style="width:100%;padding:12px 16px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:12px;font-size:14px;font-family:inherit;font-weight:600;color:#fff;outline:none;box-sizing:border-box" onfocus="this.style.borderColor='rgba(165,180,252,0.5)'" onblur="this.style.borderColor='rgba(255,255,255,0.12)'">
+                            <label class="form-label">Monthly Rent (ZMW)</label>
+                            <input type="number" id="price" placeholder="5000" required class="form-input">
                         </div>
                     </div>
                 </div>
@@ -58,64 +51,64 @@ body.add-prop-page > main { background: transparent !important; }
 
             <!-- Location -->
             <section>
-                <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.07)">
-                    <div style="width:36px;height:36px;border-radius:10px;background:rgba(79,70,229,0.25);display:flex;align-items:center;justify-content:center;color:#a5b4fc;font-size:14px"><i class="fas fa-map-pin"></i></div>
-                    <h3 style="font-size:15px;font-weight:800;color:#fff">Location</h3>
+                <div class="flex-row items-center gap-3 mb-6 pb-4 border-b">
+                    <div class="flex-center" style="width:36px;height:36px;border-radius:10px;background:var(--color-primary-light);color:var(--color-primary);font-size:14px"><i class="fas fa-map-pin"></i></div>
+                    <h3 class="font-extrabold" style="font-size:15px;">Location</h3>
                 </div>
-                <div style="display:flex;flex-direction:column;gap:16px">
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                <div class="flex-column gap-4">
+                    <div class="md-grid-cols-2 gap-4" style="display:grid;">
                         <div>
-                            <label style="display:block;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.4);margin-bottom:8px">District</label>
-                            <input type="text" id="district" placeholder="e.g. Lusaka" required style="width:100%;padding:12px 16px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:12px;font-size:14px;font-family:inherit;color:#fff;outline:none;box-sizing:border-box" onfocus="this.style.borderColor='rgba(165,180,252,0.5)'" onblur="this.style.borderColor='rgba(255,255,255,0.12)'">
+                            <label class="form-label">District</label>
+                            <input type="text" id="district" placeholder="e.g. Lusaka" required class="form-input">
                         </div>
                         <div>
-                            <label style="display:block;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.4);margin-bottom:8px">Area Name</label>
-                            <input type="text" id="area_name" placeholder="e.g. Silverest" required style="width:100%;padding:12px 16px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:12px;font-size:14px;font-family:inherit;color:#fff;outline:none;box-sizing:border-box" onfocus="this.style.borderColor='rgba(165,180,252,0.5)'" onblur="this.style.borderColor='rgba(255,255,255,0.12)'">
+                            <label class="form-label">Area Name</label>
+                            <input type="text" id="area_name" placeholder="e.g. Silverest" required class="form-input">
                         </div>
                     </div>
                     <div>
-                        <label style="display:block;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.4);margin-bottom:8px">Street Address</label>
-                        <input type="text" id="street_address" placeholder="Plot number and street" style="width:100%;padding:12px 16px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:12px;font-size:14px;font-family:inherit;color:#fff;outline:none;box-sizing:border-box" onfocus="this.style.borderColor='rgba(165,180,252,0.5)'" onblur="this.style.borderColor='rgba(255,255,255,0.12)'">
+                        <label class="form-label">Street Address</label>
+                        <input type="text" id="street_address" placeholder="Plot number and street" class="form-input">
                     </div>
                 </div>
             </section>
 
             <!-- Images -->
             <section>
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.07)">
-                    <div style="display:flex;align-items:center;gap:12px">
-                        <div style="width:36px;height:36px;border-radius:10px;background:rgba(16,185,129,0.2);display:flex;align-items:center;justify-content:center;color:#6ee7b7;font-size:14px"><i class="fas fa-camera"></i></div>
-                        <h3 style="font-size:15px;font-weight:800;color:#fff">Property Gallery</h3>
+                <div class="justify-between items-center mb-6 pb-4 border-b flex-row" style="display:flex;">
+                    <div class="flex-row items-center gap-3">
+                        <div class="flex-center" style="width:36px;height:36px;border-radius:10px;background:var(--color-success-bg);color:var(--color-success);font-size:14px"><i class="fas fa-camera"></i></div>
+                        <h3 class="font-extrabold" style="font-size:15px;">Property Gallery</h3>
                     </div>
-                    <button type="button" id="addImageBtn" style="padding:7px 14px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.6);border-radius:9px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .15s" onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.color='#fff'" onmouseout="this.style.background='rgba(255,255,255,0.07)';this.style.color='rgba(255,255,255,0.6)'">
-                        <i class="fas fa-plus" style="font-size:10px;margin-right:5px"></i> Add Image
+                    <button type="button" id="addImageBtn" class="btn btn-ghost btn-sm" style="width:auto;">
+                        <i class="fas fa-plus mr-1" style="font-size:10px;"></i> Add Image
                     </button>
                 </div>
-                <p style="font-size:12px;color:rgba(255,255,255,0.3);margin-bottom:14px;font-weight:500">Upload multiple images. Mark one as the main cover photo.</p>
-                <div id="imageUploadsContainer" style="display:flex;flex-direction:column;gap:10px">
-                    <div class="image-upload-row" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:14px;padding:16px;display:flex;flex-wrap:wrap;gap:12px;align-items:center">
-                        <div style="flex:1;min-width:160px">
-                            <input type="file" accept="image/*" required style="width:100%;font-size:12px;color:rgba(255,255,255,0.5)">
+                <p class="text-xs font-medium mb-4" style="color:var(--text-muted);">Upload multiple images. Mark one as the main cover photo.</p>
+                <div id="imageUploadsContainer" class="flex-column gap-2">
+                    <div class="image-upload-row image-row">
+                        <div class="flex-1" style="min-width:160px">
+                            <input type="file" accept="image/*" required class="image-input-file">
                         </div>
-                        <div style="flex:1;min-width:140px">
-                            <input type="text" placeholder="Caption (e.g. Living Room)" class="image-caption" style="width:100%;padding:8px 12px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);border-radius:9px;font-size:12px;font-family:inherit;color:#fff;outline:none;box-sizing:border-box">
+                        <div class="flex-1" style="min-width:140px">
+                            <input type="text" placeholder="Caption (e.g. Living Room)" class="image-caption image-input-caption">
                         </div>
-                        <label style="display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:rgba(255,255,255,0.55);cursor:pointer;white-space:nowrap">
-                            <input type="radio" name="main_image" value="0" checked style="accent-color:#4f46e5"> Cover Photo
+                        <label class="flex-row items-center gap-2 text-xs font-bold pointer cursor-pointer" style="color:var(--text-secondary);white-space:nowrap">
+                            <input type="radio" name="main_image" value="0" checked style="accent-color:var(--color-primary)"> Cover Photo
                         </label>
-                        <button type="button" class="remove-image-btn hidden" style="padding:7px 11px;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.2);color:#fca5a5;border-radius:9px;font-size:12px;cursor:pointer;font-family:inherit"><i class="fas fa-trash-alt"></i></button>
+                        <button type="button" class="remove-image-btn hidden btn btn-danger btn-sm" style="width:auto;"><i class="fas fa-trash-alt"></i></button>
                     </div>
                 </div>
             </section>
 
             <!-- Submit -->
-            <div style="padding-top:20px;border-top:1px solid rgba(255,255,255,0.07)">
-                <div style="background:rgba(79,70,229,0.1);border:1px solid rgba(165,180,252,0.15);border-radius:12px;padding:14px 18px;display:flex;gap:12px;align-items:flex-start;margin-bottom:16px">
-                    <i class="fas fa-shield-check" style="color:#a5b4fc;font-size:15px;margin-top:1px;flex-shrink:0"></i>
-                    <p style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:500;margin:0;line-height:1.5">By publishing, you confirm all information is accurate and compliant with Zambian rental laws and ZRA requirements.</p>
+            <div class="pt-6 border-t">
+                <div class="items-start gap-3 mb-4 p-4 rounded-xl flex-row" style="background:var(--color-primary-light);border:1px solid var(--color-primary);display:flex;">
+                    <i class="fas fa-shield-check mt-1 flex-shrink-0" style="color:var(--color-primary);font-size:15px;"></i>
+                    <p class="text-xs font-medium" style="color:var(--text-secondary);margin:0;line-height:1.5">By publishing, you confirm all information is accurate and compliant with Zambian rental laws and ZRA requirements.</p>
                 </div>
-                <button type="submit" id="submitBtn" style="width:100%;padding:15px;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;border:none;border-radius:14px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .18s;box-shadow:0 4px 16px rgba(79,70,229,0.4)" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 8px 24px rgba(79,70,229,0.5)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 16px rgba(79,70,229,0.4)'">
-                    <i class="fas fa-paper-plane" style="font-size:13px"></i>
+                <button type="submit" id="submitBtn" class="btn btn-primary btn-full">
+                    <i class="fas fa-paper-plane text-xs"></i>
                     <span>Publish Listing</span>
                 </button>
             </div>

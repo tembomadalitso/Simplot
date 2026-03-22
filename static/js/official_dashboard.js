@@ -25,8 +25,8 @@ async function fetchPendingProperties() {
 
         if (pendingProperties.length === 0) {
             container.innerHTML = `
-                <div class="p-12 text-center text-slate-500">
-                    <i class="fas fa-check-circle text-4xl text-emerald-400 mb-4 block"></i>
+                <div class="p-12 text-center text-muted">
+                    <i class="fas fa-check-circle text-4xl text-success mb-4 block"></i>
                     <p class="font-semibold">All caught up!</p>
                     <p class="text-sm">No properties pending tax verification.</p>
                 </div>
@@ -36,35 +36,35 @@ async function fetchPendingProperties() {
 
         container.innerHTML = '';
         pendingProperties.forEach(prop => {
-            const item = ce('div', 'p-6 hover:bg-slate-50 transition border-b border-slate-100 last:border-0 group');
+            const item = ce('div', 'list-item group');
 
             const header = ce('div', 'flex justify-between items-start mb-3');
             const info = ce('div');
-            const title = ce('h4', 'font-bold text-slate-900', prop.title);
-            const owner = ce('p', 'text-sm text-slate-500');
-            owner.append(icon('fas fa-user-tie text-indigo-400 mr-1'), document.createTextNode(' Owner: '));
-            owner.append(ce('span', 'font-semibold text-slate-700', prop.owner_name));
+            const title = ce('h4', 'font-bold', prop.title);
+            const owner = ce('p', 'text-sm text-muted');
+            owner.append(icon('fas fa-user-tie text-primary mr-1'), document.createTextNode(' Owner: '));
+            owner.append(ce('span', 'font-semibold text-secondary', prop.owner_name));
             info.append(title, owner);
 
-            const badge = ce('span', 'bg-amber-100 text-amber-700 px-2 py-1 rounded text-xs font-bold uppercase whitespace-nowrap');
+            const badge = ce('span', 'badge badge-warning');
             badge.append(icon('fas fa-clock mr-1'), document.createTextNode(' Pending'));
             header.append(info, badge);
 
-            const details = ce('div', 'grid grid-cols-2 gap-4 mt-4 text-sm bg-white p-3 rounded-lg border border-slate-100 shadow-sm');
+            const details = ce('div', 'grid grid-cols-2 gap-4 list-item-inner text-sm');
             const priceWrap = ce('div');
-            const priceTitle = ce('span', 'text-slate-500 block text-xs uppercase font-bold tracking-wider mb-1', 'Declared Price');
-            const priceVal = ce('span', 'font-black text-indigo-600', `K${parseFloat(prop.price).toLocaleString()}`);
-            const mo = ce('span', 'text-xs text-slate-400', '/mo');
+            const priceTitle = ce('span', 'text-muted block text-xs uppercase font-bold tracking-wider mb-1', 'Declared Price');
+            const priceVal = ce('span', 'font-black text-primary', `K${parseFloat(prop.price).toLocaleString()}`);
+            const mo = ce('span', 'text-xs text-muted', '/mo');
             priceWrap.append(priceTitle, priceVal, mo);
 
             const taxWrap = ce('div');
-            const taxTitle = ce('span', 'text-slate-500 block text-xs uppercase font-bold tracking-wider mb-1', 'Est. Annual Tax');
-            const taxVal = ce('span', 'font-black text-emerald-600', `K${parseFloat(prop.estimated_tax).toLocaleString()}`);
+            const taxTitle = ce('span', 'text-muted block text-xs uppercase font-bold tracking-wider mb-1', 'Est. Annual Tax');
+            const taxVal = ce('span', 'font-black text-success', `K${parseFloat(prop.estimated_tax).toLocaleString()}`);
             taxWrap.append(taxTitle, taxVal);
             details.append(priceWrap, taxWrap);
 
             const action = ce('div', 'mt-4 flex justify-end');
-            const verifyBtn = ce('button', 'bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-emerald-700 transition shadow-sm text-sm flex items-center', '', {
+            const verifyBtn = ce('button', 'btn btn-success btn-sm', '', {
                 onclick: () => toggleCompliance(parseInt(prop.id))
             });
             verifyBtn.append(icon('fas fa-check mr-2'), document.createTextNode(' Verify Compliance'));

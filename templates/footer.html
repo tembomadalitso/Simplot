@@ -1,66 +1,60 @@
-<footer style="background:rgba(7,7,26,0.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,0.07);padding:52px 0 32px;margin-top:auto">
-    <div style="max-width:1280px;margin:0 auto;padding:0 24px">
+<footer>
+    <div class="footer-container">
 
         <!-- Top row -->
-        <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:48px;margin-bottom:48px">
+        <div class="footer-grid">
 
             <!-- Brand -->
             <div>
-                <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
-                    <div style="width:36px;height:36px;background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <div class="nav-logo" style="margin-bottom:16px">
+                    <div class="nav-logo-icon">
                         <i class="fas fa-home" style="color:#fff;font-size:14px"></i>
                     </div>
-                    <div style="display:flex;flex-direction:column;line-height:1">
-                        <span style="font-size:13px;font-weight:900;letter-spacing:-0.02em;color:#fff">ZAMBIA</span>
-                        <span style="font-size:10px;font-weight:700;letter-spacing:0.18em;color:#a5b4fc;margin-top:2px">RENTALS</span>
+                    <div class="nav-logo-text">
+                        <span class="nav-logo-main">ZAMBIA</span>
+                        <span class="nav-logo-sub">RENTALS</span>
                     </div>
                 </div>
-                <p style="font-size:13px;color:rgba(255,255,255,0.4);line-height:1.7;max-width:280px;font-weight:500">
+                <p class="footer-brand-p">
                     Setting the standard for verified, compliant rental discovery across Zambia.
                 </p>
                 <!-- Social links -->
-                <div style="display:flex;gap:10px;margin-top:20px">
-                    <a href="#" style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.4);font-size:13px;transition:all .15s;text-decoration:none" onmouseover="this.style.background='rgba(79,70,229,0.3)';this.style.borderColor='rgba(165,180,252,0.4)';this.style.color='#a5b4fc'" onmouseout="this.style.background='rgba(255,255,255,0.06)';this.style.borderColor='rgba(255,255,255,0.1)';this.style.color='rgba(255,255,255,0.4)'">
-                        <i class="fab fa-twitter"></i>
-                    </a>
-                    <a href="#" style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.4);font-size:13px;transition:all .15s;text-decoration:none" onmouseover="this.style.background='rgba(79,70,229,0.3)';this.style.borderColor='rgba(165,180,252,0.4)';this.style.color='#a5b4fc'" onmouseout="this.style.background='rgba(255,255,255,0.06)';this.style.borderColor='rgba(255,255,255,0.1)';this.style.color='rgba(255,255,255,0.4)'">
-                        <i class="fab fa-facebook-f"></i>
-                    </a>
-                    <a href="#" style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.4);font-size:13px;transition:all .15s;text-decoration:none" onmouseover="this.style.background='rgba(79,70,229,0.3)';this.style.borderColor='rgba(165,180,252,0.4)';this.style.color='#a5b4fc'" onmouseout="this.style.background='rgba(255,255,255,0.06)';this.style.borderColor='rgba(255,255,255,0.1)';this.style.color='rgba(255,255,255,0.4)'">
-                        <i class="fab fa-instagram"></i>
-                    </a>
+                <div class="footer-social">
+                    <a href="#" class="footer-social-link"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="footer-social-link"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="footer-social-link"><i class="fab fa-instagram"></i></a>
                 </div>
             </div>
 
             <!-- Platform links -->
             <div>
-                <h4 style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.12em;color:rgba(255,255,255,0.35);margin-bottom:18px">Platform</h4>
-                <ul style="list-style:none;display:flex;flex-direction:column;gap:12px">
-                    <li><a href="{% url 'index' %}" style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.5);text-decoration:none;transition:color .15s" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">Find a Home</a></li>
-                    <li><a href="{% url 'login' %}" style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.5);text-decoration:none;transition:color .15s" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">List a Property</a></li>
-                    <li><a href="#" style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.5);text-decoration:none;transition:color .15s" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">How it Works</a></li>
+                <h4 class="footer-heading">Platform</h4>
+                <ul class="footer-links">
+                    <li><a href="{% url 'index' %}" class="footer-link">Find a Home</a></li>
+                    <li><a href="{% url 'login' %}" class="footer-link">List a Property</a></li>
+                    <li><a href="#" class="footer-link">How it Works</a></li>
                 </ul>
             </div>
 
             <!-- Support links -->
             <div>
-                <h4 style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.12em;color:rgba(255,255,255,0.35);margin-bottom:18px">Support</h4>
-                <ul style="list-style:none;display:flex;flex-direction:column;gap:12px">
-                    <li><a href="#" style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.5);text-decoration:none;transition:color .15s" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">Help Center</a></li>
-                    <li><a href="#" style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.5);text-decoration:none;transition:color .15s" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">Terms of Service</a></li>
-                    <li><a href="#" style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.5);text-decoration:none;transition:color .15s" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">Privacy Policy</a></li>
+                <h4 class="footer-heading">Support</h4>
+                <ul class="footer-links">
+                    <li><a href="#" class="footer-link">Help Center</a></li>
+                    <li><a href="#" class="footer-link">Terms of Service</a></li>
+                    <li><a href="#" class="footer-link">Privacy Policy</a></li>
                 </ul>
             </div>
         </div>
 
         <!-- Bottom row -->
-        <div style="padding-top:24px;border-top:1px solid rgba(255,255,255,0.07);display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px">
-            <p style="font-size:12px;color:rgba(255,255,255,0.25);font-weight:500">
+        <div class="footer-bottom">
+            <p class="footer-copy">
                 &copy; 2026 Zambia Rentals. All rights reserved. Built for the future of Zambian housing.
             </p>
-            <div style="display:flex;align-items:center;gap:6px">
-                <div style="width:6px;height:6px;border-radius:50%;background:#10b981;animation:pulse 2s infinite"></div>
-                <span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.08em">All Systems Operational</span>
+            <div class="footer-status">
+                <div class="footer-status-dot"></div>
+                <span class="footer-status-text">All Systems Operational</span>
             </div>
         </div>
     </div>
