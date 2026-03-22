@@ -23,64 +23,79 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const userData = await response.json();
 
+        // ── Hide login, show logout ──
         if (authBtn) authBtn.style.display = 'none';
 
         if (logoutBtn) {
-            logoutBtn.classList.remove('hidden');
-            logoutBtn.classList.add('flex');
-            logoutBtn.addEventListener('click', async (e) => {
+            // Use style.display — overrides any inline style or class
+            logoutBtn.style.display = 'flex';
+            logoutBtn.style.alignItems = 'center';
+            logoutBtn.style.gap = '6px';
+            logoutBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                localStorage.removeItem('auth_token');
-                window.location.href = window.URLS.login;
+                if (typeof handleLogout === 'function') {
+                    handleLogout();
+                } else {
+                    localStorage.removeItem('auth_token');
+                    document.cookie = 'auth_token=; path=/; max-age=0';
+                    window.location.href = window.URLS.login;
+                }
             });
         }
 
+        // ── Profile badge ──
         if (userProfileBadge) {
             userProfileBadge.style.display = 'flex';
+            userProfileBadge.style.alignItems = 'center';
+
             const fullName = userData.full_name || userData.username;
             if (userNameEl) userNameEl.textContent = fullName;
 
             if (userInitialsEl) {
                 let initials = 'U';
                 if (fullName && fullName.trim().length > 0) {
-                    const nameParts = fullName.trim().split(' ');
-                    initials = nameParts.length > 1
-                        ? nameParts[0][0] + nameParts[nameParts.length - 1][0]
-                        : nameParts[0].substring(0, 2);
+                    const parts = fullName.trim().split(' ');
+                    initials = parts.length > 1
+                        ? parts[0][0] + parts[parts.length - 1][0]
+                        : parts[0].substring(0, 2);
                 }
                 userInitialsEl.textContent = initials.toUpperCase();
             }
 
             if (userRoleEl) {
                 const roleLabels = {
-                    'TENANT': 'Property Seeker',
+                    'TENANT':   'Property Seeker',
                     'LANDLORD': 'Property Owner',
-                    'ZRA': 'ZRA Official',
+                    'ZRA':      'ZRA Official',
                     'MINISTRY': 'Ministry Official',
                 };
                 userRoleEl.textContent = roleLabels[userData.user_type] || 'User';
             }
         }
 
+        // ── Dashboard button ──
         if (dashboardBtn) {
             const configs = {
                 'LANDLORD': {
-                    label: 'Owner Hub',
+                    label: 'My Dashboard',
                     url: window.URLS.dashboard,
-                    icon: 'fa-layer-group',
-                    cls: 'btn btn-primary btn-sm'
+                    icon: 'fa-columns',
+                    bg: '#f59e0b',
+                    bgHover: '#d97706',
                 },
                 'ZRA': {
-                    label: 'Tax Portal',
+                    label: 'ZRA Portal',
                     url: window.URLS.zraDashboard,
-                    icon: 'fa-shield-halved',
-                    cls: 'btn btn-ghost btn-sm border-slate-200'
+                    icon: 'fa-file-invoice-dollar',
+                    bg: '#10b981',
+                    bgHover: '#059669',
                 },
                 'MINISTRY': {
-                    label: 'Occupancy Portal',
+                    label: 'Ministry Portal',
                     url: window.URLS.occupancyDashboard,
-                    icon: 'fa-building-columns',
-                    cls: 'btn btn-ghost btn-sm border-slate-200'
+                    icon: 'fa-users',
+                    bg: '#4f46e5',
+                    bgHover: '#4338ca',
                 },
             };
 
@@ -88,9 +103,47 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             if (config) {
                 dashboardBtn.href = config.url;
-                dashboardBtn.className = `hidden sm:flex items-center gap-2 ${config.cls}`;
-                dashboardBtn.innerHTML = `<i class="fas ${config.icon} text-[14px]"></i> <span>${config.label}</span>`;
+
+                // Build content
+                dashboardBtn.textContent = '';
+                const ico = document.createElement('i');
+                ico.className = `fas ${config.icon}`;
+                ico.style.fontSize = '12px';
+                dashboardBtn.appendChild(ico);
+                dashboardBtn.appendChild(document.createTextNode(' ' + config.label));
+
+                // Apply styles directly — no class conflicts
+                dashboardBtn.style.cssText = `
+                    display: flex;
+                    align-items: center;
+                    gap: 7px;
+                    padding: 9px 18px;
+                    background: ${config.bg};
+                    color: #fff;
+                    border-radius: 11px;
+                    font-size: 13px;
+                    font-weight: 700;
+                    font-family: inherit;
+                    text-decoration: none;
+                    transition: all .18s;
+                    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+                    cursor: pointer;
+                    white-space: nowrap;
+                `;
+
+                dashboardBtn.addEventListener('mouseenter', () => {
+                    dashboardBtn.style.background = config.bgHover;
+                    dashboardBtn.style.transform = 'translateY(-1px)';
+                    dashboardBtn.style.boxShadow = '0 6px 16px rgba(0,0,0,0.25)';
+                });
+                dashboardBtn.addEventListener('mouseleave', () => {
+                    dashboardBtn.style.background = config.bg;
+                    dashboardBtn.style.transform = '';
+                    dashboardBtn.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
+                });
+
             } else {
+                // TENANT — no dashboard button
                 dashboardBtn.style.display = 'none';
             }
         }

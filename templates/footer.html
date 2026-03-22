@@ -1,58 +1,66 @@
-<footer class="mt-auto bg-white border-t border-slate-100 py-16">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+<footer style="background:rgba(7,7,26,0.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,0.07);padding:52px 0 32px;margin-top:auto">
+    <div style="max-width:1280px;margin:0 auto;padding:0 24px">
 
-            <div class="col-span-1 md:col-span-2">
-                <div class="flex items-center gap-3.5 mb-6">
-                    <div class="w-10 h-10 bg-indigo-600 rounded-[14px] flex items-center justify-center shadow-[0_8px_16px_-4px_rgba(79,70,229,0.3)]">
-                        <i class="fas fa-home text-white text-lg"></i>
+        <!-- Top row -->
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:48px;margin-bottom:48px">
+
+            <!-- Brand -->
+            <div>
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+                    <div style="width:36px;height:36px;background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                        <i class="fas fa-home" style="color:#fff;font-size:14px"></i>
                     </div>
-                    <div class="flex flex-col">
-                        <span class="text-sm font-black tracking-tight text-slate-900 leading-none">ZAMBIA</span>
-                        <span class="text-[11px] font-bold tracking-[0.2em] text-indigo-600 leading-none mt-1">RENTALS</span>
+                    <div style="display:flex;flex-direction:column;line-height:1">
+                        <span style="font-size:13px;font-weight:900;letter-spacing:-0.02em;color:#fff">ZAMBIA</span>
+                        <span style="font-size:10px;font-weight:700;letter-spacing:0.18em;color:#a5b4fc;margin-top:2px">RENTALS</span>
                     </div>
                 </div>
-                <p class="text-slate-500 text-sm max-w-sm leading-relaxed">
-                    Setting the gold standard for property management and rental discovery in Zambia.
-                    Verified listings, compliant agreements, and world-class technology.
+                <p style="font-size:13px;color:rgba(255,255,255,0.4);line-height:1.7;max-width:280px;font-weight:500">
+                    Setting the standard for verified, compliant rental discovery across Zambia.
                 </p>
+                <!-- Social links -->
+                <div style="display:flex;gap:10px;margin-top:20px">
+                    <a href="#" style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.4);font-size:13px;transition:all .15s;text-decoration:none" onmouseover="this.style.background='rgba(79,70,229,0.3)';this.style.borderColor='rgba(165,180,252,0.4)';this.style.color='#a5b4fc'" onmouseout="this.style.background='rgba(255,255,255,0.06)';this.style.borderColor='rgba(255,255,255,0.1)';this.style.color='rgba(255,255,255,0.4)'">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.4);font-size:13px;transition:all .15s;text-decoration:none" onmouseover="this.style.background='rgba(79,70,229,0.3)';this.style.borderColor='rgba(165,180,252,0.4)';this.style.color='#a5b4fc'" onmouseout="this.style.background='rgba(255,255,255,0.06)';this.style.borderColor='rgba(255,255,255,0.1)';this.style.color='rgba(255,255,255,0.4)'">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.4);font-size:13px;transition:all .15s;text-decoration:none" onmouseover="this.style.background='rgba(79,70,229,0.3)';this.style.borderColor='rgba(165,180,252,0.4)';this.style.color='#a5b4fc'" onmouseout="this.style.background='rgba(255,255,255,0.06)';this.style.borderColor='rgba(255,255,255,0.1)';this.style.color='rgba(255,255,255,0.4)'">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                </div>
             </div>
 
+            <!-- Platform links -->
             <div>
-                <h4 class="text-slate-900 font-bold text-sm uppercase tracking-widest mb-6">Platform</h4>
-                <ul class="space-y-4">
-                    <li><a href="{% url 'index' %}" class="text-slate-500 hover:text-indigo-600 text-sm font-medium transition-colors">Find a Home</a></li>
-                    <li><a href="{% url 'login' %}" class="text-slate-500 hover:text-indigo-600 text-sm font-medium transition-colors">Partner with Us</a></li>
-                    <li><a href="#" class="text-slate-500 hover:text-indigo-600 text-sm font-medium transition-colors">How it Works</a></li>
+                <h4 style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.12em;color:rgba(255,255,255,0.35);margin-bottom:18px">Platform</h4>
+                <ul style="list-style:none;display:flex;flex-direction:column;gap:12px">
+                    <li><a href="{% url 'index' %}" style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.5);text-decoration:none;transition:color .15s" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">Find a Home</a></li>
+                    <li><a href="{% url 'login' %}" style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.5);text-decoration:none;transition:color .15s" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">List a Property</a></li>
+                    <li><a href="#" style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.5);text-decoration:none;transition:color .15s" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">How it Works</a></li>
                 </ul>
             </div>
 
+            <!-- Support links -->
             <div>
-                <h4 class="text-slate-900 font-bold text-sm uppercase tracking-widest mb-6">Support</h4>
-                <ul class="space-y-4">
-                    <li><a href="#" class="text-slate-500 hover:text-indigo-600 text-sm font-medium transition-colors">Help Center</a></li>
-                    <li><a href="#" class="text-slate-500 hover:text-indigo-600 text-sm font-medium transition-colors">Terms of Service</a></li>
-                    <li><a href="#" class="text-slate-500 hover:text-indigo-600 text-sm font-medium transition-colors">Privacy Policy</a></li>
+                <h4 style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.12em;color:rgba(255,255,255,0.35);margin-bottom:18px">Support</h4>
+                <ul style="list-style:none;display:flex;flex-direction:column;gap:12px">
+                    <li><a href="#" style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.5);text-decoration:none;transition:color .15s" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">Help Center</a></li>
+                    <li><a href="#" style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.5);text-decoration:none;transition:color .15s" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">Terms of Service</a></li>
+                    <li><a href="#" style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.5);text-decoration:none;transition:color .15s" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">Privacy Policy</a></li>
                 </ul>
             </div>
-
         </div>
 
-        <div class="mt-16 pt-8 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-6">
-            <p class="text-slate-400 text-xs font-medium">
+        <!-- Bottom row -->
+        <div style="padding-top:24px;border-top:1px solid rgba(255,255,255,0.07);display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px">
+            <p style="font-size:12px;color:rgba(255,255,255,0.25);font-weight:500">
                 &copy; 2026 Zambia Rentals. All rights reserved. Built for the future of Zambian housing.
             </p>
-
-            <div class="flex gap-4">
-                <a href="#" class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:bg-indigo-50 hover:text-indigo-600 transition-all duration-300">
-                    <i class="fab fa-twitter"></i>
-                </a>
-                <a href="#" class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:bg-indigo-50 hover:text-indigo-600 transition-all duration-300">
-                    <i class="fab fa-facebook-f"></i>
-                </a>
-                <a href="#" class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:bg-indigo-50 hover:text-indigo-600 transition-all duration-300">
-                    <i class="fab fa-instagram"></i>
-                </a>
+            <div style="display:flex;align-items:center;gap:6px">
+                <div style="width:6px;height:6px;border-radius:50%;background:#10b981;animation:pulse 2s infinite"></div>
+                <span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.08em">All Systems Operational</span>
             </div>
         </div>
     </div>

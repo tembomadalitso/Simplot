@@ -1,206 +1,185 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block title %}Owner Dashboard | Zambia Rentals{% endblock %}
 
-{% block content %}
-<div class="animate-fade-in stagger-1">
+{% block extra_head %}
+<style>
+body.dashboard-page > main { padding:0 !important; max-width:100% !important; }
+.db-bg { position:fixed; inset:0; z-index:-1;
+  background-image: url("{% static 'images/hero_bg.png' %}");
+  background-size:cover; background-position:center; }
+.db-bg::before { content:''; position:absolute; inset:0;
+  background: linear-gradient(160deg,rgba(7,7,26,0.9) 0%,rgba(20,14,60,0.78) 45%,rgba(7,7,26,0.9) 100%); }
+</style>
+{% endblock %}
 
-    <!-- Dashboard Header -->
-    <header class="mb-14 flex flex-col md:flex-row md:items-end justify-between gap-8">
-        <div class="space-y-2">
-            <div class="inline-flex items-center gap-2 bg-slate-100 text-slate-600 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest">
-                <i class="fas fa-columns"></i> Management Console
+{% block content %}
+<div class="db-bg"></div>
+<div style="max-width:1280px;margin:0 auto;padding:48px 24px 80px">
+
+    <!-- Header -->
+    <header style="margin-bottom:44px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:20px">
+        <div>
+            <div style="display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.6);padding:5px 14px;border-radius:9999px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:14px">
+                <i class="fas fa-columns" style="font-size:9px"></i> Management Console
             </div>
-            <h1 class="text-slate-900 font-black tracking-tight leading-none">Property Portfolio</h1>
-            <p class="text-slate-400 font-bold text-lg">Oversee your listings, applications, and financial health.</p>
+            <h1 style="font-size:clamp(1.8rem,4vw,2.6rem);font-weight:900;letter-spacing:-0.04em;color:#fff;margin-bottom:6px;line-height:1.1">Property Portfolio</h1>
+            <p style="color:rgba(255,255,255,0.5);font-size:15px;font-weight:500">Manage your listings, applications, and finances.</p>
         </div>
-        <div class="flex gap-4">
-            <a href="{% url 'add-property' %}" class="btn btn-primary btn-lg !rounded-2xl group shadow-xl shadow-indigo-100">
-                <i class="fas fa-plus text-sm group-hover:rotate-90 transition-transform"></i>
-                List New Property
-            </a>
-        </div>
+        <a href="{% url 'add-property' %}" style="display:inline-flex;align-items:center;gap:8px;padding:13px 24px;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;border-radius:14px;font-size:14px;font-weight:700;text-decoration:none;box-shadow:0 4px 16px rgba(79,70,229,0.4);transition:all .18s" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(79,70,229,0.5)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 16px rgba(79,70,229,0.4)'">
+            <i class="fas fa-plus" style="font-size:12px"></i> List New Property
+        </a>
     </header>
 
-    <!-- Stats Overview -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-        <div class="stat-card !bg-white group">
-            <div class="flex items-center justify-between">
-                <div class="stat-label">Properties</div>
-                <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-sm transition-transform group-hover:scale-110">
-                    <i class="fas fa-building"></i>
-                </div>
+    <!-- Stats -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:44px">
+        <div style="background:rgba(255,255,255,0.07);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:22px 24px;transition:all .2s" onmouseover="this.style.background='rgba(255,255,255,0.1)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255,255,255,0.07)';this.style.transform=''">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+                <span style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.4)">Properties</span>
+                <div style="width:38px;height:38px;border-radius:12px;background:rgba(79,70,229,0.2);border:1px solid rgba(165,180,252,0.2);display:flex;align-items:center;justify-content:center;color:#a5b4fc;font-size:15px"><i class="fas fa-building"></i></div>
             </div>
-            <div class="stat-value">{{ property_count }}</div>
-            <div class="text-xs font-bold text-slate-400 uppercase tracking-widest">Active Listings</div>
+            <div style="font-size:2rem;font-weight:900;letter-spacing:-0.04em;color:#fff;line-height:1">{{ property_count }}</div>
+            <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.35);margin-top:5px">Active Listings</div>
         </div>
-        <div class="stat-card !bg-white group">
-            <div class="flex items-center justify-between">
-                <div class="stat-label">Estimated Tax</div>
-                <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm transition-transform group-hover:scale-110">
-                    <i class="fas fa-file-invoice-dollar"></i>
-                </div>
+        <div style="background:rgba(255,255,255,0.07);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:22px 24px;transition:all .2s" onmouseover="this.style.background='rgba(255,255,255,0.1)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255,255,255,0.07)';this.style.transform=''">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+                <span style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.4)">Est. Tax</span>
+                <div style="width:38px;height:38px;border-radius:12px;background:rgba(16,185,129,0.15);border:1px solid rgba(110,231,183,0.2);display:flex;align-items:center;justify-content:center;color:#6ee7b7;font-size:15px"><i class="fas fa-file-invoice-dollar"></i></div>
             </div>
-            <div class="stat-value text-emerald-600">K{{ total_tax }}</div>
-            <div class="text-xs font-bold text-slate-400 uppercase tracking-widest">Projected ZRA Revenue</div>
+            <div style="font-size:2rem;font-weight:900;letter-spacing:-0.04em;color:#6ee7b7;line-height:1">K{{ total_tax }}</div>
+            <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.35);margin-top:5px">Projected ZRA Revenue</div>
         </div>
-        <div class="stat-card !bg-white group">
-            <div class="flex items-center justify-between">
-                <div class="stat-label">Operating Expenses</div>
-                <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-sm transition-transform group-hover:scale-110">
-                    <i class="fas fa-receipt"></i>
-                </div>
+        <div style="background:rgba(255,255,255,0.07);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:22px 24px;transition:all .2s" onmouseover="this.style.background='rgba(255,255,255,0.1)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255,255,255,0.07)';this.style.transform=''">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+                <span style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.4)">Expenses</span>
+                <div style="width:38px;height:38px;border-radius:12px;background:rgba(245,158,11,0.15);border:1px solid rgba(252,211,77,0.2);display:flex;align-items:center;justify-content:center;color:#fcd34d;font-size:15px"><i class="fas fa-receipt"></i></div>
             </div>
-            <div class="stat-value text-amber-600" id="totalExpenses">K0.00</div>
-            <div class="text-xs font-bold text-slate-400 uppercase tracking-widest">Current Month</div>
+            <div id="totalExpenses" style="font-size:2rem;font-weight:900;letter-spacing:-0.04em;color:#fcd34d;line-height:1">K0.00</div>
+            <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.35);margin-top:5px">Current Month</div>
         </div>
     </div>
 
-    <!-- Main Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+    <!-- Main grid -->
+    <div style="display:grid;grid-template-columns:1fr 380px;gap:28px">
 
-        <!-- Left Column: Properties & Applications (8/12) -->
-        <div class="lg:col-span-8 space-y-16">
+        <!-- Left -->
+        <div style="display:flex;flex-direction:column;gap:32px;min-width:0">
 
-            <!-- My Properties Section -->
+            <!-- Properties -->
             <section>
-                <div class="flex items-center justify-between mb-8">
-                    <h3 class="text-slate-900 font-black flex items-center gap-4">
-                        <div class="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center text-sm">
-                            <i class="fas fa-home"></i>
-                        </div>
-                        Your Listings
-                    </h3>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <h3 style="font-size:16px;font-weight:800;color:#fff;margin-bottom:20px;display:flex;align-items:center;gap:10px">
+                    <div style="width:32px;height:32px;border-radius:10px;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.7);font-size:13px"><i class="fas fa-home"></i></div>
+                    Your Listings
+                </h3>
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px">
                     {% for prop in properties %}
-                    <div class="card group transition-all duration-300 hover:shadow-2xl hover:-translate-y-2">
-                        <div class="h-48 overflow-hidden relative">
+                    <div style="background:rgba(255,255,255,0.07);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.1);border-radius:20px;overflow:hidden;transition:all .25s;cursor:pointer" onmouseover="this.style.background='rgba(255,255,255,0.11)';this.style.transform='translateY(-4px)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.4)'" onmouseout="this.style.background='rgba(255,255,255,0.07)';this.style.transform='';this.style.boxShadow=''">
+                        <div style="height:170px;position:relative;overflow:hidden">
                             {% if prop.main_image_url %}
-                            <img src="{{ prop.main_image_url }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                            <img src="{{ prop.main_image_url }}" style="width:100%;height:100%;object-fit:cover">
                             {% else %}
-                            <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=600" class="w-full h-full object-cover">
+                            <div style="width:100%;height:100%;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center"><i class="fas fa-home" style="color:rgba(255,255,255,0.15);font-size:2rem"></i></div>
                             {% endif %}
-                            <span class="absolute top-4 right-4 bg-white/95 backdrop-blur px-3 py-1.5 rounded-xl text-[10px] font-black text-slate-900 uppercase tracking-widest shadow-lg">{{ prop.get_category_display }}</span>
+                            <span style="position:absolute;top:12px;right:12px;background:rgba(0,0,0,0.5);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.85);padding:3px 10px;border-radius:9999px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.07em">{{ prop.get_category_display }}</span>
                         </div>
-                        <div class="p-8 space-y-4">
-                            <div>
-                                <h4 class="font-black text-slate-900 text-xl group-hover:text-indigo-600 transition-colors">{{ prop.title }}</h4>
-                                <div class="flex items-center gap-2 text-slate-400 font-bold text-xs mt-1 uppercase tracking-widest">
-                                    <i class="fas fa-map-pin"></i> {{ prop.district }}, {{ prop.area_name }}
-                                </div>
-                            </div>
-
-                            <div class="pt-6 border-t border-slate-50 flex items-center justify-between">
-                                <div class="flex items-baseline gap-1">
-                                    <span class="text-2xl font-black text-slate-900">K{{ prop.price }}</span>
-                                    <span class="text-slate-400 text-xs font-bold uppercase tracking-widest">/mo</span>
-                                </div>
+                        <div style="padding:18px 20px">
+                            <h4 style="font-size:15px;font-weight:800;color:#fff;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ prop.title }}</h4>
+                            <p style="font-size:12px;color:rgba(255,255,255,0.45);font-weight:500;margin-bottom:14px"><i class="fas fa-map-pin" style="font-size:10px;color:rgba(165,180,252,0.6);margin-right:5px"></i>{{ prop.district }}, {{ prop.area_name }}</p>
+                            <div style="display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid rgba(255,255,255,0.08)">
+                                <div><span style="font-size:1.2rem;font-weight:900;color:#fff;letter-spacing:-0.03em">K{{ prop.price }}</span><span style="font-size:11px;color:rgba(255,255,255,0.35);font-weight:500">/mo</span></div>
                                 {% if prop.is_tax_compliant %}
-                                <span class="badge badge-success !text-[10px]"><i class="fas fa-check-circle mr-1.5"></i> Verified</span>
+                                <span style="background:rgba(16,185,129,0.15);border:1px solid rgba(110,231,183,0.25);color:#6ee7b7;padding:3px 10px;border-radius:9999px;font-size:10px;font-weight:800"><i class="fas fa-check-circle" style="margin-right:4px"></i>Verified</span>
                                 {% else %}
-                                <span class="badge badge-warning !text-[10px]"><i class="fas fa-clock mr-1.5"></i> Pending</span>
+                                <span style="background:rgba(245,158,11,0.15);border:1px solid rgba(252,211,77,0.25);color:#fcd34d;padding:3px 10px;border-radius:9999px;font-size:10px;font-weight:800"><i class="fas fa-clock" style="margin-right:4px"></i>Pending</span>
                                 {% endif %}
                             </div>
-
-                            <div class="pt-6 flex justify-between gap-4">
-                                <a href="{% url 'property-detail' prop.id %}" class="btn btn-ghost btn-sm flex-1 !rounded-xl">View Page</a>
-                                <button onclick="deleteProperty({{ prop.id }})" class="btn btn-danger btn-sm w-12 !rounded-xl" title="Delete listing">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
+                            <div style="display:flex;gap:8px;margin-top:12px">
+                                <a href="{% url 'property-detail' prop.id %}" style="flex:1;padding:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);border-radius:10px;font-size:12px;font-weight:700;text-align:center;text-decoration:none;transition:all .15s" onmouseover="this.style.background='rgba(255,255,255,0.14)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">View</a>
+                                <button onclick="deleteProperty({{ prop.id }})" style="padding:8px 14px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);color:#fca5a5;border-radius:10px;font-size:12px;cursor:pointer;transition:all .15s;font-family:inherit" onmouseover="this.style.background='rgba(239,68,68,0.2)'" onmouseout="this.style.background='rgba(239,68,68,0.1)'"><i class="fas fa-trash-alt"></i></button>
                             </div>
                         </div>
                     </div>
                     {% empty %}
-                    <div class="col-span-full card p-16 text-center bg-slate-50/50 border-dashed border-2 border-slate-200">
-                        <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-6 text-slate-300 shadow-sm">
-                            <i class="fas fa-house-chimney-medical text-3xl"></i>
-                        </div>
-                        <h4 class="text-slate-900 font-black mb-2">Portfolio Empty</h4>
-                        <p class="text-slate-400 font-bold mb-8">Start your journey by listing your first property today.</p>
-                        <a href="{% url 'add-property' %}" class="btn btn-primary !rounded-2xl">Create New Listing</a>
+                    <div style="grid-column:1/-1;text-align:center;padding:60px 20px;background:rgba(255,255,255,0.04);border:1px dashed rgba(255,255,255,0.12);border-radius:20px">
+                        <i class="fas fa-home" style="font-size:2.5rem;color:rgba(255,255,255,0.1);display:block;margin-bottom:16px"></i>
+                        <h4 style="color:rgba(255,255,255,0.6);font-weight:800;margin-bottom:8px">No Listings Yet</h4>
+                        <p style="color:rgba(255,255,255,0.3);font-size:14px;margin-bottom:20px">Start by listing your first property.</p>
+                        <a href="{% url 'add-property' %}" style="display:inline-flex;align-items:center;gap:7px;padding:10px 22px;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;border-radius:12px;font-size:13px;font-weight:700;text-decoration:none">
+                            <i class="fas fa-plus"></i> Create Listing
+                        </a>
                     </div>
                     {% endfor %}
                 </div>
             </section>
 
-            <!-- Applications Section -->
+            <!-- Applications -->
             <section>
-                <div class="flex items-center justify-between mb-8">
-                    <h3 class="text-slate-900 font-black flex items-center gap-4">
-                        <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center text-sm">
-                            <i class="fas fa-file-contract"></i>
-                        </div>
-                        Incoming Applications
-                    </h3>
-                </div>
-                <div class="data-table-wrapper">
+                <h3 style="font-size:16px;font-weight:800;color:#fff;margin-bottom:20px;display:flex;align-items:center;gap:10px">
+                    <div style="width:32px;height:32px;border-radius:10px;background:rgba(79,70,229,0.3);display:flex;align-items:center;justify-content:center;color:#a5b4fc;font-size:13px"><i class="fas fa-file-contract"></i></div>
+                    Incoming Applications
+                </h3>
+                <div style="background:rgba(255,255,255,0.06);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.09);border-radius:20px;overflow:hidden">
                     <div id="applicationsContainer">
-                        <div class="p-16 text-center text-slate-400">
-                            <i class="fas fa-circle-notch fa-spin text-3xl mb-4 text-indigo-400"></i>
-                            <p class="font-bold">Syncing with registry...</p>
+                        <div style="padding:48px;text-align:center;color:rgba(255,255,255,0.35)">
+                            <i class="fas fa-circle-notch fa-spin" style="font-size:1.8rem;color:rgba(165,180,252,0.5);display:block;margin-bottom:12px"></i>
+                            <p style="font-size:13px;font-weight:600">Loading applications…</p>
                         </div>
                     </div>
                 </div>
             </section>
         </div>
 
-        <!-- Right Column: Finances (4/12) -->
-        <div class="lg:col-span-4 space-y-12">
+        <!-- Right: Expenses -->
+        <div>
+            <div style="position:sticky;top:80px">
+                <h3 style="font-size:16px;font-weight:800;color:#fff;margin-bottom:20px;display:flex;align-items:center;gap:10px">
+                    <div style="width:32px;height:32px;border-radius:10px;background:rgba(245,158,11,0.2);display:flex;align-items:center;justify-content:center;color:#fcd34d;font-size:13px"><i class="fas fa-wallet"></i></div>
+                    Finance Ledger
+                </h3>
 
-            <!-- Expense Tracker -->
-            <section class="lg:sticky lg:top-28">
-                <div class="flex items-center gap-4 mb-8">
-                    <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-sm">
-                        <i class="fas fa-wallet"></i>
-                    </div>
-                    <h3 class="text-slate-900 font-black text-xl">Finance Ledger</h3>
-                </div>
-
-                <div class="card p-8 border-amber-100 bg-gradient-to-b from-white to-amber-50/20 mb-10 shadow-xl">
-                    <form id="expenseForm" class="space-y-6">
-                        <div class="form-group !mb-0">
-                            <label class="form-label">Property Source</label>
-                            <select id="expenseProperty" required class="form-select !bg-white">
-                                <option value="">Select a property...</option>
-                                {% for prop in properties %}
-                                <option value="{{ prop.id }}">{{ prop.title }}</option>
+                <!-- Expense form -->
+                <div style="background:rgba(255,255,255,0.07);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:22px;margin-bottom:16px">
+                    <form id="expenseForm" style="display:flex;flex-direction:column;gap:14px">
+                        <div>
+                            <label style="display:block;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.4);margin-bottom:7px">Property</label>
+                            <select id="expenseProperty" required style="width:100%;padding:10px 14px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:10px;font-size:13px;font-family:inherit;font-weight:600;color:#fff;outline:none;appearance:none">
+                                <option value="" style="background:#1e1b4b">Select property…</option>
+                                {% for prop in user_properties %}
+                                <option value="{{ prop.id }}" style="background:#1e1b4b">{{ prop.title }}</option>
                                 {% endfor %}
                             </select>
                         </div>
-                        <div class="form-group !mb-0">
-                            <label class="form-label">Line Item Description</label>
-                            <input type="text" id="expenseDescription" required placeholder="e.g., HVAC Maintenance" class="form-input !bg-white">
+                        <div>
+                            <label style="display:block;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.4);margin-bottom:7px">Description</label>
+                            <input type="text" id="expenseDescription" required placeholder="e.g. Plumbing repair" style="width:100%;padding:10px 14px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:10px;font-size:13px;font-family:inherit;font-weight:500;color:#fff;outline:none" />
                         </div>
-                        <div class="form-group !mb-0">
-                            <label class="form-label">Amount (ZMW)</label>
-                            <input type="number" id="expenseAmount" required min="0" step="0.01" placeholder="0.00" class="form-input !bg-white">
+                        <div>
+                            <label style="display:block;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.4);margin-bottom:7px">Amount (ZMW)</label>
+                            <input type="number" id="expenseAmount" required min="0" step="0.01" placeholder="0.00" style="width:100%;padding:10px 14px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:10px;font-size:13px;font-family:inherit;font-weight:600;color:#fff;outline:none" />
                         </div>
-                        <button type="submit" class="btn btn-primary btn-full !bg-slate-900 hover:!bg-black !rounded-2xl !py-4">
+                        <button type="submit" style="width:100%;padding:12px;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .18s;box-shadow:0 4px 12px rgba(79,70,229,0.35)">
                             Record Expense
                         </button>
                     </form>
                 </div>
 
-                <div class="data-table-wrapper">
-                    <div class="bg-slate-50 px-6 py-4 border-b border-slate-100 flex justify-between items-center">
-                        <h4 class="font-black text-[11px] text-slate-400 uppercase tracking-widest">Recent Activity</h4>
-                        <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                <!-- Expenses list -->
+                <div style="background:rgba(255,255,255,0.06);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.09);border-radius:20px;overflow:hidden">
+                    <div style="padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;justify-content:space-between;align-items:center">
+                        <span style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.35)">Recent Activity</span>
+                        <div style="width:6px;height:6px;border-radius:50%;background:#10b981;animation:pulse 2s infinite"></div>
                     </div>
-                    <div id="expensesList" class="divide-y divide-slate-50 max-h-[400px] overflow-y-auto">
-                        <div class="p-10 text-center text-slate-400 text-sm font-bold italic">
-                            Awaiting data entry...
-                        </div>
+                    <div id="expensesList" style="max-height:360px;overflow-y:auto">
+                        <div style="padding:32px;text-align:center;color:rgba(255,255,255,0.25);font-size:13px;font-weight:600;font-style:italic">No expenses recorded yet.</div>
                     </div>
                 </div>
-            </section>
+            </div>
         </div>
     </div>
 </div>
 {% endblock %}
 
 {% block extra_scripts %}
+<script>document.addEventListener('DOMContentLoaded',()=>document.body.classList.add('dashboard-page'));</script>
 <script src="{% static 'js/dashboard.js' %}"></script>
 {% endblock %}
