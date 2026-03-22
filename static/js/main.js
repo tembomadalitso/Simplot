@@ -45,11 +45,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (splash) {
         // Hide after a short delay to allow fonts/assets to load
         setTimeout(() => {
-            splash.style.opacity = '0';
-            splash.style.transition = 'opacity 0.5s ease';
+            splash.classList.add('hidden-splash');
             setTimeout(() => {
                 splash.style.display = 'none';
-            }, 500); // Wait for fade-out to complete
-        }, 1200); // Show splash for 1.2 seconds
+            }, 600);
+        }, 800);
     }
 });

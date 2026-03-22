@@ -3,77 +3,102 @@
 {% block title %}Ministry Occupancy Portal | Zambia Rentals{% endblock %}
 
 {% block content %}
-<div class="fade-in-up">
-    <!-- Page Header -->
-    <header style="margin-bottom:36px;display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:16px">
-        <div>
-            <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
-                <div style="width:40px;height:40px;background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(79,70,229,0.3)">
-                    <i class="fas fa-users" style="color:#fff;font-size:17px"></i>
-                </div>
-                <h1 style="font-size:1.6rem;font-weight:800;letter-spacing:-0.03em">Ministry Occupancy Intelligence</h1>
+<div class="animate-fade-in stagger-1">
+
+    <!-- Gov Header -->
+    <header class="mb-14 space-y-4">
+        <div class="flex flex-wrap items-center gap-4">
+            <div class="inline-flex items-center gap-2 bg-slate-900 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-lg">
+                <i class="fas fa-building-columns"></i> Ministry of Home Affairs
             </div>
-            <p style="color:var(--color-text-secondary);font-size:14px">Official portal for Ministry of Home Affairs data tracking and density mapping.</p>
+            <div class="inline-flex items-center gap-2 bg-indigo-50 text-indigo-600 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border border-indigo-100">
+                <i class="fas fa-users-rays"></i> Occupancy Census
+            </div>
         </div>
-        <span class="badge badge-primary" style="font-size:11px;padding:6px 14px">
-            <i class="fas fa-landmark"></i> Ministry Official
-        </span>
+        <h1 class="text-slate-900 font-black tracking-tight leading-none text-4xl">Occupancy Intelligence Portal</h1>
+        <p class="text-slate-500 font-bold text-lg max-w-2xl">Visualizing national rental density and tracking residential population by district.</p>
     </header>
 
-    <!-- Table -->
-    <div class="card fade-in-up" style="overflow:hidden">
-        <div style="padding:20px 24px;border-bottom:1px solid var(--color-border);display:flex;align-items:center;gap:12px">
-            <div class="section-header-icon"><i class="fas fa-map-marked-alt"></i></div>
-            <div>
-                <div class="section-title">District Occupancy Report</div>
-                <div style="font-size:12px;color:var(--color-text-muted)">Active rental agreements by district</div>
+    <!-- Metrics Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+        <div class="stat-card !bg-white group border-indigo-100">
+            <div class="flex items-center justify-between">
+                <div class="stat-label">Total Residents Tracked</div>
+                <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-sm transition-transform group-hover:scale-110">
+                    <i class="fas fa-users"></i>
+                </div>
             </div>
+            <div class="stat-value text-indigo-600">{% if occupancy_stats %}{{ occupancy_stats.0.total_people|default:0 }}{% else %}0{% endif %}+</div>
+            <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Aggregate across districts</div>
         </div>
 
-        <div style="overflow-x:auto">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>District</th>
-                        <th>Resident Count</th>
-                        <th>Units Tracked</th>
-                        <th style="width:30%">Density Index</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for stat in occupancy_stats %}
-                    <tr>
-                        <td>
-                            <div style="font-weight:700;color:var(--color-text-primary)">{{ stat.property__district }}</div>
-                        </td>
-                        <td>
-                            <span class="badge badge-primary">
-                                <i class="fas fa-users"></i> {{ stat.total_people }} People
-                            </span>
-                        </td>
-                        <td style="color:var(--color-text-secondary);font-weight:500">{{ stat.property_count }} Listings</td>
-                        <td>
-                            <div style="display:flex;align-items:center;gap:10px">
-                                <div class="progress-bar" style="flex:1">
-                                    <div class="progress-fill" style="width:{% if stat.total_people > 50 %}85{% elif stat.total_people > 20 %}50{% else %}20{% endif %}%"></div>
-                                </div>
-                                <span style="font-size:12px;font-weight:700;color:var(--color-text-muted);min-width:32px">{% if stat.total_people > 50 %}85%{% elif stat.total_people > 20 %}50%{% else %}20%{% endif %}</span>
-                            </div>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="4">
-                            <div class="empty-state">
-                                <i class="fas fa-database"></i>
-                                <p>No active rental agreements found.</p>
-                            </div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div class="stat-card !bg-white group border-slate-100">
+            <div class="flex items-center justify-between">
+                <div class="stat-label">Rental Units Monitored</div>
+                <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center text-sm transition-transform group-hover:scale-110">
+                    <i class="fas fa-house-chimney"></i>
+                </div>
+            </div>
+            <div class="stat-value text-slate-900">{% if occupancy_stats %}{{ occupancy_stats.0.property_count|default:0 }}{% else %}0{% endif %}</div>
+            <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Verified active listings</div>
         </div>
+    </div>
+
+    <!-- Section Header -->
+    <div class="flex items-center gap-4 mb-8">
+        <div class="w-12 h-12 rounded-2xl bg-slate-900 text-white flex items-center justify-center text-lg shadow-xl shadow-slate-100">
+            <i class="fas fa-map-marked-alt"></i>
+        </div>
+        <div>
+            <h3 class="text-slate-900 font-black">District Heatmap Registry</h3>
+            <p class="text-slate-400 font-bold text-sm uppercase tracking-widest">Density mapping by administrative district</p>
+        </div>
+    </div>
+
+    <!-- Data Display -->
+    <div class="data-table-wrapper border-slate-100 mb-20 shadow-xl shadow-slate-50">
+        <div class="bg-slate-50 px-8 py-5 border-b border-slate-100 flex justify-between items-center">
+            <h4 class="font-black text-[11px] text-slate-400 uppercase tracking-widest">National Occupancy Log</h4>
+            <span class="badge badge-primary !text-[9px] shadow-sm">{{ occupancy_stats|length }} DISTRICTS</span>
+        </div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th class="w-1/4">District Hub</th>
+                    <th>Population Tracked</th>
+                    <th>Active Units</th>
+                    <th class="text-right">Density Index</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stat in occupancy_stats %}
+                <tr>
+                    <td class="font-black text-slate-900 text-lg">{{ stat.property__district }}</td>
+                    <td>
+                        <span class="bg-indigo-50 text-indigo-600 px-4 py-1.5 rounded-xl text-[11px] font-black uppercase flex items-center gap-2 w-fit">
+                            <i class="fas fa-users-viewfinder"></i> {{ stat.total_people }} RESIDENTS
+                        </span>
+                    </td>
+                    <td class="text-slate-400 font-bold text-sm">{{ stat.property_count }} Active Listings</td>
+                    <td>
+                        <div class="flex items-center justify-end gap-6">
+                            <div class="w-40 bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                                <div class="h-full bg-indigo-600 transition-all duration-1000" style="width: {% if stat.total_people > 50 %}85{% elif stat.total_people > 20 %}50{% else %}20{% endif %}%"></div>
+                            </div>
+                            <span class="text-[11px] font-black text-slate-400 tracking-widest min-w-[40px] text-right">{% if stat.total_people > 50 %}HIGH{% elif stat.total_people > 20 %}MED{% else %}LOW{% endif %}</span>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="p-32 text-center">
+                        <i class="fas fa-database text-slate-100 text-5xl mb-6"></i>
+                        <p class="text-slate-300 font-black uppercase tracking-[0.25em] text-sm">No Active Agreement Records</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 {% endblock %}
