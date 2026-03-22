@@ -1,101 +1,109 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block title %}Post New Listing | Zambia Rentals{% endblock %}
 
 {% block content %}
-<div class="max-w-3xl mx-auto px-4 mt-8 animate-[fadeIn_0.5s_ease-out]">
-        <div class="glass-card rounded-3xl p-8 shadow-xl">
-            <header class="mb-8">
-                <h1 class="text-3xl font-bold text-slate-900">List Your Property</h1>
-                <p class="text-slate-500">Provide details to reach thousands of potential tenants.</p>
-            </header>
+<div style="max-width:720px;margin:0 auto" class="fade-in-up">
+    <div style="margin-bottom:28px">
+        <h1 style="font-size:1.75rem;font-weight:800;letter-spacing:-0.03em;margin-bottom:6px">List Your Property</h1>
+        <p style="color:var(--color-text-secondary)">Provide details to reach thousands of potential tenants across Zambia.</p>
+    </div>
 
-            <form id="propertyForm" class="space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-semibold text-slate-700 mb-2">Property Title</label>
-                        <input type="text" id="title" placeholder="e.g. Modern 2BR Apartment in Meanwood" required 
-                               class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-indigo-500">
-                    </div>
+    <div class="card" style="padding:40px">
+        <form id="propertyForm" style="display:flex;flex-direction:column;gap:28px">
 
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-semibold text-slate-700 mb-2">Description</label>
-                        <textarea id="description" placeholder="Describe the property's amenities, nearby locations, etc." rows="4"
-                               class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+            <!-- Basic Info -->
+            <section>
+                <h3 style="font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--color-text-muted);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--color-border)">
+                    Basic Information
+                </h3>
+                <div style="display:flex;flex-direction:column;gap:16px">
+                    <div class="form-group">
+                        <label class="form-label">Property Title</label>
+                        <input type="text" id="title" placeholder="e.g. Modern 2BR Apartment in Meanwood" required class="form-input">
                     </div>
-                    
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-2">Category</label>
-                        <select id="category" class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-indigo-500">
-                            <option value="RESIDENTIAL">Residential</option>
-                            <option value="BOARDING">Boarding House</option>
-                            <option value="LODGE">Lodge/Short-stay</option>
-                        </select>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea id="description" placeholder="Describe amenities, nearby locations, unique features…" rows="4" class="form-textarea"></textarea>
                     </div>
-
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-2">Monthly Rent (ZMW)</label>
-                        <input type="number" id="price" placeholder="5000" required 
-                               class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-indigo-500">
-                    </div>
-                </div>
-
-                <hr class="border-slate-100">
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-2">District</label>
-                        <input type="text" id="district" placeholder="e.g. Lusaka" required 
-                               class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-indigo-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-2">Area Name</label>
-                        <input type="text" id="area_name" placeholder="e.g. Silverest" required 
-                               class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-indigo-500">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-semibold text-slate-700 mb-2">Street Address</label>
-                        <input type="text" id="street_address" placeholder="Plot number and street" 
-                               class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-indigo-500">
-                    </div>
-                </div>
-
-                <hr class="border-slate-100">
-
-                <div>
-                    <div class="flex justify-between items-center mb-4">
-                        <label class="block text-sm font-semibold text-slate-700">Property Images</label>
-                        <button type="button" id="addImageBtn" class="text-sm bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-lg font-bold hover:bg-indigo-100 transition"><i class="fas fa-plus mr-1"></i> Add Image</button>
-                    </div>
-                    <p class="text-xs text-slate-500 mb-4">Upload multiple images. Select one to be the main cover image.</p>
-
-                    <div id="imageUploadsContainer" class="space-y-4">
-                        <!-- Initial image upload row -->
-                        <div class="glass p-4 rounded-xl border border-slate-200 flex flex-col md:flex-row gap-4 items-start image-upload-row">
-                            <div class="flex-1 w-full">
-                                <input type="file" accept="image/*" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" required>
-                            </div>
-                            <div class="flex-1 w-full">
-                                <input type="text" placeholder="Caption (e.g. Master Bedroom)" class="w-full px-3 py-2 rounded-lg border border-slate-200 outline-none focus:ring-2 focus:ring-indigo-500 text-sm image-caption">
-                            </div>
-                            <div class="flex items-center gap-3 w-full md:w-auto mt-2 md:mt-0 pt-2 md:pt-0 border-t md:border-t-0 border-slate-100">
-                                <label class="flex items-center text-sm font-medium text-slate-700 cursor-pointer">
-                                    <input type="radio" name="main_image" value="0" class="mr-2 text-indigo-600 focus:ring-indigo-500 h-4 w-4" checked>
-                                    Main Image
-                                </label>
-                                <button type="button" class="text-red-500 hover:text-red-700 p-2 hidden remove-image-btn" title="Remove"><i class="fas fa-trash"></i></button>
-                            </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                        <div class="form-group">
+                            <label class="form-label">Category</label>
+                            <select id="category" class="form-select">
+                                <option value="RESIDENTIAL">Residential</option>
+                                <option value="BOARDING">Boarding House</option>
+                                <option value="LODGE">Lodge / Short-stay</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Monthly Rent (ZMW)</label>
+                            <input type="number" id="price" placeholder="5000" required class="form-input">
                         </div>
                     </div>
                 </div>
+            </section>
 
-                <button type="submit" id="submitBtn" class="w-full bg-indigo-600 text-white font-bold py-4 rounded-2xl hover:bg-indigo-700 transition shadow-lg shadow-indigo-100 mt-8 flex justify-center items-center">
-                    <span>Publish Listing</span>
-                </button>
-            </form>
-            <div id="formStatus" class="mt-4 text-center hidden"></div>
-        </div>
+            <!-- Location -->
+            <section>
+                <h3 style="font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--color-text-muted);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--color-border)">
+                    Location
+                </h3>
+                <div style="display:flex;flex-direction:column;gap:16px">
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                        <div class="form-group">
+                            <label class="form-label">District</label>
+                            <input type="text" id="district" placeholder="e.g. Lusaka" required class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Area Name</label>
+                            <input type="text" id="area_name" placeholder="e.g. Silverest" required class="form-input">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Street Address</label>
+                        <input type="text" id="street_address" placeholder="Plot number and street" class="form-input">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Images -->
+            <section>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--color-border)">
+                    <h3 style="font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--color-text-muted)">Property Images</h3>
+                    <button type="button" id="addImageBtn" class="btn btn-ghost btn-sm">
+                        <i class="fas fa-plus"></i> Add Image
+                    </button>
+                </div>
+                <p style="font-size:12px;color:var(--color-text-muted);margin-bottom:14px">Upload multiple images. Mark one as the main cover photo.</p>
+
+                <div id="imageUploadsContainer" style="display:flex;flex-direction:column;gap:12px">
+                    <div class="image-upload-row" style="background:var(--color-bg-subtle);border:1px solid var(--color-border);border-radius:var(--radius-md);padding:16px;display:flex;flex-wrap:wrap;gap:12px;align-items:center">
+                        <div style="flex:1;min-width:160px">
+                            <input type="file" accept="image/*" required style="width:100%;font-size:13px;color:var(--color-text-secondary)">
+                        </div>
+                        <div style="flex:1;min-width:140px">
+                            <input type="text" placeholder="Caption (e.g. Living Room)" class="form-input image-caption" style="font-size:13px;padding:8px 12px">
+                        </div>
+                        <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--color-text-secondary);cursor:pointer;white-space:nowrap">
+                            <input type="radio" name="main_image" value="0" checked style="accent-color:var(--color-primary)">
+                            Main Photo
+                        </label>
+                        <button type="button" class="btn-danger btn btn-sm remove-image-btn hidden" title="Remove">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Submit -->
+            <button type="submit" id="submitBtn" class="btn btn-primary btn-full btn-lg">
+                <i class="fas fa-paper-plane"></i>
+                <span>Publish Listing</span>
+            </button>
+        </form>
+
+        <div id="formStatus" class="alert hidden" style="margin-top:16px;display:none"></div>
+    </div>
 </div>
 {% endblock %}
 

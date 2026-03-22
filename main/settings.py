@@ -12,7 +12,7 @@ SECRET_KEY = 'django-insecure-mvi=9ekc^x-o_sds&6#*qif+s54(91vy7_369d#5f5(b=5f#xm
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['mysit3.pythonanywhere.com']
+ALLOWED_HOSTS = ['mysit3.pythonanywhere.com', 'localhost', '127.0.0.1']
 
 INSTALLED_APPS = [
     'django.contrib.admin',

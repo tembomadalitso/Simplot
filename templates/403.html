@@ -1,22 +1,21 @@
 {% extends 'base.html' %}
-
 {% block title %}Access Denied | Zambia Rentals{% endblock %}
 
 {% block content %}
-<div class="flex flex-col items-center justify-center min-h-[60vh] text-center px-4 animate-[fadeIn_0.5s_ease-out]">
-    <div class="glass-card p-12 rounded-3xl max-w-lg shadow-2xl">
-        <div class="w-24 h-24 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
-            <i class="fas fa-lock text-4xl"></i>
+<div style="display:flex;align-items:center;justify-content:center;min-height:60vh;padding:40px 20px">
+    <div class="card fade-in-up" style="max-width:480px;width:100%;padding:56px 48px;text-align:center;box-shadow:var(--shadow-xl)">
+        <div style="width:72px;height:72px;background:var(--color-red-light);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px">
+            <i class="fas fa-lock" style="font-size:28px;color:var(--color-red)"></i>
         </div>
-        <h1 class="text-4xl font-black text-slate-900 mb-4">403: Access Denied</h1>
-        <p class="text-slate-600 text-lg mb-8 leading-relaxed">
+        <h1 style="font-size:2rem;font-weight:900;letter-spacing:-0.04em;margin-bottom:12px">403: Access Denied</h1>
+        <p style="font-size:15px;color:var(--color-text-secondary);max-width:320px;margin:0 auto 32px;line-height:1.6">
             You don't have permission to access this page. This area is reserved for authorized personnel only.
         </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="{% url 'index' %}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-xl font-bold transition shadow-lg shadow-indigo-200">
-                Back to Home
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+            <a href="{% url 'index' %}" class="btn btn-primary">
+                <i class="fas fa-home"></i> Back to Home
             </a>
-            <a href="{% url 'login' %}" class="bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-8 py-3 rounded-xl font-bold transition">
+            <a href="{% url 'login' %}" class="btn btn-ghost">
                 Sign In
             </a>
         </div>

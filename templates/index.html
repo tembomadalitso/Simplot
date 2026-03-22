@@ -2,39 +2,80 @@
 {% load static %}
 
 {% block content %}
-<header class="glass-card rounded-3xl p-10 mb-12 text-center animate-[fadeIn_0.8s_ease-out]">
-    <h1 class="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-indigo-600 via-indigo-500 to-emerald-500 bg-clip-text text-transparent pb-2">
-        Find Your Next Home in Zambia
+
+<!-- Hero -->
+<header class="text-center mb-14 fade-in-up" style="padding:48px 0 24px">
+    <div style="display:inline-flex;align-items:center;gap:8px;background:var(--color-primary-light);color:var(--color-primary);padding:6px 16px;border-radius:var(--radius-full);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:20px">
+        <i class="fas fa-shield-alt"></i> Verified & Compliant Listings
+    </div>
+    <h1 style="font-size:clamp(2rem,5vw,3.5rem);font-weight:900;letter-spacing:-0.04em;line-height:1.1;margin-bottom:16px">
+        Find Your Next Home<br>
+        <span style="background:linear-gradient(135deg,#4f46e5,#10b981);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">in Zambia</span>
     </h1>
-    <p class="mt-4 text-slate-600 text-lg max-w-2xl mx-auto">Secure, compliant, and modern rental listings at your fingertips.</p>
+    <p style="font-size:1.1rem;color:var(--color-text-secondary);max-width:520px;margin:0 auto">
+        Secure, ZRA-compliant rental listings across Zambia — from Lusaka to Livingstone.
+    </p>
 </header>
 
-<section class="glass p-6 rounded-2xl mb-12 shadow-sm animate-[fadeIn_1s_ease-out]">
-    <div class="flex flex-col md:flex-row gap-4">
-        <div class="relative flex-1 group">
-            <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors"></i>
-            <input type="text" id="searchInput" placeholder="Search by district or area..."
-                   class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 focus:border-indigo-300 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all text-slate-700 font-medium">
+<!-- Search Bar -->
+<section class="glass mb-12 fade-in-up" style="border-radius:var(--radius-xl);padding:20px 24px;box-shadow:var(--shadow-md);animation-delay:0.06s">
+    <div style="display:flex;flex-wrap:wrap;gap:12px">
+        <div style="position:relative;flex:1;min-width:200px">
+            <i class="fas fa-search" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--color-text-muted);font-size:14px;pointer-events:none"></i>
+            <input type="text" id="searchInput" placeholder="Search by district or area…"
+                   class="form-input" style="padding-left:42px;border-radius:var(--radius-md)">
         </div>
-        <div class="relative min-w-[200px] group">
-            <i class="fas fa-filter absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors pointer-events-none"></i>
-            <select id="categoryFilter" class="w-full pl-10 pr-10 py-3.5 rounded-xl border border-slate-200 focus:border-indigo-300 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all appearance-none bg-white text-slate-700 font-medium cursor-pointer">
+        <div style="position:relative;min-width:180px">
+            <i class="fas fa-filter" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--color-text-muted);font-size:13px;pointer-events:none"></i>
+            <select id="categoryFilter" class="form-select" style="padding-left:40px;cursor:pointer">
                 <option value="">All Categories</option>
                 <option value="RESIDENTIAL">Residential</option>
                 <option value="BOARDING">Boarding</option>
                 <option value="LODGE">Lodge</option>
             </select>
-            <i class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-sm"></i>
+            <i class="fas fa-chevron-down" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--color-text-muted);font-size:11px;pointer-events:none"></i>
         </div>
     </div>
 </section>
 
-<div id="property-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-    <div class="text-center col-span-full py-20 text-slate-500">
-        <i class="fas fa-spinner fa-spin text-4xl mb-4 text-indigo-400"></i>
-        <p class="text-lg animate-pulse">Loading the latest listings...</p>
+<!-- Property Grid -->
+<div id="property-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:24px">
+    <!-- Skeleton loaders -->
+    <div class="property-card" style="animation-delay:0s">
+        <div class="skeleton" style="height:200px"></div>
+        <div style="padding:20px 24px">
+            <div class="skeleton" style="height:16px;width:60%;margin-bottom:10px;border-radius:6px"></div>
+            <div class="skeleton" style="height:12px;width:40%;margin-bottom:20px;border-radius:6px"></div>
+            <div style="display:flex;justify-content:space-between">
+                <div class="skeleton" style="height:20px;width:30%;border-radius:6px"></div>
+                <div class="skeleton" style="height:20px;width:25%;border-radius:6px"></div>
+            </div>
+        </div>
+    </div>
+    <div class="property-card" style="animation-delay:0.06s">
+        <div class="skeleton" style="height:200px"></div>
+        <div style="padding:20px 24px">
+            <div class="skeleton" style="height:16px;width:70%;margin-bottom:10px;border-radius:6px"></div>
+            <div class="skeleton" style="height:12px;width:45%;margin-bottom:20px;border-radius:6px"></div>
+            <div style="display:flex;justify-content:space-between">
+                <div class="skeleton" style="height:20px;width:30%;border-radius:6px"></div>
+                <div class="skeleton" style="height:20px;width:25%;border-radius:6px"></div>
+            </div>
+        </div>
+    </div>
+    <div class="property-card" style="animation-delay:0.12s">
+        <div class="skeleton" style="height:200px"></div>
+        <div style="padding:20px 24px">
+            <div class="skeleton" style="height:16px;width:55%;margin-bottom:10px;border-radius:6px"></div>
+            <div class="skeleton" style="height:12px;width:35%;margin-bottom:20px;border-radius:6px"></div>
+            <div style="display:flex;justify-content:space-between">
+                <div class="skeleton" style="height:20px;width:30%;border-radius:6px"></div>
+                <div class="skeleton" style="height:20px;width:25%;border-radius:6px"></div>
+            </div>
+        </div>
     </div>
 </div>
+
 {% endblock %}
 
 {% block extra_scripts %}
