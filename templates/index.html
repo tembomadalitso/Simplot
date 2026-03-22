@@ -1,243 +1,50 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block extra_head %}
-<style>
-    /* Pull main padding so hero bg bleeds to edges */
-    body.index-page > main {
-        padding: 0 !important;
-        max-width: 100% !important;
-        overflow-x: hidden;
-    }
-
-    /* ── Fixed full-page background ── */
-    .index-bg {
-        position: fixed;
-        inset: 0;
-        z-index: -1;
-        background-image: url("{% static 'images/index.png' %}");
-        background-size: cover;
-        background-position: center;
-        background-attachment: fixed;
-    }
-
-    /* Multiple overlay layers for depth & readability */
-    .index-bg::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(
-            160deg,
-            rgba(10, 10, 30, 0.78) 0%,
-            rgba(30, 20, 80, 0.65) 40%,
-            rgba(10, 20, 50, 0.75) 100%
-        );
-    }
-
-    /* Subtle noise texture for premium feel */
-    .index-bg::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-        opacity: 0.3;
-    }
-
-    /* ── Glass panel utility ── */
-    .glass-panel {
-        background: rgba(255, 255, 255, 0.07);
-        backdrop-filter: blur(20px) saturate(1.4);
-        -webkit-backdrop-filter: blur(20px) saturate(1.4);
-        border: 1px solid rgba(255, 255, 255, 0.14);
-        border-radius: 24px;
-        box-shadow:
-            0 0 0 1px rgba(255,255,255,0.05) inset,
-            0 24px 48px rgba(0,0,0,0.35);
-    }
-
-    /* Property card glass variant */
-    .glass-prop-card {
-        background: rgba(255, 255, 255, 0.09);
-        backdrop-filter: blur(18px) saturate(1.3);
-        -webkit-backdrop-filter: blur(18px) saturate(1.3);
-        border: 1px solid rgba(255, 255, 255, 0.16);
-        border-radius: 22px;
-        overflow: hidden;
-        transition: transform 0.25s cubic-bezier(0.4,0,0.2,1),
-                    box-shadow 0.25s cubic-bezier(0.4,0,0.2,1),
-                    background 0.25s;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-        cursor: pointer;
-    }
-
-    .glass-prop-card:hover {
-        transform: translateY(-6px);
-        background: rgba(255,255,255,0.14);
-        box-shadow: 0 20px 48px rgba(0,0,0,0.45);
-        border-color: rgba(255,255,255,0.25);
-    }
-
-    /* Glass search bar */
-    .glass-search {
-        background: rgba(255,255,255,0.1);
-        backdrop-filter: blur(24px) saturate(1.5);
-        -webkit-backdrop-filter: blur(24px) saturate(1.5);
-        border: 1px solid rgba(255,255,255,0.18);
-        border-radius: 18px;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.06) inset;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 4px;
-        padding: 8px;
-        align-items: center;
-    }
-
-    .glass-input {
-        flex: 1;
-        min-width: 180px;
-        background: transparent;
-        border: none;
-        outline: none;
-        color: #fff;
-        font-size: 15px;
-        font-weight: 500;
-        font-family: inherit;
-        padding: 10px 14px 10px 44px;
-        height: 48px;
-    }
-
-    .glass-input::placeholder { color: rgba(255,255,255,0.45); }
-
-    .glass-select {
-        background: transparent;
-        border: none;
-        outline: none;
-        color: rgba(255,255,255,0.85);
-        font-size: 14px;
-        font-weight: 700;
-        font-family: inherit;
-        padding: 10px 12px 10px 38px;
-        height: 48px;
-        cursor: pointer;
-        appearance: none;
-        min-width: 150px;
-    }
-
-    .glass-select option { background: #1e1b4b; color: #fff; }
-
-    .search-divider {
-        width: 1px;
-        height: 28px;
-        background: rgba(255,255,255,0.18);
-        flex-shrink: 0;
-        margin: 0 4px;
-    }
-
-    /* Glass badge */
-    .glass-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 7px;
-        background: rgba(255,255,255,0.12);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255,255,255,0.2);
-        color: rgba(255,255,255,0.88);
-        padding: 7px 18px;
-        border-radius: 9999px;
-        font-size: 11px;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-    }
-
-    /* Section label on dark bg */
-    .section-label {
-        font-size: 11px;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        color: rgba(255,255,255,0.45);
-        margin-bottom: 6px;
-    }
-
-    /* Card price tag */
-    .price-tag {
-        font-size: 1.4rem;
-        font-weight: 900;
-        letter-spacing: -0.04em;
-        color: #ffffff;
-        line-height: 1;
-    }
-
-    /* Shimmer for skeleton */
-    @keyframes shimmer {
-        0%   { background-position: 200% 0; }
-        100% { background-position: -200% 0; }
-    }
-
-    .skel {
-        background: linear-gradient(90deg,
-            rgba(255,255,255,0.06) 25%,
-            rgba(255,255,255,0.12) 50%,
-            rgba(255,255,255,0.06) 75%);
-        background-size: 200% 100%;
-        animation: shimmer 1.6s infinite;
-        border-radius: 6px;
-    }
-
-    @keyframes fadeUp {
-        from { opacity:0; transform:translateY(16px); }
-        to   { opacity:1; transform:translateY(0); }
-    }
-
-    .fade-up-1 { animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.05s both; }
-    .fade-up-2 { animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.15s both; }
-    .fade-up-3 { animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.25s both; }
-    .fade-up-4 { animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.35s both; }
-</style>
-{% endblock %}
-
 {% block content %}
 
 <!-- Fixed full-page background -->
-<div class="index-bg"></div>
+<div class="index-bg-container">
+    <div class="index-bg-img"></div>
+    <div class="index-bg-overlay"></div>
+    <div class="index-bg-noise"></div>
+</div>
 
 <!-- Page wrapper -->
-<div style="min-height:100vh;padding:80px 0 60px">
-    <div style="max-width:1200px;margin:0 auto;padding:0 24px">
+<div class="page-wrapper">
+    <div class="container-px">
 
         <!-- ── HERO ── -->
-        <div style="text-align:center;margin-bottom:52px" class="fade-up-1">
-            <div class="glass-badge" style="margin-bottom:28px">
-                <i class="fas fa-shield-alt" style="font-size:10px"></i>
+        <div class="text-center mb-8 fade-up delay-1" style="margin-bottom:52px;">
+            <div class="hero-badge">
+                <i class="fas fa-shield-alt text-xs"></i>
                 Verified &amp; Compliant Rentals
             </div>
-            <h1 style="font-size:clamp(2.2rem,5vw,4rem);font-weight:900;letter-spacing:-0.04em;line-height:1.06;color:#fff;margin-bottom:20px;text-shadow:0 2px 24px rgba(0,0,0,0.4)">
+            <h1 class="hero-title">
                 Your Search for the<br>
-                <span style="background:linear-gradient(135deg,#a5b4fc 20%,#6ee7b7 80%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">
+                <span class="hero-title-gradient">
                     Perfect Home
                 </span> Starts Here.
             </h1>
-            <p style="font-size:1.1rem;color:rgba(255,255,255,0.65);max-width:500px;margin:0 auto;line-height:1.7;font-weight:500">
+            <p class="hero-subtitle">
                 Discover premium rental listings across Zambia — transparent, legally compliant,
                 and tailored to every tenant.
             </p>
         </div>
 
         <!-- ── SEARCH BAR ── -->
-        <div style="max-width:780px;margin:0 auto 56px" class="fade-up-2">
+        <div class="search-container fade-up delay-2">
             <div class="glass-search">
                 <!-- Search input -->
-                <div style="flex:1;min-width:180px;position:relative;display:flex;align-items:center">
-                    <i class="fas fa-search" style="position:absolute;left:16px;color:rgba(255,255,255,0.4);font-size:14px;pointer-events:none"></i>
-                    <input type="text" id="searchInput" placeholder="Search district, area, or property…" class="glass-input">
+                <div class="search-input-wrap">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="searchInput" placeholder="Search district, area, or property…" class="glass-input-hero">
                 </div>
                 <div class="search-divider"></div>
                 <!-- Category -->
-                <div style="position:relative;display:flex;align-items:center">
-                    <i class="fas fa-map-pin" style="position:absolute;left:14px;color:rgba(255,255,255,0.4);font-size:12px;pointer-events:none"></i>
-                    <select id="categoryFilter" class="glass-select">
+                <div class="flex-row items-center" style="position:relative;">
+                    <i class="fas fa-map-pin search-icon" style="left:14px;font-size:12px"></i>
+                    <select id="categoryFilter" class="glass-select-hero">
                         <option value="">All Types</option>
                         <option value="RESIDENTIAL">Residential</option>
                         <option value="BOARDING">Boarding</option>
@@ -245,63 +52,63 @@
                     </select>
                 </div>
                 <!-- Search button -->
-                <button onclick="fetchProperties()" style="height:48px;padding:0 24px;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .18s;box-shadow:0 4px 14px rgba(79,70,229,0.4);flex-shrink:0" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 8px 20px rgba(79,70,229,0.5)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 14px rgba(79,70,229,0.4)'">
-                    <i class="fas fa-search" style="font-size:13px"></i> Search
+                <button onclick="fetchProperties()" class="search-btn">
+                    <i class="fas fa-search text-xs"></i> Search
                 </button>
             </div>
         </div>
 
         <!-- ── SECTION HEADING ── -->
-        <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:24px" class="fade-up-3">
+        <div class="justify-between items-end mb-6 fade-up delay-3 flex-row" style="display:flex;">
             <div>
                 <div class="section-label">Featured Properties</div>
-                <h3 style="font-size:1.2rem;font-weight:800;letter-spacing:-0.03em;color:#fff">Recently Verified Listings</h3>
+                <h3 class="text-2xl font-extrabold tracking-tight">Recently Verified Listings</h3>
             </div>
-            <div style="display:flex;gap:8px">
-                <button style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);color:rgba(255,255,255,0.6);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;backdrop-filter:blur(8px)" onmouseover="this.style.background='rgba(255,255,255,0.2)';this.style.color='#fff'" onmouseout="this.style.background='rgba(255,255,255,0.1)';this.style.color='rgba(255,255,255,0.6)'">
-                    <i class="fas fa-chevron-left" style="font-size:11px"></i>
+            <div class="flex-row gap-2">
+                <button class="theme-toggle" style="width:36px;height:36px;">
+                    <i class="fas fa-chevron-left text-xs"></i>
                 </button>
-                <button style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);color:rgba(255,255,255,0.6);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;backdrop-filter:blur(8px)" onmouseover="this.style.background='rgba(255,255,255,0.2)';this.style.color='#fff'" onmouseout="this.style.background='rgba(255,255,255,0.1)';this.style.color='rgba(255,255,255,0.6)'">
-                    <i class="fas fa-chevron-right" style="font-size:11px"></i>
+                <button class="theme-toggle" style="width:36px;height:36px;">
+                    <i class="fas fa-chevron-right text-xs"></i>
                 </button>
             </div>
         </div>
 
         <!-- ── PROPERTY GRID ── -->
-        <div id="property-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px" class="fade-up-4">
+        <div id="property-list" class="property-grid fade-up delay-4">
             <!-- Skeleton 1 -->
             <div class="glass-prop-card">
-                <div style="height:210px" class="skel"></div>
-                <div style="padding:20px">
-                    <div class="skel" style="height:15px;width:60%;margin-bottom:10px"></div>
-                    <div class="skel" style="height:11px;width:38%;margin-bottom:20px"></div>
-                    <div style="display:flex;justify-content:space-between">
-                        <div class="skel" style="height:18px;width:30%"></div>
-                        <div class="skel" style="height:18px;width:22%"></div>
+                <div class="skel-card-img"></div>
+                <div class="p-4">
+                    <div class="skel-line w-full" style="width:60%"></div>
+                    <div class="skel-line w-full" style="width:38%;margin-bottom:20px"></div>
+                    <div class="flex-row justify-between">
+                        <div class="skel-line" style="width:30%;height:18px"></div>
+                        <div class="skel-line" style="width:22%;height:18px"></div>
                     </div>
                 </div>
             </div>
             <!-- Skeleton 2 -->
             <div class="glass-prop-card">
-                <div style="height:210px" class="skel"></div>
-                <div style="padding:20px">
-                    <div class="skel" style="height:15px;width:70%;margin-bottom:10px"></div>
-                    <div class="skel" style="height:11px;width:42%;margin-bottom:20px"></div>
-                    <div style="display:flex;justify-content:space-between">
-                        <div class="skel" style="height:18px;width:30%"></div>
-                        <div class="skel" style="height:18px;width:22%"></div>
+                <div class="skel-card-img"></div>
+                <div class="p-4">
+                    <div class="skel-line w-full" style="width:70%"></div>
+                    <div class="skel-line w-full" style="width:42%;margin-bottom:20px"></div>
+                    <div class="flex-row justify-between">
+                        <div class="skel-line" style="width:30%;height:18px"></div>
+                        <div class="skel-line" style="width:22%;height:18px"></div>
                     </div>
                 </div>
             </div>
             <!-- Skeleton 3 -->
             <div class="glass-prop-card">
-                <div style="height:210px" class="skel"></div>
-                <div style="padding:20px">
-                    <div class="skel" style="height:15px;width:55%;margin-bottom:10px"></div>
-                    <div class="skel" style="height:11px;width:33%;margin-bottom:20px"></div>
-                    <div style="display:flex;justify-content:space-between">
-                        <div class="skel" style="height:18px;width:30%"></div>
-                        <div class="skel" style="height:18px;width:22%"></div>
+                <div class="skel-card-img"></div>
+                <div class="p-4">
+                    <div class="skel-line w-full" style="width:55%"></div>
+                    <div class="skel-line w-full" style="width:33%;margin-bottom:20px"></div>
+                    <div class="flex-row justify-between">
+                        <div class="skel-line" style="width:30%;height:18px"></div>
+                        <div class="skel-line" style="width:22%;height:18px"></div>
                     </div>
                 </div>
             </div>

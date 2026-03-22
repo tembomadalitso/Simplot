@@ -2,90 +2,83 @@
 {% load static %}
 {% block title %}{{ property.title }} | Zambia Rentals{% endblock %}
 
-{% block extra_head %}
-<style>
-body.detail-page { background: linear-gradient(160deg,#0d0d2b 0%,#0a0e1f 50%,#07071a 100%) !important; }
-body.detail-page > main { background: transparent !important; }
-</style>
-{% endblock %}
-
 {% block content %}
-<div style="max-width:1100px;margin:0 auto">
-    <div style="display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start">
+<div class="detail-container">
+    <div class="detail-grid">
 
         <!-- Left: Images + Details -->
-        <div style="display:flex;flex-direction:column;gap:24px;min-width:0">
+        <div class="flex-column gap-6 fade-up delay-1" style="min-width:0">
 
             <!-- Slideshow -->
-            <div style="position:relative;border-radius:22px;overflow:hidden;height:460px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08)" id="slideshow-container">
+            <div class="slideshow-container" id="slideshow-container">
                 {% if property.images.exists %}
                     {% for img in property.images.all %}
-                    <div class="slide" style="position:absolute;inset:0;transition:opacity .8s ease;{% if forloop.first %}opacity:1;z-index:2{% else %}opacity:0;z-index:1{% endif %}">
-                        <img src="{{ img.image.url }}" style="width:100%;height:100%;object-fit:cover">
+                    <div class="slide" style="{% if forloop.first %}opacity:1;z-index:2{% else %}opacity:0;z-index:1{% endif %}">
+                        <img src="{{ img.image.url }}">
                         {% if img.caption %}
-                        <div style="position:absolute;bottom:20px;left:20px;right:20px;background:rgba(0,0,0,0.5);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.15);padding:10px 16px;border-radius:12px;text-align:center">
-                            <p style="color:rgba(255,255,255,0.85);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;margin:0">{{ img.caption }}</p>
+                        <div class="slide-caption">
+                            <p class="text-xs font-bold uppercase tracking-widest mb-0" style="color:var(--text-main);">{{ img.caption }}</p>
                         </div>
                         {% endif %}
                     </div>
                     {% endfor %}
                     {% if property.images.count > 1 %}
-                    <button id="prevSlide" style="position:absolute;left:16px;top:50%;transform:translateY(-50%);z-index:10;width:40px;height:40px;border-radius:50%;background:rgba(0,0,0,0.4);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.2);color:#fff;font-size:14px;cursor:pointer;opacity:0;transition:opacity .2s;display:flex;align-items:center;justify-content:center" id="prevSlide"><i class="fas fa-chevron-left"></i></button>
-                    <button id="nextSlide" style="position:absolute;right:16px;top:50%;transform:translateY(-50%);z-index:10;width:40px;height:40px;border-radius:50%;background:rgba(0,0,0,0.4);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.2);color:#fff;font-size:14px;cursor:pointer;opacity:0;transition:opacity .2s;display:flex;align-items:center;justify-content:center" id="nextSlide"><i class="fas fa-chevron-right"></i></button>
+                    <button id="prevSlide" class="slideshow-btn prev"><i class="fas fa-chevron-left"></i></button>
+                    <button id="nextSlide" class="slideshow-btn next"><i class="fas fa-chevron-right"></i></button>
                     {% endif %}
                 {% else %}
-                <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center"><i class="fas fa-home" style="font-size:4rem;color:rgba(255,255,255,0.08)"></i></div>
+                <div class="w-full h-full flex-center"><i class="fas fa-home text-muted" style="font-size:4rem;opacity:0.2"></i></div>
                 {% endif %}
 
                 <!-- Badges -->
-                <div style="position:absolute;top:18px;left:18px;z-index:10;display:flex;flex-wrap:wrap;gap:8px">
-                    <span style="background:rgba(79,70,229,0.85);backdrop-filter:blur(8px);color:#fff;padding:5px 14px;border-radius:9999px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em">{{ property.get_category_display }}</span>
+                <div class="slide-badges">
+                    <span class="badge badge-primary">{{ property.get_category_display }}</span>
                     {% if property.is_tax_compliant %}
-                    <span style="background:rgba(16,185,129,0.25);backdrop-filter:blur(8px);border:1px solid rgba(16,185,129,0.4);color:#6ee7b7;padding:5px 14px;border-radius:9999px;font-size:10px;font-weight:800;display:flex;align-items:center;gap:5px"><i class="fas fa-check-circle" style="font-size:9px"></i> Verified</span>
+                    <span class="badge badge-success" style="backdrop-filter:blur(8px);"><i class="fas fa-check-circle text-xs"></i> Verified</span>
                     {% endif %}
                 </div>
             </div>
 
             <!-- Property info -->
-            <div style="background:rgba(255,255,255,0.06);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.09);border-radius:22px;padding:28px">
-                <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,0.07)">
+            <div class="detail-card">
+                <div class="detail-header">
                     <div>
-                        <h1 style="font-size:clamp(1.5rem,3vw,2rem);font-weight:900;letter-spacing:-0.04em;color:#fff;margin-bottom:8px;line-height:1.15">{{ property.title }}</h1>
-                        <p style="color:rgba(255,255,255,0.45);font-size:14px;font-weight:500;display:flex;align-items:center;gap:7px">
-                            <i class="fas fa-map-pin" style="color:rgba(165,180,252,0.6);font-size:11px"></i>
+                        <h1 class="font-black tracking-tighter mb-2" style="font-size:clamp(1.5rem,3vw,2rem);line-height:1.15">{{ property.title }}</h1>
+                        <p class="text-sm font-medium flex-row items-center gap-2">
+                            <i class="fas fa-map-pin" style="color:var(--color-primary);font-size:11px"></i>
                             {{ property.street_address }}, {{ property.area_name }}, {{ property.district }}
                         </p>
                     </div>
-                    <div style="text-align:right;flex-shrink:0">
-                        <div style="font-size:1.8rem;font-weight:900;letter-spacing:-0.04em;color:#fff;line-height:1">K{{ property.price }}</div>
-                        <div style="font-size:11px;color:rgba(255,255,255,0.35);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-top:3px">per month</div>
+                    <div class="text-right flex-shrink-0">
+                        <div class="price-tag">K{{ property.price }}</div>
+                        <div class="text-xs font-semibold uppercase tracking-widest mt-1" style="color:var(--text-muted);">per month</div>
                     </div>
                 </div>
 
                 <!-- Description + Trust -->
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+                <div class="md-grid-cols-2 gap-6" style="display:grid;">
                     <div>
-                        <h3 style="font-size:13px;font-weight:800;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px">Overview</h3>
-                        <p style="color:rgba(255,255,255,0.6);font-size:14px;font-weight:500;line-height:1.7">
+                        <h3 class="footer-heading">Overview</h3>
+                        <p class="text-sm font-medium" style="line-height:1.7">
                             {% if property.description %}{{ property.description }}{% else %}A prime {{ property.get_category_display|lower }} in the heart of {{ property.district }}.{% endif %}
-                            Currently listed as {% if property.is_tax_compliant %}<span style="color:#6ee7b7;font-weight:700">tax compliant</span>{% else %}<span style="color:#fcd34d;font-weight:700">pending verification</span>{% endif %}.
+                            Currently listed as {% if property.is_tax_compliant %}<span class="font-bold" style="color:var(--color-success);">tax compliant</span>{% else %}<span class="font-bold" style="color:var(--color-warning);">pending verification</span>{% endif %}.
                         </p>
                     </div>
                     <div>
-                        <h3 style="font-size:13px;font-weight:800;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px">Trust & Compliance</h3>
-                        <div style="display:flex;flex-direction:column;gap:10px">
-                            <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.15);border-radius:10px">
-                                <div style="width:28px;height:28px;border-radius:50%;background:rgba(16,185,129,0.15);display:flex;align-items:center;justify-content:center;color:#6ee7b7;font-size:11px;flex-shrink:0"><i class="fas fa-check"></i></div>
+                        <h3 class="footer-heading">Trust & Compliance</h3>
+                        <div class="flex-column gap-2">
+                            <div class="trust-badge" style="background:var(--color-success-bg);border:1px solid var(--color-success);">
+                                <div class="trust-icon-box" style="background:var(--color-success-bg);color:var(--color-success);"><i class="fas fa-check"></i></div>
                                 <div>
-                                    <div style="font-size:11px;font-weight:800;color:rgba(255,255,255,0.7);text-transform:uppercase;letter-spacing:0.06em">ZRA Registered</div>
-                                    <div style="font-size:10px;color:rgba(255,255,255,0.35);font-weight:500">Tax compliant listing</div>
+                                    <div class="text-xs font-extrabold uppercase tracking-widest" style="color:var(--text-main);">ZRA Registered</div>
+                                    <div class="text-xs font-medium" style="color:var(--text-muted);font-size:10px;">Tax compliant listing</div>
                                 </div>
                             </div>
-                            <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(79,70,229,0.08);border:1px solid rgba(165,180,252,0.12);border-radius:10px">
-                                <div style="width:28px;height:28px;border-radius:50%;background:rgba(79,70,229,0.15);display:flex;align-items:center;justify-content:center;color:#a5b4fc;font-size:11px;flex-shrink:0"><i class="fas fa-file-contract"></i></div>
+                            <div class="trust-badge" style="background:var(--color-primary-light);border:1px solid var(--color-primary);">
+                                <div class="trust-icon-box" style="background:var(--color-primary-light);color:var(--color-primary);"><i class="fas fa-file-contract"></i></div>
                                 <div>
-                                    <div style="font-size:11px;font-weight:800;color:rgba(255,255,255,0.7);text-transform:uppercase;letter-spacing:0.06em">Legal Agreement</div>
-                                    <div style="font-size:10px;color:rgba(255,255,255,0.35);font-weight:500">Ministry records compliant</div>
+                                    <div class="text-xs font-extrabold uppercase tracking-widest" style="color:var(--text-main);">Legal Agreement</div>
+                                    <div class="text-xs font-medium" style="color:var(--text-muted);font-size:10px;">Ministry records compliant</div>
                                 </div>
                             </div>
                         </div>
@@ -95,61 +88,61 @@ body.detail-page > main { background: transparent !important; }
         </div>
 
         <!-- Right: Actions -->
-        <div style="display:flex;flex-direction:column;gap:16px;position:sticky;top:80px">
-            <div style="background:rgba(255,255,255,0.07);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.12);border-radius:22px;padding:28px;box-shadow:0 24px 48px rgba(0,0,0,0.4)">
-                <div style="text-align:center;margin-bottom:24px">
-                    <h3 style="font-size:16px;font-weight:800;color:#fff;margin-bottom:6px">Ready to Move?</h3>
-                    <p style="font-size:13px;color:rgba(255,255,255,0.45);font-weight:500">Connect with the owner or submit your application.</p>
+        <div class="flex-column gap-4 fade-up delay-2" style="position:sticky;top:80px">
+            <div class="detail-card" style="box-shadow:var(--shadow-lg)">
+                <div class="text-center mb-6">
+                    <h3 class="font-extrabold mb-1" style="font-size:16px;">Ready to Move?</h3>
+                    <p class="text-sm font-medium" style="color:var(--text-secondary);">Connect with the owner or submit your application.</p>
                 </div>
 
-                <div style="display:flex;flex-direction:column;gap:10px">
+                <div class="flex-column gap-2">
                     {% if landlord_phone %}
-                    <a href="https://wa.me/{{ landlord_phone }}?text=Hello, I am interested in your property: {{ property.title }} listed on Zambia Rentals." target="_blank" style="width:100%;padding:14px;background:linear-gradient(135deg,#059669,#10b981);color:#fff;border-radius:14px;font-size:14px;font-weight:700;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .18s;box-shadow:0 4px 12px rgba(16,185,129,0.3);box-sizing:border-box" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 8px 20px rgba(16,185,129,0.4)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 12px rgba(16,185,129,0.3)'">
+                    <a href="https://wa.me/{{ landlord_phone }}?text=Hello, I am interested in your property: {{ property.title }} listed on Zambia Rentals." target="_blank" class="btn btn-success w-full">
                         <i class="fab fa-whatsapp" style="font-size:17px"></i> WhatsApp the Owner
                     </a>
                     {% else %}
-                    <button disabled style="width:100%;padding:14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.3);border-radius:14px;font-size:14px;font-weight:700;font-family:inherit;cursor:not-allowed">Contact Unavailable</button>
+                    <button disabled class="btn btn-ghost w-full" style="opacity: 0.5; cursor: not-allowed;">Contact Unavailable</button>
                     {% endif %}
 
-                    <a href="{% url 'apply-property' property.id %}" style="width:100%;padding:14px;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;border-radius:14px;font-size:14px;font-weight:700;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .18s;box-shadow:0 4px 12px rgba(79,70,229,0.35);box-sizing:border-box" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 8px 20px rgba(79,70,229,0.45)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 12px rgba(79,70,229,0.35)'">
-                        <i class="fas fa-file-contract" style="font-size:13px"></i> Apply Now
+                    <a href="{% url 'apply-property' property.id %}" class="btn btn-primary w-full">
+                        <i class="fas fa-file-contract text-xs"></i> Apply Now
                     </a>
                 </div>
 
                 <!-- Action icons -->
-                <div style="display:flex;justify-content:center;gap:12px;margin-top:20px;padding-top:18px;border-top:1px solid rgba(255,255,255,0.07)">
-                    <button style="display:flex;flex-direction:column;align-items:center;gap:5px;background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.35);font-family:inherit;transition:color .15s" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.35)'">
-                        <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-size:13px"><i class="fas fa-heart"></i></div>
-                        <span style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em">Save</span>
+                <div class="flex-center gap-3 mt-4 py-4 border-t">
+                    <button class="action-item">
+                        <div class="action-icon-box"><i class="fas fa-heart"></i></div>
+                        <span class="action-label">Save</span>
                     </button>
-                    <button style="display:flex;flex-direction:column;align-items:center;gap:5px;background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.35);font-family:inherit;transition:color .15s" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.35)'">
-                        <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-size:13px"><i class="fas fa-share-alt"></i></div>
-                        <span style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em">Share</span>
+                    <button class="action-item">
+                        <div class="action-icon-box"><i class="fas fa-share-alt"></i></div>
+                        <span class="action-label">Share</span>
                     </button>
-                    <button style="display:flex;flex-direction:column;align-items:center;gap:5px;background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.35);font-family:inherit;transition:color .15s" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.35)'">
-                        <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-size:13px"><i class="fas fa-print"></i></div>
-                        <span style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em">Print</span>
+                    <button class="action-item">
+                        <div class="action-icon-box"><i class="fas fa-print"></i></div>
+                        <span class="action-label">Print</span>
                     </button>
                 </div>
             </div>
 
             <!-- Owner card -->
-            <div style="background:rgba(255,255,255,0.05);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,0.08);border-radius:18px;padding:20px">
-                <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
-                    <div style="width:40px;height:40px;border-radius:50%;background:rgba(79,70,229,0.2);border:1px solid rgba(165,180,252,0.2);display:flex;align-items:center;justify-content:center;color:#a5b4fc;font-size:16px;flex-shrink:0"><i class="fas fa-house-user"></i></div>
+            <div class="db-stat-card">
+                <div class="flex-row items-center gap-3 mb-4">
+                    <div class="flex-center" style="width:40px;height:40px;border-radius:50%;background:var(--color-primary-light);border:1px solid var(--color-primary);color:var(--color-primary);font-size:16px;flex-shrink:0"><i class="fas fa-house-user"></i></div>
                     <div>
-                        <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.3)">Listed by</div>
-                        <div style="font-size:14px;font-weight:800;color:#fff">Zambia Property Ltd</div>
+                        <div class="text-xs font-extrabold uppercase tracking-widest" style="color:var(--text-muted);">Listed by</div>
+                        <div class="font-extrabold" style="font-size:14px;">Zambia Property Ltd</div>
                     </div>
                 </div>
-                <div style="display:flex;flex-direction:column;gap:8px">
-                    <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600">
-                        <span style="color:rgba(255,255,255,0.35)">Response Rate</span>
-                        <span style="color:#6ee7b7">98% · High</span>
+                <div class="flex-column gap-2">
+                    <div class="justify-between flex-row text-xs font-semibold">
+                        <span style="color:var(--text-muted);">Response Rate</span>
+                        <span style="color:var(--color-success);">98% · High</span>
                     </div>
-                    <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600">
-                        <span style="color:rgba(255,255,255,0.35)">Response Time</span>
-                        <span style="color:rgba(255,255,255,0.65)">&lt; 1 Hour</span>
+                    <div class="justify-between flex-row text-xs font-semibold">
+                        <span style="color:var(--text-muted);">Response Time</span>
+                        <span style="color:var(--text-secondary);">&lt; 1 Hour</span>
                     </div>
                 </div>
             </div>
@@ -170,9 +163,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let cur = 0;
     const prev = document.getElementById('prevSlide');
     const next = document.getElementById('nextSlide');
-
-    container.addEventListener('mouseenter', () => { if(prev) prev.style.opacity='1'; if(next) next.style.opacity='1'; });
-    container.addEventListener('mouseleave', () => { if(prev) prev.style.opacity='0'; if(next) next.style.opacity='0'; });
 
     function show(i) {
         slides.forEach((s, idx) => {

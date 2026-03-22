@@ -8,13 +8,13 @@ async function fetchProperties() {
     // Skeleton loaders
     container.innerHTML = Array(6).fill().map((_, i) => `
         <div class="glass-prop-card" style="animation-delay:${i*0.05}s">
-            <div style="height:210px;background:linear-gradient(90deg,rgba(255,255,255,0.06) 25%,rgba(255,255,255,0.12) 50%,rgba(255,255,255,0.06) 75%);background-size:200% 100%;animation:shimmer 1.6s infinite ${i*0.1}s"></div>
-            <div style="padding:20px">
-                <div style="height:15px;width:60%;border-radius:6px;background:linear-gradient(90deg,rgba(255,255,255,0.06) 25%,rgba(255,255,255,0.12) 50%,rgba(255,255,255,0.06) 75%);background-size:200% 100%;animation:shimmer 1.6s infinite;margin-bottom:10px"></div>
-                <div style="height:11px;width:38%;border-radius:6px;background:linear-gradient(90deg,rgba(255,255,255,0.06) 25%,rgba(255,255,255,0.12) 50%,rgba(255,255,255,0.06) 75%);background-size:200% 100%;animation:shimmer 1.6s infinite;margin-bottom:20px"></div>
-                <div style="display:flex;justify-content:space-between">
-                    <div style="height:18px;width:30%;border-radius:6px;background:linear-gradient(90deg,rgba(255,255,255,0.06) 25%,rgba(255,255,255,0.12) 50%,rgba(255,255,255,0.06) 75%);background-size:200% 100%;animation:shimmer 1.6s infinite"></div>
-                    <div style="height:18px;width:22%;border-radius:6px;background:linear-gradient(90deg,rgba(255,255,255,0.06) 25%,rgba(255,255,255,0.12) 50%,rgba(255,255,255,0.06) 75%);background-size:200% 100%;animation:shimmer 1.6s infinite"></div>
+            <div class="skel-card-img" style="animation-delay:${i*0.1}s"></div>
+            <div class="p-4">
+                <div class="skel-line w-full" style="width:60%"></div>
+                <div class="skel-line w-full" style="width:38%;margin-bottom:20px"></div>
+                <div class="flex-row justify-between">
+                    <div class="skel-line" style="width:30%;height:18px"></div>
+                    <div class="skel-line" style="width:22%;height:18px"></div>
                 </div>
             </div>
         </div>
@@ -31,11 +31,11 @@ async function fetchProperties() {
 
         if (!data || data.length === 0) {
             container.innerHTML = `
-                <div style="grid-column:1/-1;text-align:center;padding:60px 20px">
-                    <div style="width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
-                        <i class="fas fa-search" style="color:rgba(255,255,255,0.4);font-size:22px"></i>
+                <div class="text-center p-8" style="grid-column:1/-1;padding-top:60px;padding-bottom:60px;">
+                    <div class="flex-center mb-4" style="width:56px;height:56px;border-radius:50%;background:var(--bg-surface);margin:0 auto;">
+                        <i class="fas fa-search text-muted" style="font-size:22px"></i>
                     </div>
-                    <p style="color:rgba(255,255,255,0.6);font-size:16px;font-weight:600">No listings found matching your search.</p>
+                    <p class="text-lg font-semibold text-muted">No listings found matching your search.</p>
                 </div>`;
             return;
         }
@@ -50,77 +50,77 @@ async function fetchProperties() {
 
             // Card wrapper
             const card = document.createElement('div');
-            card.className = 'glass-prop-card';
-            card.style.animation = `fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) ${idx * 0.06}s both`;
+            card.className = `glass-prop-card fade-up delay-${(idx % 4) + 1}`;
             card.onclick = () => { window.location.href = window.URLS.propertyDetail.replace('0', parseInt(prop.id)); };
 
             // Image area
             const imgWrap = document.createElement('div');
-            imgWrap.style.cssText = 'height:210px;position:relative;overflow:hidden;background:rgba(255,255,255,0.05)';
+            imgWrap.className = 'prop-card-img-wrap';
 
             if (mainImageUrl) {
                 const img = document.createElement('img');
+                img.className = 'prop-card-img';
                 img.src = mainImageUrl;
                 img.alt = prop.title;
-                img.style.cssText = 'width:100%;height:100%;object-fit:cover;transition:transform 0.4s ease';
                 card.addEventListener('mouseenter', () => img.style.transform = 'scale(1.06)');
                 card.addEventListener('mouseleave', () => img.style.transform = 'scale(1)');
                 imgWrap.appendChild(img);
             } else {
-                imgWrap.innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center"><i class="fas fa-home" style="font-size:2.5rem;color:rgba(255,255,255,0.15)"></i></div>`;
+                imgWrap.innerHTML = `<div class="w-full h-full flex-center"><i class="fas fa-home text-muted" style="font-size:2.5rem;opacity:0.2"></i></div>`;
             }
 
             // Category badge
             const catBadge = document.createElement('span');
-            catBadge.style.cssText = 'position:absolute;top:14px;left:14px;background:rgba(0,0,0,0.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.9);padding:4px 12px;border-radius:9999px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.07em';
+            catBadge.className = 'badge badge-primary prop-card-badge-left';
             catBadge.textContent = prop.category_display;
             imgWrap.appendChild(catBadge);
 
             // Verified badge
             if (prop.is_tax_compliant) {
                 const vBadge = document.createElement('span');
-                vBadge.style.cssText = 'position:absolute;top:14px;right:14px;background:rgba(16,185,129,0.25);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(16,185,129,0.4);color:#6ee7b7;padding:4px 10px;border-radius:9999px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.07em;display:flex;align-items:center;gap:5px';
-                vBadge.innerHTML = '<i class="fas fa-check-circle" style="font-size:9px"></i> Verified';
+                vBadge.className = 'badge badge-success prop-card-badge-right';
+                vBadge.innerHTML = '<i class="fas fa-check-circle text-xs"></i> Verified';
                 imgWrap.appendChild(vBadge);
             }
 
             // Bottom gradient on image
             const imgGrad = document.createElement('div');
-            imgGrad.style.cssText = 'position:absolute;bottom:0;left:0;right:0;height:60px;background:linear-gradient(to bottom,transparent,rgba(0,0,0,0.5))';
+            imgGrad.className = 'prop-card-img-grad';
             imgWrap.appendChild(imgGrad);
 
             card.appendChild(imgWrap);
 
             // Card body
             const body = document.createElement('div');
-            body.style.cssText = 'padding:18px 20px 20px';
+            body.className = 'prop-card-body';
 
             // Title
             const title = document.createElement('h4');
-            title.style.cssText = 'font-size:15px;font-weight:800;letter-spacing:-0.02em;color:#fff;margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis';
+            title.className = 'prop-card-title';
             title.textContent = prop.title;
 
             // Location
             const loc = document.createElement('p');
-            loc.style.cssText = 'font-size:12px;color:rgba(255,255,255,0.5);font-weight:500;margin-bottom:16px;display:flex;align-items:center;gap:5px';
-            loc.innerHTML = `<i class="fas fa-map-marker-alt" style="font-size:10px;color:rgba(165,180,252,0.7)"></i> ${prop.area_name}, ${prop.district}`;
+            loc.className = 'text-xs font-medium flex-row items-center gap-1 mb-4';
+            loc.innerHTML = `<i class="fas fa-map-marker-alt" style="color:var(--color-primary);font-size:10px;"></i> ${prop.area_name}, ${prop.district}`;
 
             // Divider
             const div = document.createElement('div');
-            div.style.cssText = 'height:1px;background:rgba(255,255,255,0.08);margin-bottom:14px';
+            div.className = 'border-b mb-4';
 
             // Footer row
             const footer = document.createElement('div');
-            footer.style.cssText = 'display:flex;justify-content:space-between;align-items:center';
+            footer.className = 'flex-row justify-between items-center';
 
             const price = document.createElement('div');
-            price.innerHTML = `<span style="font-size:1.3rem;font-weight:900;letter-spacing:-0.04em;color:#fff">K${parseFloat(prop.price).toLocaleString()}</span><span style="font-size:12px;color:rgba(255,255,255,0.45);font-weight:500">/mo</span>`;
+            price.innerHTML = `<span class="price-tag">K${parseFloat(prop.price).toLocaleString()}</span><span class="text-xs font-medium text-muted">/mo</span>`;
 
             const viewBtn = document.createElement('span');
-            viewBtn.style.cssText = 'font-size:12px;font-weight:700;color:rgba(165,180,252,0.85);display:flex;align-items:center;gap:5px;transition:color .15s';
+            viewBtn.className = 'text-xs font-bold flex-row items-center gap-1';
+            viewBtn.style.color = 'var(--color-primary)';
             viewBtn.innerHTML = 'View Details <i class="fas fa-arrow-right" style="font-size:10px"></i>';
-            card.addEventListener('mouseenter', () => viewBtn.style.color = '#a5b4fc');
-            card.addEventListener('mouseleave', () => viewBtn.style.color = 'rgba(165,180,252,0.85)');
+            card.addEventListener('mouseenter', () => viewBtn.style.color = 'var(--color-primary-hover)');
+            card.addEventListener('mouseleave', () => viewBtn.style.color = 'var(--color-primary)');
 
             footer.append(price, viewBtn);
             body.append(title, loc, div, footer);
@@ -131,9 +131,9 @@ async function fetchProperties() {
     } catch (error) {
         console.error('Error fetching properties:', error);
         container.innerHTML = `
-            <div style="grid-column:1/-1;text-align:center;padding:60px 20px">
-                <p style="color:rgba(255,100,100,0.8);font-size:15px;font-weight:600">
-                    <i class="fas fa-exclamation-triangle" style="margin-right:8px"></i>Failed to load listings. Please try again.
+            <div class="text-center p-8" style="grid-column:1/-1;padding-top:60px;padding-bottom:60px;">
+                <p class="text-lg font-semibold" style="color:var(--color-error);">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>Failed to load listings. Please try again.
                 </p>
             </div>`;
     }

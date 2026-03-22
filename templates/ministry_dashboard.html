@@ -2,109 +2,104 @@
 {% load static %}
 {% block title %}Ministry Occupancy Portal | Zambia Rentals{% endblock %}
 
-{% block extra_head %}
-<style>
-body.ministry-page > main { padding:0 !important; max-width:100% !important; }
-.db-bg { position:fixed; inset:0; z-index:-1;
-  background-image: url("{% static 'images/index.png' %}");
-  background-size:cover; background-position:center; }
-.db-bg::before { content:''; position:absolute; inset:0;
-  background: linear-gradient(160deg,rgba(5,7,30,0.9) 0%,rgba(15,10,60,0.8) 45%,rgba(5,7,30,0.9) 100%); }
-</style>
-{% endblock %}
-
 {% block content %}
-<div class="db-bg"></div>
-<div style="max-width:1280px;margin:0 auto;padding:48px 24px 80px">
+<div class="db-bg-container">
+    <div class="db-bg-img"></div>
+    <div class="db-bg-overlay"></div>
+</div>
+
+<div class="db-container">
 
     <!-- Header -->
-    <header style="margin-bottom:44px">
-        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px">
-            <div style="display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.6);padding:5px 14px;border-radius:9999px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em">
-                <i class="fas fa-building-columns" style="font-size:9px"></i> Ministry of Home Affairs
+    <header class="db-header fade-up delay-1">
+        <div>
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px">
+                <div class="hero-badge" style="margin-bottom:0">
+                    <i class="fas fa-building-columns" style="font-size:9px"></i> Ministry of Home Affairs
+                </div>
+                <div class="badge badge-primary">
+                    <i class="fas fa-users-rays" style="font-size:9px"></i> Occupancy Census
+                </div>
             </div>
-            <div style="display:inline-flex;align-items:center;gap:7px;background:rgba(79,70,229,0.12);border:1px solid rgba(165,180,252,0.2);color:#a5b4fc;padding:5px 14px;border-radius:9999px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em">
-                <i class="fas fa-users-rays" style="font-size:9px"></i> Occupancy Census
-            </div>
+            <h1 style="font-size:clamp(1.8rem,4vw,2.6rem);font-weight:900;letter-spacing:-0.04em;margin-bottom:6px;line-height:1.1">Occupancy Intelligence Portal</h1>
+            <p style="color:var(--text-secondary);font-size:15px;font-weight:500">National rental density and residential population tracking by district.</p>
         </div>
-        <h1 style="font-size:clamp(1.8rem,4vw,2.6rem);font-weight:900;letter-spacing:-0.04em;color:#fff;margin-bottom:6px;line-height:1.1">Occupancy Intelligence Portal</h1>
-        <p style="color:rgba(255,255,255,0.45);font-size:15px;font-weight:500">National rental density and residential population tracking by district.</p>
     </header>
 
     <!-- Stats -->
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:44px">
-        <div style="background:rgba(79,70,229,0.1);backdrop-filter:blur(16px);border:1px solid rgba(165,180,252,0.16);border-radius:20px;padding:22px 24px;transition:all .2s" onmouseover="this.style.background='rgba(79,70,229,0.16)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(79,70,229,0.1)';this.style.transform=''">
+    <div class="db-stat-grid fade-up delay-2">
+        <div class="db-stat-card" style="background:var(--color-primary-light); border-color:var(--color-primary);">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-                <span style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:rgba(165,180,252,0.6)">Residents Tracked</span>
-                <div style="width:38px;height:38px;border-radius:12px;background:rgba(79,70,229,0.2);border:1px solid rgba(165,180,252,0.25);display:flex;align-items:center;justify-content:center;color:#a5b4fc;font-size:15px"><i class="fas fa-users"></i></div>
+                <span class="stat-label" style="color:var(--color-primary)">Residents Tracked</span>
+                <div style="width:38px;height:38px;border-radius:12px;background:var(--color-primary-light);border:1px solid var(--color-primary);display:flex;align-items:center;justify-content:center;color:var(--color-primary);font-size:15px"><i class="fas fa-users"></i></div>
             </div>
-            <div style="font-size:2rem;font-weight:900;letter-spacing:-0.04em;color:#a5b4fc;line-height:1">{% if occupancy_stats %}{{ occupancy_stats.0.total_people|default:0 }}{% else %}0{% endif %}+</div>
-            <div style="font-size:11px;font-weight:600;color:rgba(165,180,252,0.4);margin-top:5px">Across all districts</div>
+            <div class="stat-value" style="color:var(--color-primary)">{% if occupancy_stats %}{{ occupancy_stats.0.total_people|default:0 }}{% else %}0{% endif %}+</div>
+            <div style="font-size:11px;font-weight:600;color:var(--text-muted);margin-top:5px">Across all districts</div>
         </div>
-        <div style="background:rgba(255,255,255,0.06);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:22px 24px;transition:all .2s" onmouseover="this.style.background='rgba(255,255,255,0.1)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255,255,255,0.06)';this.style.transform=''">
+        <div class="db-stat-card">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-                <span style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.4)">Units Monitored</span>
-                <div style="width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.6);font-size:15px"><i class="fas fa-house-chimney"></i></div>
+                <span class="stat-label">Units Monitored</span>
+                <div style="width:38px;height:38px;border-radius:12px;background:var(--bg-body);border:1px solid var(--border-color);display:flex;align-items:center;justify-content:center;color:var(--text-secondary);font-size:15px"><i class="fas fa-house-chimney"></i></div>
             </div>
-            <div style="font-size:2rem;font-weight:900;letter-spacing:-0.04em;color:#fff;line-height:1">{% if occupancy_stats %}{{ occupancy_stats.0.property_count|default:0 }}{% else %}0{% endif %}</div>
-            <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.3);margin-top:5px">Verified active listings</div>
+            <div class="stat-value">{% if occupancy_stats %}{{ occupancy_stats.0.property_count|default:0 }}{% else %}0{% endif %}</div>
+            <div style="font-size:11px;font-weight:600;color:var(--text-muted);margin-top:5px">Verified active listings</div>
         </div>
-        <div style="background:rgba(255,255,255,0.06);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:22px 24px;transition:all .2s">
+        <div class="db-stat-card">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-                <span style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.4)">Districts</span>
-                <div style="width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.6);font-size:15px"><i class="fas fa-map-marked-alt"></i></div>
+                <span class="stat-label">Districts</span>
+                <div style="width:38px;height:38px;border-radius:12px;background:var(--bg-body);border:1px solid var(--border-color);display:flex;align-items:center;justify-content:center;color:var(--text-secondary);font-size:15px"><i class="fas fa-map-marked-alt"></i></div>
             </div>
-            <div style="font-size:2rem;font-weight:900;letter-spacing:-0.04em;color:#fff;line-height:1">{{ occupancy_stats|length }}</div>
-            <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.3);margin-top:5px">With active agreements</div>
+            <div class="stat-value">{{ occupancy_stats|length }}</div>
+            <div style="font-size:11px;font-weight:600;color:var(--text-muted);margin-top:5px">With active agreements</div>
         </div>
     </div>
 
     <!-- Table header -->
-    <div style="display:flex;align-items:center;gap:14px;margin-bottom:22px">
-        <div style="width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.6);font-size:16px"><i class="fas fa-map-marked-alt"></i></div>
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:22px" class="fade-up delay-3">
+        <div style="width:40px;height:40px;border-radius:12px;background:var(--bg-surface);border:1px solid var(--border-color);display:flex;align-items:center;justify-content:center;color:var(--text-secondary);font-size:16px"><i class="fas fa-map-marked-alt"></i></div>
         <div>
-            <h3 style="font-size:16px;font-weight:800;color:#fff;margin-bottom:2px">District Heatmap Registry</h3>
-            <p style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.08em">Density mapping by administrative district</p>
+            <h3 style="font-size:16px;font-weight:800;margin-bottom:2px">District Heatmap Registry</h3>
+            <p class="section-label" style="margin-bottom:0">Density mapping by administrative district</p>
         </div>
-        <div style="margin-left:auto;background:rgba(79,70,229,0.15);border:1px solid rgba(165,180,252,0.2);color:#a5b4fc;padding:5px 14px;border-radius:9999px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.07em">{{ occupancy_stats|length }} Districts</div>
+        <div style="margin-left:auto" class="badge badge-primary">{{ occupancy_stats|length }} Districts</div>
     </div>
 
     <!-- Table -->
-    <div style="background:rgba(255,255,255,0.06);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.09);border-radius:20px;overflow:hidden">
+    <div class="data-table-wrapper fade-up delay-4">
         <div style="overflow-x:auto">
-            <table style="width:100%;border-collapse:collapse">
+            <table class="data-table">
                 <thead>
-                    <tr style="background:rgba(255,255,255,0.03);border-bottom:1px solid rgba(255,255,255,0.07)">
-                        <th style="padding:14px 20px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.3);text-align:left">District</th>
-                        <th style="padding:14px 20px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.3);text-align:left">Population</th>
-                        <th style="padding:14px 20px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.3);text-align:left">Units</th>
-                        <th style="padding:14px 20px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.3);text-align:left;width:30%">Density Index</th>
+                    <tr>
+                        <th>District</th>
+                        <th>Population</th>
+                        <th>Units</th>
+                        <th style="width:30%">Density Index</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for stat in occupancy_stats %}
-                    <tr style="border-bottom:1px solid rgba(255,255,255,0.05);transition:background .15s" onmouseover="this.style.background='rgba(255,255,255,0.04)'" onmouseout="this.style.background=''">
-                        <td style="padding:16px 20px;font-size:15px;font-weight:800;color:#fff">{{ stat.property__district }}</td>
-                        <td style="padding:16px 20px">
-                            <span style="background:rgba(79,70,229,0.15);border:1px solid rgba(165,180,252,0.2);color:#a5b4fc;padding:4px 12px;border-radius:9999px;font-size:12px;font-weight:800;display:inline-flex;align-items:center;gap:6px">
-                                <i class="fas fa-users" style="font-size:10px"></i> {{ stat.total_people }}
+                    <tr>
+                        <td style="font-weight:800;">{{ stat.property__district }}</td>
+                        <td>
+                            <span class="badge badge-primary">
+                                <i class="fas fa-users" style="font-size:10px; margin-right: 6px;"></i> {{ stat.total_people }}
                             </span>
                         </td>
-                        <td style="padding:16px 20px;font-size:13px;font-weight:600;color:rgba(255,255,255,0.5)">{{ stat.property_count }} Listings</td>
-                        <td style="padding:16px 20px">
+                        <td style="font-weight:600;color:var(--text-muted)">{{ stat.property_count }} Listings</td>
+                        <td>
                             <div style="display:flex;align-items:center;gap:12px">
-                                <div style="flex:1;height:5px;background:rgba(255,255,255,0.08);border-radius:9999px;overflow:hidden">
-                                    <div style="height:100%;background:linear-gradient(90deg,#4f46e5,#a5b4fc);border-radius:9999px;transition:width .8s ease;width:{% if stat.total_people > 50 %}85{% elif stat.total_people > 20 %}50{% else %}20{% endif %}%"></div>
+                                <div style="flex:1;height:5px;background:var(--border-color);border-radius:9999px;overflow:hidden">
+                                    <div style="height:100%;background:linear-gradient(90deg,var(--color-primary),var(--color-primary-hover));border-radius:9999px;transition:width .8s ease;width:{% if stat.total_people > 50 %}85{% elif stat.total_people > 20 %}50{% else %}20{% endif %}%"></div>
                                 </div>
-                                <span style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.07em;min-width:28px">{% if stat.total_people > 50 %}HIGH{% elif stat.total_people > 20 %}MED{% else %}LOW{% endif %}</span>
+                                <span style="font-size:10px;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;min-width:28px">{% if stat.total_people > 50 %}HIGH{% elif stat.total_people > 20 %}MED{% else %}LOW{% endif %}</span>
                             </div>
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
                         <td colspan="4" style="padding:60px;text-align:center">
-                            <i class="fas fa-database" style="font-size:2rem;color:rgba(255,255,255,0.1);display:block;margin-bottom:12px"></i>
-                            <p style="color:rgba(255,255,255,0.3);font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em">No Active Agreement Records</p>
+                            <i class="fas fa-database" style="font-size:2rem;color:var(--text-muted);display:block;margin-bottom:12px"></i>
+                            <p style="color:var(--text-muted);font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em">No Active Agreement Records</p>
                         </td>
                     </tr>
                     {% endfor %}
