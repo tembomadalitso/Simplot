@@ -1,9 +1,46 @@
 // Landlord Dashboard Logic
 document.addEventListener('DOMContentLoaded', () => {
     fetchDashboardData();
-    initCharts();
     initExport();
+
+    // Wire up filter listeners for property list
+    const propSearch = document.getElementById('propSearch');
+    const propCategory = document.getElementById('propCategory');
+
+    if (propSearch) {
+        propSearch.addEventListener('input', debounce(() => {
+            // Logic to filter DOM elements (since fetchDashboardData fetches all)
+            filterLocalProperties(propSearch.value, propCategory.value);
+        }, 300));
+    }
+    if (propCategory) {
+        propCategory.addEventListener('change', () => {
+            filterLocalProperties(propSearch.value, propCategory.value);
+        });
+    }
 });
+
+function filterLocalProperties(search, cat) {
+    const cards = document.querySelectorAll('#propertiesList > .card');
+    cards.forEach(card => {
+        const title = card.querySelector('h4').textContent.toLowerCase();
+        const category = card.querySelector('.badge-primary').textContent;
+
+        const matchSearch = !search || title.includes(search.toLowerCase());
+        const matchCat = !cat || category.includes(cat);
+
+        card.style.display = (matchSearch && matchCat) ? 'block' : 'none';
+    });
+}
+
+// Basic debounce utility
+function debounce(func, timeout = 300) {
+    let timer;
+    return (...args) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => { func.apply(this, args); }, timeout);
+    };
+}
 
 function initExport() {
     const btn = document.getElementById('exportDashboardBtn');
@@ -26,24 +63,28 @@ async function fetchDashboardData() {
     const token = localStorage.getItem('auth_token');
     if (!token) return;
 
-    // Fetch Applications
     try {
-        const appResp = await fetch(window.URLS.apiRentals, {
-            headers: { 'Authorization': `Token ${token}` }
-        });
-        if (appResp.ok) {
-            const apps = await appResp.json();
-            renderApplications(apps);
-        }
+        // Parallel data fetch
+        const [appResp, expResp, propResp] = await Promise.all([
+            fetch(window.URLS.apiRentals, { headers: { 'Authorization': `Token ${token}` } }),
+            fetch(window.URLS.apiExpenses, { headers: { 'Authorization': `Token ${token}` } }),
+            fetch(window.URLS.apiProperties, { headers: { 'Authorization': `Token ${token}` } })
+        ]);
 
-        // Fetch Expenses
-        const expResp = await fetch(window.URLS.apiExpenses, {
-            headers: { 'Authorization': `Token ${token}` }
-        });
+        if (appResp.ok) renderApplications(await appResp.json());
+
+        let expenses = [];
         if (expResp.ok) {
-            const expenses = await expResp.json();
+            expenses = await expResp.json();
             renderExpenses(expenses);
         }
+
+        let properties = [];
+        if (propResp.ok) {
+            properties = await propResp.json();
+        }
+
+        initCharts(expenses, properties);
     } catch (e) {
         console.error("Dashboard sync error:", e);
     }
@@ -76,18 +117,18 @@ function renderApplications(apps) {
 
     const tbody = table.querySelector('tbody');
     apps.forEach(app => {
-        const tr = ce('tr');
+        const tr = ce('tr', 'hover:bg-primary-soft transition-colors group cursor-pointer');
         tr.innerHTML = `
-            <td class="font-bold text-main">${escapeHTML(app.property_title || 'Property')}</td>
-            <td>${escapeHTML(app.tenant_name || 'Anonymous')}</td>
-            <td><span class="badge badge-neutral">${app.number_of_occupants}</span></td>
-            <td><span class="badge ${getStatusBadgeClass(app.status)}">${app.status}</span></td>
-            <td>
-                <div class="flex gap-2">
+            <td class="font-bold text-main !py-5">${escapeHTML(app.property_title || 'Property')}</td>
+            <td class="!py-5 font-medium text-secondary group-hover:text-main">${escapeHTML(app.tenant_name || 'Anonymous')}</td>
+            <td class="!py-5"><span class="badge badge-neutral !bg-surface !border-color">${app.number_of_occupants} Residents</span></td>
+            <td class="!py-5"><span class="badge ${getStatusBadgeClass(app.status)} !bg-opacity-20">${app.status}</span></td>
+            <td class="!py-5">
+                <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     ${app.status === 'PENDING' ? `
-                        <button onclick="updateAppStatus(${app.id}, 'approve')" class="btn btn-primary btn-sm !py-1 !px-3 text-[10px]">Approve</button>
-                        <button onclick="updateAppStatus(${app.id}, 'reject')" class="btn btn-ghost btn-sm !py-1 !px-3 text-[10px] border border-color">Reject</button>
-                    ` : `<span class="text-[10px] font-bold text-muted uppercase">Finalized</span>`}
+                        <button onclick="updateAppStatus(${app.id}, 'approve')" class="btn btn-primary btn-sm !py-2 !px-4 text-[10px] shadow-sm">Approve</button>
+                        <button onclick="updateAppStatus(${app.id}, 'reject')" class="btn btn-ghost btn-sm !py-2 !px-4 text-[10px] border border-color shadow-sm">Reject</button>
+                    ` : `<span class="text-[10px] font-black text-muted uppercase tracking-widest">Finalized</span>`}
                 </div>
             </td>
         `;
@@ -132,25 +173,30 @@ function renderExpenses(expenses) {
 }
 
 // Charting Logic (MANDATORY per plan)
-function initCharts() {
+function initCharts(expenses = [], properties = []) {
     const ctx1 = document.getElementById('incomeExpensesChart');
     if (ctx1) {
+        const totalIncome = properties.reduce((acc, p) => acc + parseFloat(p.price), 0);
+        const totalExpenses = expenses.reduce((acc, e) => acc + parseFloat(e.amount), 0);
+
         new Chart(ctx1, {
             type: 'bar',
             data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                labels: ['Current Portfolio Value'],
                 datasets: [
                     {
-                        label: 'Income',
-                        data: [12000, 15000, 14000, 18000, 17000, 21000],
+                        label: 'Monthly Income',
+                        data: [totalIncome],
                         backgroundColor: '#6366f1',
-                        borderRadius: 6
+                        borderRadius: 12,
+                        barThickness: 40
                     },
                     {
-                        label: 'Expenses',
-                        data: [4000, 5000, 3500, 6000, 4200, 4800],
+                        label: 'Monthly Expenses',
+                        data: [totalExpenses],
                         backgroundColor: '#ef4444',
-                        borderRadius: 6
+                        borderRadius: 12,
+                        barThickness: 40
                     }
                 ]
             },
@@ -159,7 +205,7 @@ function initCharts() {
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: {
-                    x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
+                    x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { weight: 'bold' } } },
                     y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } }
                 }
             }
@@ -168,27 +214,25 @@ function initCharts() {
 
     const ctx2 = document.getElementById('occupancyChart');
     if (ctx2) {
+        const residentialCount = properties.filter(p => p.category === 'RESIDENTIAL').length;
+        const otherCount = properties.length - residentialCount;
+
         new Chart(ctx2, {
-            type: 'line',
+            type: 'doughnut',
             data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                labels: ['Residential', 'Other'],
                 datasets: [{
-                    label: 'Occupancy %',
-                    data: [82, 85, 88, 92, 94, 98],
-                    borderColor: '#10b981',
-                    tension: 0.4,
-                    fill: true,
-                    backgroundColor: 'rgba(16, 185, 129, 0.1)'
+                    data: [residentialCount, otherCount],
+                    backgroundColor: ['#10b981', '#6366f1'],
+                    borderWidth: 0,
+                    hoverOffset: 15
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
-                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } }
-                }
+                plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', padding: 20, font: { weight: 'bold' } } } },
+                cutout: '75%'
             }
         });
     }

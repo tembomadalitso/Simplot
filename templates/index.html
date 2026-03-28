@@ -2,128 +2,110 @@
 {% load static %}
 
 {% block content %}
+<div class="animate-slide-up">
+    <!-- Hero Section -->
+    <div class="relative py-20 mb-10 overflow-hidden rounded-3xl bg-card border border-color">
+        <!-- Background accents -->
+        <div class="absolute -top-24 -right-24 w-96 h-96 bg-primary/10 blur-[100px] rounded-full"></div>
+        <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-success/5 blur-[100px] rounded-full"></div>
 
-<!-- Fixed full-page background -->
-<div class="index-bg-container">
-    <div class="index-bg-img"></div>
-    <div class="index-bg-overlay"></div>
-    <div class="index-bg-noise"></div>
-</div>
-
-<!-- Page wrapper -->
-<div class="page-wrapper">
-    <div class="container-px">
-
-        <!-- ── HERO ── -->
-        <div class="text-center mb-8 fade-up delay-1" style="margin-bottom:52px;">
-            <div class="hero-badge">
-                <i class="fas fa-shield-alt text-xs"></i>
-                Verified &amp; Compliant Rentals
+        <div class="relative z-10 text-center px-6">
+            <div class="badge badge-primary mb-6 !bg-primary-light/20 !backdrop-blur-md">
+                <i class="fas fa-shield-alt text-[10px] mr-2"></i> Verified & Compliant Rentals
             </div>
-            <h1 class="hero-title">
+            <h1 class="hero-title mb-6">
                 Your Search for the<br>
-                <span class="hero-title-gradient">
-                    Perfect Home
-                </span> Starts Here.
+                <span class="text-gradient">Perfect Home</span> Starts Here.
             </h1>
-            <p class="hero-subtitle">
-                Discover premium rental listings across Zambia — transparent, legally compliant,
-                and tailored to every tenant.
+            <p class="text-secondary font-medium max-w-2xl mx-auto mb-10 text-lg">
+                Discover premium rental listings across Zambia — transparent, legally compliant, and tailored to every tenant.
             </p>
-        </div>
 
-        <!-- ── SEARCH BAR ── -->
-        <div class="search-container fade-up delay-2">
-            <div class="glass-search">
-                <!-- Search input -->
-                <div class="search-input-wrap">
-                    <i class="fas fa-search search-icon"></i>
-                    <input type="text" id="searchInput" placeholder="Search district, area, or property…" class="glass-input-hero">
+            <!-- Search Bar Integration -->
+            <div class="max-w-3xl mx-auto">
+                <div class="filter-bar !p-2 !bg-body !border-primary/20 !rounded-2xl shadow-2xl">
+                    <div class="flex flex-col md:flex-row items-center w-full gap-2">
+                        <div class="relative flex-1 group w-full">
+                            <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-muted"></i>
+                            <input type="text" id="searchInput" placeholder="Search district, area, or property…" class="filter-input w-full !bg-transparent !border-none !pl-11 h-12">
+                        </div>
+                        <div class="h-8 w-[1px] bg-border-color hidden md:block"></div>
+                        <div class="relative w-full md:w-48">
+                            <i class="fas fa-map-pin absolute left-4 top-1/2 -translate-y-1/2 text-muted"></i>
+                            <select id="categoryFilter" class="filter-input w-full !bg-transparent !border-none !pl-10 h-12 cursor-pointer appearance-none">
+                                <option value="">All Types</option>
+                                <option value="RESIDENTIAL">Residential</option>
+                                <option value="BOARDING">Boarding</option>
+                                <option value="LODGE">Lodge</option>
+                            </select>
+                        </div>
+                        <button onclick="fetchProperties()" class="btn btn-primary h-12 px-8 w-full md:w-auto">
+                            Search
+                        </button>
+                    </div>
                 </div>
-                <div class="search-divider"></div>
-                <!-- Category -->
-                <div class="flex-row items-center" style="position:relative;">
-                    <i class="fas fa-map-pin search-icon" style="left:14px;font-size:12px"></i>
-                    <select id="categoryFilter" class="glass-select-hero">
-                        <option value="">All Types</option>
-                        <option value="RESIDENTIAL">Residential</option>
-                        <option value="BOARDING">Boarding</option>
-                        <option value="LODGE">Lodge</option>
-                    </select>
-                </div>
-                <!-- Search button -->
-                <button onclick="fetchProperties()" class="search-btn">
-                    <i class="fas fa-search text-xs"></i> Search
-                </button>
             </div>
         </div>
+    </div>
 
-        <!-- ── SECTION HEADING ── -->
-        <div class="justify-between items-end mb-6 fade-up delay-3 flex-row" style="display:flex;">
+    <!-- Listings Section -->
+    <section>
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
             <div>
-                <div class="section-label">Featured Properties</div>
-                <h3 class="text-2xl font-extrabold tracking-tight">Recently Verified Listings</h3>
+                <div class="text-[11px] font-black uppercase tracking-widest text-primary mb-2">Featured Properties</div>
+                <h3 class="text-2xl font-black">Recently Verified Listings</h3>
             </div>
-            <div class="flex-row gap-2">
-                <button class="theme-toggle" style="width:36px;height:36px;">
+            <div class="flex gap-2">
+                <button class="btn btn-ghost border border-color !p-3 rounded-xl hover:text-primary transition-all">
                     <i class="fas fa-chevron-left text-xs"></i>
                 </button>
-                <button class="theme-toggle" style="width:36px;height:36px;">
+                <button class="btn btn-ghost border border-color !p-3 rounded-xl hover:text-primary transition-all">
                     <i class="fas fa-chevron-right text-xs"></i>
                 </button>
             </div>
         </div>
 
-        <!-- ── PROPERTY GRID ── -->
-        <div id="property-list" class="property-grid fade-up delay-4">
-            <!-- Skeleton 1 -->
-            <div class="glass-prop-card">
-                <div class="skel-card-img"></div>
-                <div class="p-4">
-                    <div class="skel-line w-full" style="width:60%"></div>
-                    <div class="skel-line w-full" style="width:38%;margin-bottom:20px"></div>
-                    <div class="flex-row justify-between">
-                        <div class="skel-line" style="width:30%;height:18px"></div>
-                        <div class="skel-line" style="width:22%;height:18px"></div>
+        <!-- Property Grid -->
+        <div id="property-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Skeletons (Auto-managed by app.js) -->
+            <div class="card animate-pulse">
+                <div class="h-56 bg-surface"></div>
+                <div class="p-6">
+                    <div class="h-4 bg-surface rounded w-3/4 mb-4"></div>
+                    <div class="h-3 bg-surface rounded w-1/2 mb-6"></div>
+                    <div class="flex justify-between">
+                        <div class="h-6 bg-surface rounded w-1/4"></div>
+                        <div class="h-6 bg-surface rounded w-1/4"></div>
                     </div>
                 </div>
             </div>
-            <!-- Skeleton 2 -->
-            <div class="glass-prop-card">
-                <div class="skel-card-img"></div>
-                <div class="p-4">
-                    <div class="skel-line w-full" style="width:70%"></div>
-                    <div class="skel-line w-full" style="width:42%;margin-bottom:20px"></div>
-                    <div class="flex-row justify-between">
-                        <div class="skel-line" style="width:30%;height:18px"></div>
-                        <div class="skel-line" style="width:22%;height:18px"></div>
+            <div class="card animate-pulse">
+                <div class="h-56 bg-surface"></div>
+                <div class="p-6">
+                    <div class="h-4 bg-surface rounded w-3/4 mb-4"></div>
+                    <div class="h-3 bg-surface rounded w-1/2 mb-6"></div>
+                    <div class="flex justify-between">
+                        <div class="h-6 bg-surface rounded w-1/4"></div>
+                        <div class="h-6 bg-surface rounded w-1/4"></div>
                     </div>
                 </div>
             </div>
-            <!-- Skeleton 3 -->
-            <div class="glass-prop-card">
-                <div class="skel-card-img"></div>
-                <div class="p-4">
-                    <div class="skel-line w-full" style="width:55%"></div>
-                    <div class="skel-line w-full" style="width:33%;margin-bottom:20px"></div>
-                    <div class="flex-row justify-between">
-                        <div class="skel-line" style="width:30%;height:18px"></div>
-                        <div class="skel-line" style="width:22%;height:18px"></div>
+            <div class="card animate-pulse">
+                <div class="h-56 bg-surface"></div>
+                <div class="p-6">
+                    <div class="h-4 bg-surface rounded w-3/4 mb-4"></div>
+                    <div class="h-3 bg-surface rounded w-1/2 mb-6"></div>
+                    <div class="flex justify-between">
+                        <div class="h-6 bg-surface rounded w-1/4"></div>
+                        <div class="h-6 bg-surface rounded w-1/4"></div>
                     </div>
                 </div>
             </div>
         </div>
-
-    </div>
+    </section>
 </div>
-
 {% endblock %}
 
 {% block extra_scripts %}
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    document.body.classList.add('index-page');
-});
-</script>
 <script src="{% static 'js/app.js' %}"></script>
 {% endblock %}

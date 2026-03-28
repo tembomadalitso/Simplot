@@ -1,18 +1,24 @@
 import io
 from datetime import date
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
+from django.contrib.auth import get_user_model
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment, PatternFill
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
-from .models import Property, RentalAgreement, Expense, User
+from .models import Property, RentalAgreement, Expense
+
+User = get_user_model()
 
 def export_xlsx_view(request):
     """Generates an XLSX report for properties/income or compliance with filtering."""
     user = request.user
     if not user.is_authenticated:
         return HttpResponse("Unauthorized", status=401)
+
+    if user.user_type not in ['LANDLORD', 'ZRA', 'MINISTRY']:
+        return HttpResponseForbidden("You do not have permission to export reports.")
 
     wb = Workbook()
     ws = wb.active
@@ -85,6 +91,9 @@ def export_pdf_report(request):
     user = request.user
     if not user.is_authenticated:
         return HttpResponse("Unauthorized", status=401)
+
+    if user.user_type not in ['LANDLORD', 'ZRA', 'MINISTRY']:
+        return HttpResponseForbidden("You do not have permission to export reports.")
 
     buffer = io.BytesIO()
     p = canvas.Canvas(buffer, pagesize=A4)

@@ -1,9 +1,37 @@
 // Census Ministry Dashboard Logic
+let allCensusData = {};
+
 document.addEventListener('DOMContentLoaded', () => {
     fetchCensusAudit();
-    initCensusCharts();
     initCensusExport();
+
+    const districtSearch = document.getElementById('censusSearchDistrict');
+    const categoryFilter = document.getElementById('censusCategoryFilter');
+
+    if (districtSearch) districtSearch.addEventListener('input', debounce(applyCensusFilters, 300));
+    if (categoryFilter) categoryFilter.addEventListener('change', applyCensusFilters);
 });
+
+function applyCensusFilters() {
+    const districtQuery = document.getElementById('censusSearchDistrict').value.toLowerCase();
+
+    const filtered = {};
+    Object.keys(allCensusData).forEach(district => {
+        if (!districtQuery || district.toLowerCase().includes(districtQuery)) {
+            filtered[district] = allCensusData[district];
+        }
+    });
+
+    renderCensusAuditTable(filtered);
+}
+
+function debounce(func, timeout = 300) {
+    let timer;
+    return (...args) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => { func.apply(this, args); }, timeout);
+    };
+}
 
 function initCensusExport() {
     const btn = document.getElementById('exportCensusBtn');
@@ -35,7 +63,9 @@ async function fetchCensusAudit() {
         });
         if (resp.ok) {
             const data = await resp.json();
-            renderCensusAuditTable(data);
+            allCensusData = data;
+            renderCensusAuditTable(allCensusData);
+            initCensusCharts(allCensusData);
         }
     } catch (e) {
         console.error("Census sync error:", e);
@@ -70,14 +100,14 @@ function renderCensusAuditTable(data) {
     const tbody = table.querySelector('tbody');
     Object.keys(data).forEach(district => {
         const d = data[district];
-        const tr = ce('tr');
+        const tr = ce('tr', 'hover:bg-primary-soft transition-colors group cursor-pointer');
         tr.innerHTML = `
-            <td class="font-bold text-main uppercase tracking-tighter">${escapeHTML(district)}</td>
-            <td><span class="badge badge-neutral">${d.property_count} Assets</span></td>
-            <td class="font-black text-primary">${d.total_population} Residents</td>
-            <td><span class="badge ${d.total_population > 500 ? 'badge-error' : 'badge-success'} !bg-opacity-20">${d.total_population > 500 ? 'High' : 'Low'}</span></td>
-            <td>
-                <button class="btn btn-ghost btn-sm px-4 border border-color text-[10px] font-black uppercase tracking-widest">District Map</button>
+            <td class="font-black text-main uppercase tracking-tighter !py-6">${escapeHTML(district)}</td>
+            <td class="!py-6 font-bold text-secondary group-hover:text-main"><span class="badge badge-neutral !bg-surface !border-color">${d.property_count} Audited Assets</span></td>
+            <td class="!py-6 font-black text-primary">${d.total_population.toLocaleString()} Residents</td>
+            <td class="!py-6"><span class="badge ${d.total_population > 500 ? 'badge-error' : 'badge-success'} !bg-opacity-20">${d.total_population > 500 ? 'High Density' : 'Low Density'}</span></td>
+            <td class="!py-6 text-right">
+                <button class="btn btn-ghost btn-sm px-4 border border-color text-[10px] font-black uppercase tracking-widest group-hover:bg-primary group-hover:text-white transition-all shadow-sm">District Intelligence</button>
             </td>
         `;
         tbody.appendChild(tr);
@@ -85,16 +115,19 @@ function renderCensusAuditTable(data) {
 }
 
 // Charting Logic (MANDATORY per plan)
-function initCensusCharts() {
+function initCensusCharts(data = {}) {
     const ctx1 = document.getElementById('regionalChart');
     if (ctx1) {
+        const districts = Object.keys(data);
+        const populations = districts.map(d => data[d].total_population);
+
         new Chart(ctx1, {
             type: 'polarArea',
             data: {
-                labels: ['Lusaka', 'Copperbelt', 'Southern', 'Central'],
+                labels: districts,
                 datasets: [{
-                    label: 'Population Density',
-                    data: [1200, 850, 420, 310],
+                    label: 'Residents',
+                    data: populations,
                     backgroundColor: [
                         'rgba(99, 102, 241, 0.7)',
                         'rgba(16, 185, 129, 0.7)',
@@ -107,7 +140,7 @@ function initCensusCharts() {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { weight: 'bold' } } } },
+                plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { weight: 'bold' }, padding: 15 } } },
                 scales: { r: { grid: { color: 'rgba(255,255,255,0.05)' }, angleLines: { display: false }, ticks: { display: false } } }
             }
         });
@@ -115,13 +148,17 @@ function initCensusCharts() {
 
     const ctx2 = document.getElementById('growthChart');
     if (ctx2) {
+        // Growth trend visualization based on current district assets
+        const districts = Object.keys(data);
+        const assetCounts = districts.map(d => data[d].property_count);
+
         new Chart(ctx2, {
             type: 'line',
             data: {
-                labels: ['2020', '2021', '2022', '2023', '2024'],
+                labels: districts,
                 datasets: [{
-                    label: 'Residents Growth',
-                    data: [45000, 52000, 61000, 72000, 88000],
+                    label: 'Properties Monitored',
+                    data: assetCounts,
                     borderColor: '#6366f1',
                     tension: 0.4,
                     fill: true,
@@ -133,7 +170,7 @@ function initCensusCharts() {
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: {
-                    x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
+                    x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 } } },
                     y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } }
                 }
             }

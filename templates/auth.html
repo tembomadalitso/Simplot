@@ -4,46 +4,45 @@
 {% block title %}Sign In | Zambia Rentals{% endblock %}
 
 {% block content %}
-<div class="auth-bg-container">
-    <div class="auth-bg-img"></div>
-    <div class="auth-bg-overlay"></div>
+<div class="animate-slide-up flex items-center justify-center py-10 md:py-20">
+    <div class="relative w-full max-w-md">
+        <!-- Background accents -->
+        <div class="absolute -top-24 -right-24 w-64 h-64 bg-primary/20 blur-[100px] rounded-full"></div>
+        <div class="absolute -bottom-24 -left-24 w-64 h-64 bg-success/10 blur-[100px] rounded-full"></div>
 
-    <div class="auth-card-wrapper fade-up delay-1">
-        <div class="auth-glass-card">
-
+        <div class="card p-12 !rounded-3xl border-color shadow-2xl relative z-10 overflow-hidden">
             <!-- Header -->
-            <div class="text-center mb-8">
-                <div class="auth-logo-box">
-                    <i class="fas fa-home" style="color:#fff;font-size:21px"></i>
+            <div class="text-center mb-10">
+                <div class="w-16 h-16 rounded-2xl bg-primary-light flex items-center justify-center text-primary text-2xl mx-auto mb-6 shadow-inner">
+                    <i class="fas fa-home"></i>
                 </div>
-                <h2 id="authTitle" class="text-2xl font-black tracking-tighter mb-1">Welcome Back</h2>
-                <p id="authSubtitle" class="text-xs font-medium" style="color:var(--text-secondary);">Sign in to manage your property journey</p>
+                <h2 id="authTitle" class="text-3xl font-black mb-2">Welcome Back</h2>
+                <p id="authSubtitle" class="text-sm font-medium text-muted">Sign in to manage your property journey</p>
             </div>
 
             <!-- Form -->
-            <form id="authForm" class="flex-column gap-4">
-
-                <div>
-                    <label class="auth-label">Username</label>
-                    <div class="auth-input-wrap">
-                        <i class="fas fa-user auth-input-icon"></i>
-                        <input type="text" id="username" required class="auth-input" placeholder="your_username">
+            <form id="authForm" class="flex flex-col gap-6">
+                <div class="flex flex-col gap-2">
+                    <label class="text-[11px] font-black uppercase tracking-widest text-muted ml-1">Username</label>
+                    <div class="relative group">
+                        <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors"></i>
+                        <input type="text" id="username" required class="filter-input w-full h-12 !pl-11" placeholder="your_username">
                     </div>
                 </div>
 
-                <div id="extraFields" class="flex-column gap-4" style="display:none;">
-                    <div>
-                        <label class="auth-label">Email Address</label>
-                        <div class="auth-input-wrap">
-                            <i class="fas fa-envelope auth-input-icon"></i>
-                            <input type="email" id="email" class="auth-input" placeholder="you@example.com">
+                <div id="extraFields" class="flex flex-col gap-6 hidden">
+                    <div class="flex flex-col gap-2">
+                        <label class="text-[11px] font-black uppercase tracking-widest text-muted ml-1">Email Address</label>
+                        <div class="relative group">
+                            <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors"></i>
+                            <input type="email" id="email" class="filter-input w-full h-12 !pl-11" placeholder="you@example.com">
                         </div>
                     </div>
-                    <div>
-                        <label class="auth-label">Account Type</label>
-                        <div class="auth-input-wrap">
-                            <i class="fas fa-id-badge auth-input-icon"></i>
-                            <select id="user_type" class="auth-select">
+                    <div class="flex flex-col gap-2">
+                        <label class="text-[11px] font-black uppercase tracking-widest text-muted ml-1">Account Type</label>
+                        <div class="relative group">
+                            <i class="fas fa-id-badge absolute left-4 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors"></i>
+                            <select id="user_type" class="filter-input w-full h-12 !pl-11 cursor-pointer">
                                 <option value="TENANT">Tenant / Seeker</option>
                                 <option value="LANDLORD">Landlord / Owner</option>
                                 <option value="ZRA">ZRA Official</option>
@@ -53,27 +52,27 @@
                     </div>
                 </div>
 
-                <div>
-                    <label class="auth-label">Password</label>
-                    <div class="auth-input-wrap">
-                        <i class="fas fa-lock auth-input-icon"></i>
-                        <input type="password" id="password" required class="auth-input" placeholder="••••••••">
+                <div class="flex flex-col gap-2">
+                    <label class="text-[11px] font-black uppercase tracking-widest text-muted ml-1">Password</label>
+                    <div class="relative group">
+                        <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors"></i>
+                        <input type="password" id="password" required class="filter-input w-full h-12 !pl-11" placeholder="••••••••">
                     </div>
                 </div>
 
-                <button type="submit" class="auth-btn" style="margin-top:6px">
+                <button type="submit" class="btn btn-primary h-14 !text-base shadow-primary/40 mt-4">
                     <span id="btnText">Continue to Platform</span>
-                    <i class="fas fa-arrow-right text-xs"></i>
+                    <i class="fas fa-arrow-right text-xs ml-2"></i>
                 </button>
             </form>
 
-            <div class="text-center mt-6">
-                <button id="toggleAuth" class="auth-toggle">
-                    Don't have an account? Sign Up
+            <div class="text-center mt-8">
+                <button id="toggleAuth" class="text-xs font-black uppercase tracking-widest text-muted hover:text-primary transition-all">
+                    Don't have an account? <span class="text-primary underline">Sign Up</span>
                 </button>
             </div>
 
-            <div id="authMessage" style="display:none"></div>
+            <div id="authMessage" class="mt-6 text-center text-xs font-bold p-4 rounded-xl hidden"></div>
         </div>
     </div>
 </div>
@@ -83,8 +82,6 @@
 <script src="{% static 'js/auth.js' %}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    document.body.classList.add('auth-page');
-
     const extraFields = document.getElementById('extraFields');
     const authTitle   = document.getElementById('authTitle');
     const authSubtitle= document.getElementById('authSubtitle');
@@ -92,31 +89,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const toggleAuth  = document.getElementById('toggleAuth');
     const msgDiv      = document.getElementById('authMessage');
 
-    // Override auth.js message styling to match glass theme
-    const origInnerText = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'innerText');
-    const observer = new MutationObserver(() => {
-        if (msgDiv.style.display !== 'none' && msgDiv.innerText) {
-            const isSuccess = msgDiv.classList.contains('text-emerald-500');
-            msgDiv.className = isSuccess ? 'auth-alert auth-alert-success' : 'auth-alert auth-alert-error';
-            msgDiv.style.display = 'block';
-        }
-    });
-    observer.observe(msgDiv, { attributes: true, childList: true, subtree: true });
-
     toggleAuth.addEventListener('click', () => {
-        const isLogin = extraFields.style.display === 'none' || extraFields.style.display === '';
+        const isLogin = extraFields.classList.contains('hidden');
         if (isLogin) {
-            extraFields.style.display = 'flex';
+            extraFields.classList.remove('hidden');
             authTitle.textContent    = 'Join the Platform';
             authSubtitle.textContent = 'Start your premium real estate experience';
             btnText.textContent      = 'Create Account';
-            toggleAuth.textContent   = 'Already have an account? Sign In';
+            toggleAuth.innerHTML     = 'Already have an account? <span class="text-primary underline">Sign In</span>';
         } else {
-            extraFields.style.display = 'none';
+            extraFields.classList.add('hidden');
             authTitle.textContent    = 'Welcome Back';
             authSubtitle.textContent = 'Sign in to manage your property journey';
             btnText.textContent      = 'Continue to Platform';
-            toggleAuth.textContent   = "Don't have an account? Sign Up";
+            toggleAuth.innerHTML     = "Don't have an account? <span class="text-primary underline">Sign Up</span>";
         }
     });
 });

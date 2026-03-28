@@ -33,12 +33,13 @@ class PropertySerializer(serializers.ModelSerializer):
 # core/serializers.py
 class RentalAgreementSerializer(serializers.ModelSerializer):
     property_details = PropertySerializer(source='property', read_only=True)
+    property_title = serializers.ReadOnlyField(source='property.title')
     tenant_name = serializers.ReadOnlyField(source='tenant.username')
 
     class Meta:
         model = RentalAgreement
         fields = [
-            'id', 'property', 'property_details', 'tenant', 'tenant_name',
+            'id', 'property', 'property_title', 'property_details', 'tenant', 'tenant_name',
             'start_date', 'end_date', 'status', 'is_active', 'number_of_occupants'
         ]
         read_only_fields = ['tenant', 'status']
@@ -52,9 +53,10 @@ class TaxPolicySerializer(serializers.ModelSerializer):
 from .models import Expense
 
 class ExpenseSerializer(serializers.ModelSerializer):
+    property_title = serializers.ReadOnlyField(source='property.title')
     class Meta:
         model = Expense
-        fields = ['id', 'property', 'amount', 'description', 'date']
+        fields = ['id', 'property', 'property_title', 'amount', 'description', 'date']
 from djoser.serializers import UserCreateSerializer as BaseUserCreateSerializer
 
 class UserCreateSerializer(BaseUserCreateSerializer):

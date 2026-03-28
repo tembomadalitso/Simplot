@@ -3,47 +3,49 @@
 {% block title %}Post New Listing | Zambia Rentals{% endblock %}
 
 {% block content %}
-<div class="fade-up delay-1" style="max-width:740px;margin:0 auto">
-
+<div class="animate-slide-up max-w-3xl mx-auto">
     <!-- Header -->
-    <header style="margin-bottom:36px">
-        <div class="badge badge-primary" style="margin-bottom:14px">
-            <i class="fas fa-plus text-xs"></i> New Listing
+    <header class="mb-12">
+        <div class="badge badge-primary mb-6">
+            <i class="fas fa-plus text-[10px] mr-2"></i> New Listing
         </div>
-        <h1 class="font-black tracking-tighter mb-2" style="font-size:clamp(1.8rem,4vw,2.4rem);line-height:1.1">List Your Property</h1>
-        <p class="text-sm font-medium" style="color:var(--text-secondary);">Share your space with thousands of verified tenants across Zambia.</p>
+        <h1 class="mb-2">List Your Property</h1>
+        <p class="text-secondary font-medium">Share your space with thousands of verified tenants across Zambia.</p>
     </header>
 
-    <div class="detail-card fade-up delay-2">
-        <form id="propertyForm" class="flex-column gap-8">
+    <div class="card p-10 !rounded-3xl border-color shadow-2xl relative overflow-hidden">
+        <div class="absolute -top-32 -right-32 w-64 h-64 bg-primary/5 blur-[80px] rounded-full"></div>
 
+        <form id="propertyForm" class="flex flex-col gap-12 relative z-10">
             <!-- General Info -->
             <section>
-                <div class="flex-row items-center gap-3 mb-6 pb-4 border-b">
-                    <div class="flex-center" style="width:36px;height:36px;border-radius:10px;background:var(--bg-body);color:var(--text-secondary);font-size:14px"><i class="fas fa-info"></i></div>
-                    <h3 class="font-extrabold" style="font-size:15px;">General Information</h3>
+                <div class="flex items-center gap-4 mb-8 pb-4 border-b border-color">
+                    <div class="w-10 h-10 rounded-xl bg-surface border border-color flex items-center justify-center text-muted">
+                        <i class="fas fa-info text-xs"></i>
+                    </div>
+                    <h3 class="text-base font-black uppercase tracking-widest">General Information</h3>
                 </div>
-                <div class="flex-column gap-4">
-                    <div>
-                        <label class="form-label">Property Title</label>
-                        <input type="text" id="title" placeholder="e.g. Modern 2BR Apartment in Meanwood" required class="form-input">
+                <div class="flex flex-col gap-6">
+                    <div class="flex flex-col gap-2">
+                        <label class="text-[11px] font-black uppercase tracking-widest text-muted ml-1">Property Title</label>
+                        <input type="text" id="title" placeholder="e.g. Modern 2BR Apartment in Meanwood" required class="filter-input w-full h-12">
                     </div>
-                    <div>
-                        <label class="form-label">Description</label>
-                        <textarea id="description" placeholder="Describe amenities, nearby locations, unique features…" rows="4" class="form-textarea"></textarea>
+                    <div class="flex flex-col gap-2">
+                        <label class="text-[11px] font-black uppercase tracking-widest text-muted ml-1">Description</label>
+                        <textarea id="description" placeholder="Describe amenities, nearby locations, unique features…" rows="4" class="filter-input w-full p-4 h-auto min-h-[120px]"></textarea>
                     </div>
-                    <div class="md-grid-cols-2 gap-4" style="display:grid;">
-                        <div>
-                            <label class="form-label">Category</label>
-                            <select id="category" class="form-select">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="flex flex-col gap-2">
+                            <label class="text-[11px] font-black uppercase tracking-widest text-muted ml-1">Category</label>
+                            <select id="category" class="filter-input w-full h-12 cursor-pointer">
                                 <option value="RESIDENTIAL">Residential</option>
                                 <option value="BOARDING">Boarding House</option>
                                 <option value="LODGE">Lodge / Short-stay</option>
                             </select>
                         </div>
-                        <div>
-                            <label class="form-label">Monthly Rent (ZMW)</label>
-                            <input type="number" id="price" placeholder="5000" required class="form-input">
+                        <div class="flex flex-col gap-2">
+                            <label class="text-[11px] font-black uppercase tracking-widest text-muted ml-1">Monthly Rent (ZMW)</label>
+                            <input type="number" id="price" placeholder="5000" required class="filter-input w-full h-12">
                         </div>
                     </div>
                 </div>
@@ -51,74 +53,75 @@
 
             <!-- Location -->
             <section>
-                <div class="flex-row items-center gap-3 mb-6 pb-4 border-b">
-                    <div class="flex-center" style="width:36px;height:36px;border-radius:10px;background:var(--color-primary-light);color:var(--color-primary);font-size:14px"><i class="fas fa-map-pin"></i></div>
-                    <h3 class="font-extrabold" style="font-size:15px;">Location</h3>
+                <div class="flex items-center gap-4 mb-8 pb-4 border-b border-color">
+                    <div class="w-10 h-10 rounded-xl bg-primary-light border border-primary/20 flex items-center justify-center text-primary">
+                        <i class="fas fa-map-pin text-xs"></i>
+                    </div>
+                    <h3 class="text-base font-black uppercase tracking-widest">Location Audit</h3>
                 </div>
-                <div class="flex-column gap-4">
-                    <div class="md-grid-cols-2 gap-4" style="display:grid;">
-                        <div>
-                            <label class="form-label">District</label>
-                            <input type="text" id="district" placeholder="e.g. Lusaka" required class="form-input">
-                        </div>
-                        <div>
-                            <label class="form-label">Area Name</label>
-                            <input type="text" id="area_name" placeholder="e.g. Silverest" required class="form-input">
-                        </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="flex flex-col gap-2">
+                        <label class="text-[11px] font-black uppercase tracking-widest text-muted ml-1">District</label>
+                        <input type="text" id="district" placeholder="e.g. Lusaka" required class="filter-input w-full h-12">
                     </div>
-                    <div>
-                        <label class="form-label">Street Address</label>
-                        <input type="text" id="street_address" placeholder="Plot number and street" class="form-input">
+                    <div class="flex flex-col gap-2">
+                        <label class="text-[11px] font-black uppercase tracking-widest text-muted ml-1">Area Name</label>
+                        <input type="text" id="area_name" placeholder="e.g. Silverest" required class="filter-input w-full h-12">
                     </div>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <label class="text-[11px] font-black uppercase tracking-widest text-muted ml-1">Street Address</label>
+                    <input type="text" id="street_address" placeholder="Plot number and street" class="filter-input w-full h-12">
                 </div>
             </section>
 
             <!-- Images -->
             <section>
-                <div class="justify-between items-center mb-6 pb-4 border-b flex-row" style="display:flex;">
-                    <div class="flex-row items-center gap-3">
-                        <div class="flex-center" style="width:36px;height:36px;border-radius:10px;background:var(--color-success-bg);color:var(--color-success);font-size:14px"><i class="fas fa-camera"></i></div>
-                        <h3 class="font-extrabold" style="font-size:15px;">Property Gallery</h3>
+                <div class="flex justify-between items-center mb-8 pb-4 border-b border-color">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-success-bg/20 border border-success/20 flex items-center justify-center text-success">
+                            <i class="fas fa-camera text-xs"></i>
+                        </div>
+                        <h3 class="text-base font-black uppercase tracking-widest">Property Gallery</h3>
                     </div>
-                    <button type="button" id="addImageBtn" class="btn btn-ghost btn-sm" style="width:auto;">
-                        <i class="fas fa-plus mr-1" style="font-size:10px;"></i> Add Image
+                    <button type="button" id="addImageBtn" class="btn btn-ghost btn-sm border border-color !px-4">
+                        <i class="fas fa-plus mr-2 text-[10px]"></i> Add Image
                     </button>
                 </div>
-                <p class="text-xs font-medium mb-4" style="color:var(--text-muted);">Upload multiple images. Mark one as the main cover photo.</p>
-                <div id="imageUploadsContainer" class="flex-column gap-2">
-                    <div class="image-upload-row image-row">
-                        <div class="flex-1" style="min-width:160px">
-                            <input type="file" accept="image/*" required class="image-input-file">
+                <div id="imageUploadsContainer" class="flex flex-col gap-4">
+                    <div class="flex flex-col md:flex-row items-center gap-4 p-6 bg-body rounded-2xl border border-color group">
+                        <div class="flex-1 w-full">
+                            <input type="file" accept="image/*" required class="text-xs font-bold text-muted file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-primary-light file:text-primary hover:file:bg-primary hover:file:text-white transition-all cursor-pointer">
                         </div>
-                        <div class="flex-1" style="min-width:140px">
-                            <input type="text" placeholder="Caption (e.g. Living Room)" class="image-caption image-input-caption">
+                        <div class="flex-1 w-full">
+                            <input type="text" placeholder="Caption (e.g. Living Room)" class="filter-input w-full !bg-surface h-10 text-xs">
                         </div>
-                        <label class="flex-row items-center gap-2 text-xs font-bold pointer cursor-pointer" style="color:var(--text-secondary);white-space:nowrap">
-                            <input type="radio" name="main_image" value="0" checked style="accent-color:var(--color-primary)"> Cover Photo
+                        <label class="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-muted cursor-pointer whitespace-nowrap">
+                            <input type="radio" name="main_image" value="0" checked class="w-4 h-4 accent-primary"> Cover Photo
                         </label>
-                        <button type="button" class="remove-image-btn hidden btn btn-danger btn-sm" style="width:auto;"><i class="fas fa-trash-alt"></i></button>
+                        <button type="button" class="remove-image-btn hidden btn btn-ghost !p-2 text-error hover:bg-error-bg/20 rounded-xl">
+                            <i class="fas fa-trash-alt text-xs"></i>
+                        </button>
                     </div>
                 </div>
             </section>
 
             <!-- Submit -->
-            <div class="pt-6 border-t">
-                <div class="items-start gap-3 mb-4 p-4 rounded-xl flex-row" style="background:var(--color-primary-light);border:1px solid var(--color-primary);display:flex;">
-                    <i class="fas fa-shield-check mt-1 flex-shrink-0" style="color:var(--color-primary);font-size:15px;"></i>
-                    <p class="text-xs font-medium" style="color:var(--text-secondary);margin:0;line-height:1.5">By publishing, you confirm all information is accurate and compliant with Zambian rental laws and ZRA requirements.</p>
+            <div class="pt-10 border-t border-color">
+                <div class="flex items-start gap-4 p-5 rounded-2xl bg-primary-light/10 border border-primary/20 mb-8">
+                    <i class="fas fa-shield-check text-primary mt-1"></i>
+                    <p class="text-[11px] font-bold text-secondary leading-relaxed">By publishing, you confirm all information is accurate and compliant with Zambian rental laws and ZRA requirements.</p>
                 </div>
-                <button type="submit" id="submitBtn" class="btn btn-primary btn-full">
-                    <i class="fas fa-paper-plane text-xs"></i>
-                    <span>Publish Listing</span>
+                <button type="submit" id="submitBtn" class="btn btn-primary btn-full h-14 !text-base shadow-primary/40">
+                    <i class="fas fa-paper-plane text-xs mr-2"></i> Publish Premium Listing
                 </button>
             </div>
         </form>
-        <div id="formStatus" style="margin-top:16px;display:none"></div>
+        <div id="formStatus" class="mt-4"></div>
     </div>
 </div>
 {% endblock %}
 
 {% block extra_scripts %}
-<script>document.addEventListener('DOMContentLoaded',()=>document.body.classList.add('add-prop-page'));</script>
 <script src="{% static 'js/add_property.js' %}"></script>
 {% endblock %}

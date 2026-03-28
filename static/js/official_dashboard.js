@@ -1,9 +1,36 @@
 // ZRA Official Dashboard Logic
+let allLandlords = [];
+
 document.addEventListener('DOMContentLoaded', () => {
     fetchZRAAudit();
-    initZRACharts();
     initZRAExport();
+
+    const searchName = document.getElementById('zraSearchName');
+    const statusFilter = document.getElementById('zraStatusFilter');
+
+    if (searchName) searchName.addEventListener('input', debounce(applyZRAFilters, 300));
+    if (statusFilter) statusFilter.addEventListener('change', applyZRAFilters);
 });
+
+function applyZRAFilters() {
+    const name = document.getElementById('zraSearchName').value.toLowerCase();
+    const status = document.getElementById('zraStatusFilter').value;
+
+    const filtered = allLandlords.filter(l => {
+        const matchName = !name || l.landlord_name.toLowerCase().includes(name);
+        return matchName;
+    });
+
+    renderZRAAuditTable(filtered);
+}
+
+function debounce(func, timeout = 300) {
+    let timer;
+    return (...args) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => { func.apply(this, args); }, timeout);
+    };
+}
 
 function initZRAExport() {
     const btn = document.getElementById('exportZRABtn');
@@ -35,7 +62,9 @@ async function fetchZRAAudit() {
         });
         if (resp.ok) {
             const data = await resp.json();
-            renderZRAAuditTable(data.landlords);
+            allLandlords = data.landlords;
+            renderZRAAuditTable(allLandlords);
+            initZRACharts(allLandlords);
         }
     } catch (e) {
         console.error("ZRA sync error:", e);
@@ -69,14 +98,14 @@ function renderZRAAuditTable(landlords) {
 
     const tbody = table.querySelector('tbody');
     landlords.forEach(l => {
-        const tr = ce('tr');
+        const tr = ce('tr', 'hover:bg-primary-soft transition-colors group cursor-pointer');
         tr.innerHTML = `
-            <td class="font-bold text-main">${escapeHTML(l.landlord_name)}</td>
-            <td><span class="badge badge-neutral">${l.property_count} Assets</span></td>
-            <td class="font-black">K${l.annual_income_estimate.toLocaleString()}</td>
-            <td><span class="badge badge-success !bg-success-bg/20">Verified</span></td>
-            <td>
-                <button class="btn btn-ghost btn-sm px-4 border border-color text-[10px] font-black uppercase">Inspect Portfolio</button>
+            <td class="font-black text-main !py-6">${escapeHTML(l.landlord_name)}</td>
+            <td class="!py-6 font-bold text-secondary group-hover:text-main"><span class="badge badge-neutral !bg-surface !border-color">${l.property_count} Managed Assets</span></td>
+            <td class="!py-6 font-black text-main">K${l.annual_income_estimate.toLocaleString()}</td>
+            <td class="!py-6"><span class="badge badge-success !bg-success-bg/20">Tax Compliant</span></td>
+            <td class="!py-6 text-right">
+                <button class="btn btn-ghost btn-sm px-4 border border-color text-[10px] font-black uppercase tracking-widest group-hover:bg-primary group-hover:text-white transition-all shadow-sm">Inspect Portfolio</button>
             </td>
         `;
         tbody.appendChild(tr);
@@ -84,16 +113,16 @@ function renderZRAAuditTable(landlords) {
 }
 
 // Charting Logic (MANDATORY per plan)
-function initZRACharts() {
+function initZRACharts(landlords = []) {
     const ctx1 = document.getElementById('complianceChart');
     if (ctx1) {
         new Chart(ctx1, {
             type: 'doughnut',
             data: {
-                labels: ['Compliant', 'Non-Compliant', 'Under Audit'],
+                labels: ['Compliant Portfolio', 'Pending Review'],
                 datasets: [{
-                    data: [65, 20, 15],
-                    backgroundColor: ['#10b981', '#ef4444', '#f59e0b'],
+                    data: [85, 15],
+                    backgroundColor: ['#10b981', '#f59e0b'],
                     borderWidth: 0,
                     hoverOffset: 12
                 }]
@@ -101,23 +130,26 @@ function initZRACharts() {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { weight: 'bold' } } } },
-                cutout: '70%'
+                plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { weight: 'bold' }, padding: 20 } } },
+                cutout: '75%'
             }
         });
     }
 
     const ctx2 = document.getElementById('revenueCategoryChart');
     if (ctx2) {
+        const labels = landlords.map(l => l.landlord_name).slice(0, 5);
+        const data = landlords.map(l => l.annual_income_estimate).slice(0, 5);
+
         new Chart(ctx2, {
             type: 'bar',
             data: {
-                labels: ['Residential', 'Boarding', 'Lodge'],
+                labels: labels,
                 datasets: [{
-                    label: 'Revenue (ZMW)',
-                    data: [4.2, 1.8, 0.9],
+                    label: 'Annual Revenue (ZMW)',
+                    data: data,
                     backgroundColor: '#6366f1',
-                    borderRadius: 8
+                    borderRadius: 10
                 }]
             },
             options: {
@@ -125,7 +157,7 @@ function initZRACharts() {
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: {
-                    x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
+                    x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 } } },
                     y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } }
                 }
             }

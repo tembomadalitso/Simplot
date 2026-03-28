@@ -3,188 +3,195 @@
 {% block title %}{{ property.title }} | Zambia Rentals{% endblock %}
 
 {% block content %}
-<div class="detail-container">
-    <div class="detail-grid">
+<div class="animate-slide-up">
+    <!-- Breadcrumbs -->
+    <div class="flex items-center gap-3 mb-8 text-xs font-bold uppercase tracking-widest text-muted">
+        <a href="{% url 'index' %}" class="hover:text-primary transition-colors">Home</a>
+        <i class="fas fa-chevron-right text-[8px]"></i>
+        <span class="text-secondary">{{ property.district }}</span>
+        <i class="fas fa-chevron-right text-[8px]"></i>
+        <span class="text-main truncate max-w-[200px]">{{ property.title }}</span>
+    </div>
 
-        <!-- ── Left: Images + Details ── -->
-        <div class="flex-column gap-6 fade-up delay-1" style="min-width:0">
-
-            <!-- Slideshow -->
-            <div class="slideshow-container" id="slideshow-container">
-                {% if property.images.exists %}
-                    {% for img in property.images.all %}
-                    <div class="slide" style="{% if forloop.first %}opacity:1;z-index:2{% else %}opacity:0;z-index:1{% endif %}">
-                        <img src="{{ img.image.url }}" alt="{{ img.caption|default:property.title }}">
-                        {% if img.caption %}
-                        <div class="slide-caption">
-                            <p>{{ img.caption }}</p>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Main Content (Left) -->
+        <div class="lg:col-span-2 flex flex-col gap-8">
+            <!-- Gallery Section -->
+            <div class="card overflow-hidden !rounded-3xl border-color group">
+                <div class="relative h-[480px] bg-body" id="slideshow-container">
+                    {% if property.images.exists %}
+                        {% for img in property.images.all %}
+                        <div class="slide absolute inset-0 transition-opacity duration-700 ease-in-out" style="{% if forloop.first %}opacity:1;z-index:2{% else %}opacity:0;z-index:1{% endif %}">
+                            <img src="{{ img.image.url }}" class="w-full h-full object-cover">
+                            {% if img.caption %}
+                            <div class="absolute bottom-6 left-6 right-6 p-4 bg-glass backdrop-blur-xl border border-white/10 rounded-2xl">
+                                <p class="text-[10px] font-black uppercase tracking-widest text-white text-center">{{ img.caption }}</p>
+                            </div>
+                            {% endif %}
                         </div>
+                        {% endfor %}
+
+                        <!-- Navigation Arrows -->
+                        {% if property.images.count > 1 %}
+                        <button id="prevSlide" class="absolute left-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-glass backdrop-blur-md border border-white/10 text-white flex items-center justify-center hover:bg-primary transition-all z-10 opacity-0 group-hover:opacity-100">
+                            <i class="fas fa-chevron-left text-xs"></i>
+                        </button>
+                        <button id="nextSlide" class="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-glass backdrop-blur-md border border-white/10 text-white flex items-center justify-center hover:bg-primary transition-all z-10 opacity-0 group-hover:opacity-100">
+                            <i class="fas fa-chevron-right text-xs"></i>
+                        </button>
+                        {% endif %}
+                    {% else %}
+                    <div class="w-full h-full flex items-center justify-center">
+                        <i class="fas fa-home text-muted text-5xl"></i>
+                    </div>
+                    {% endif %}
+
+                    <!-- Overlay badges -->
+                    <div class="absolute top-6 left-6 flex gap-2 z-10">
+                        <span class="badge badge-primary !bg-glass !backdrop-blur-md shadow-2xl">{{ property.get_category_display }}</span>
+                        {% if property.is_tax_compliant %}
+                        <span class="badge badge-success !bg-glass !backdrop-blur-md shadow-2xl">
+                            <i class="fas fa-check-circle text-[9px] mr-2"></i> Verified Portfolio
+                        </span>
                         {% endif %}
                     </div>
-                    {% endfor %}
-                    {% if property.images.count > 1 %}
-                    <button id="prevSlide" class="slideshow-btn prev"><i class="fas fa-chevron-left"></i></button>
-                    <button id="nextSlide" class="slideshow-btn next"><i class="fas fa-chevron-right"></i></button>
-                    {% endif %}
-                {% else %}
-                <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center">
-                    <i class="fas fa-home" style="font-size:4rem;color:rgba(255,255,255,0.08)"></i>
-                </div>
-                {% endif %}
-
-                <!-- Overlay badges -->
-                <div class="slide-badges">
-                    <span class="badge badge-primary">{{ property.get_category_display }}</span>
-                    {% if property.is_tax_compliant %}
-                    <span class="badge badge-success">
-                        <i class="fas fa-check-circle" style="font-size:9px"></i> Verified
-                    </span>
-                    {% endif %}
                 </div>
             </div>
 
-            <!-- Property info card -->
-            <div class="detail-card">
-
-                <!-- Title + Price -->
-                <div class="detail-header">
-                    <div style="flex:1;min-width:0">
-                        <h1 style="font-size:clamp(1.4rem,3vw,1.9rem);font-weight:900;letter-spacing:-0.04em;color:#fff;margin-bottom:8px;line-height:1.15">{{ property.title }}</h1>
-                        <p style="font-size:13px;font-weight:500;color:rgba(255,255,255,0.5);display:flex;align-items:center;gap:7px;flex-wrap:wrap">
-                            <i class="fas fa-map-pin" style="color:rgba(165,180,252,0.7);font-size:11px;flex-shrink:0"></i>
+            <!-- Property Info Details -->
+            <div class="card p-8 !rounded-3xl border-color">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-6">
+                    <div class="flex-1">
+                        <h1 class="text-3xl font-black mb-4">{{ property.title }}</h1>
+                        <p class="text-secondary font-medium flex items-center gap-2">
+                            <i class="fas fa-map-pin text-primary text-xs"></i>
                             {{ property.street_address }}, {{ property.area_name }}, {{ property.district }}
                         </p>
                     </div>
-                    <div style="flex-shrink:0">
-                        <div style="font-size:1.8rem;font-weight:900;letter-spacing:-0.04em;color:#fff;line-height:1">K{{ property.price }}</div>
-                        <div style="font-size:10px;color:rgba(255,255,255,0.35);font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-top:3px">per month</div>
+                    <div class="text-right">
+                        <div class="text-4xl font-black tracking-tighter text-main">K{{ property.price }}</div>
+                        <div class="text-[10px] font-black uppercase tracking-widest text-muted mt-1">Monthly Investment</div>
                     </div>
                 </div>
 
-                <!-- Description + Trust -->
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px" class="md-grid-cols-2">
-
-                    <!-- Description -->
-                    <div>
-                        <div class="footer-heading">Overview</div>
-                        <p style="font-size:13px;font-weight:500;color:rgba(255,255,255,0.6);line-height:1.75">
-                            {% if property.description %}{{ property.description }}{% else %}A prime {{ property.get_category_display|lower }} in the heart of {{ property.district }}.{% endif %}
-                            Currently listed as
-                            {% if property.is_tax_compliant %}
-                                <span style="color:#6ee7b7;font-weight:700">tax compliant</span>
-                            {% else %}
-                                <span style="color:#fcd34d;font-weight:700">pending verification</span>
-                            {% endif %}.
-                        </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 pt-8 border-t border-color">
+                    <!-- Overview -->
+                    <div class="flex flex-col gap-6">
+                        <div>
+                            <div class="text-[11px] font-black uppercase tracking-widest text-primary mb-4">Property Overview</div>
+                            <p class="text-secondary leading-relaxed font-medium">
+                                {% if property.description %}{{ property.description }}{% else %}A premium {{ property.get_category_display|lower }} in the heart of {{ property.district }}. Modern amenities and excellent connectivity.{% endif %}
+                            </p>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="stat-card !bg-surface-solid !p-4 !rounded-2xl">
+                                <span class="text-[10px] font-black text-muted uppercase tracking-widest">Type</span>
+                                <span class="font-bold text-main">{{ property.get_category_display }}</span>
+                            </div>
+                            <div class="stat-card !bg-surface-solid !p-4 !rounded-2xl">
+                                <span class="text-[10px] font-black text-muted uppercase tracking-widest">Status</span>
+                                <span class="font-bold {{ property.is_tax_compliant|yesno:'text-success,text-warning' }}">
+                                    {{ property.is_tax_compliant|yesno:'Compliant,Pending' }}
+                                </span>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- Trust badges -->
+                    <!-- Trust & Compliance -->
                     <div>
-                        <div class="footer-heading">Trust &amp; Compliance</div>
-                        <div style="display:flex;flex-direction:column;gap:8px">
-
-                            <!-- ZRA -->
-                            <div style="display:flex;align-items:center;gap:10px;padding:11px 14px;background:rgba(16,185,129,0.07);border:1px solid rgba(16,185,129,0.18);border-radius:12px">
-                                <div style="width:30px;height:30px;border-radius:50%;background:rgba(16,185,129,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-                                    <i class="fas fa-check" style="color:#6ee7b7;font-size:11px"></i>
+                        <div class="text-[11px] font-black uppercase tracking-widest text-primary mb-4">Legal & Compliance</div>
+                        <div class="flex flex-col gap-4">
+                            <div class="flex items-center gap-4 p-4 bg-success-bg/10 border border-success/20 rounded-2xl">
+                                <div class="w-10 h-10 rounded-full bg-success/20 flex items-center justify-center text-success">
+                                    <i class="fas fa-check text-xs"></i>
                                 </div>
                                 <div>
-                                    <div style="font-size:11px;font-weight:800;color:rgba(255,255,255,0.75);text-transform:uppercase;letter-spacing:0.06em">ZRA Registered</div>
-                                    <div style="font-size:10px;color:rgba(255,255,255,0.35);font-weight:500;margin-top:1px">Tax compliant listing</div>
+                                    <div class="text-xs font-black uppercase text-main">ZRA Registered</div>
+                                    <div class="text-[10px] font-medium text-muted">Tax compliant listing</div>
                                 </div>
                             </div>
-
-                            <!-- Legal -->
-                            <div style="display:flex;align-items:center;gap:10px;padding:11px 14px;background:rgba(79,70,229,0.07);border:1px solid rgba(165,180,252,0.18);border-radius:12px">
-                                <div style="width:30px;height:30px;border-radius:50%;background:rgba(79,70,229,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-                                    <i class="fas fa-file-contract" style="color:#a5b4fc;font-size:11px"></i>
+                            <div class="flex items-center gap-4 p-4 bg-primary-light/10 border border-primary/20 rounded-2xl">
+                                <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+                                    <i class="fas fa-file-contract text-xs"></i>
                                 </div>
                                 <div>
-                                    <div style="font-size:11px;font-weight:800;color:rgba(255,255,255,0.75);text-transform:uppercase;letter-spacing:0.06em">Legal Agreement</div>
-                                    <div style="font-size:10px;color:rgba(255,255,255,0.35);font-weight:500;margin-top:1px">Ministry records compliant</div>
+                                    <div class="text-xs font-black uppercase text-main">Ministry Audited</div>
+                                    <div class="text-[10px] font-medium text-muted">National record compliant</div>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- ── Right: Actions sidebar ── -->
-        <div style="display:flex;flex-direction:column;gap:14px" class="fade-up delay-2">
-
-            <!-- CTA card -->
-            <div class="detail-card" style="box-shadow:0 24px 48px rgba(0,0,0,0.4)">
-                <div style="text-align:center;margin-bottom:22px">
-                    <h3 style="font-size:16px;font-weight:800;color:#fff;margin-bottom:5px;letter-spacing:-0.02em">Ready to Move?</h3>
-                    <p style="font-size:12px;color:rgba(255,255,255,0.45);font-weight:500">Connect with the owner or submit your application.</p>
+        <!-- Sidebar (Right) -->
+        <div class="flex flex-col gap-8">
+            <!-- Action Card -->
+            <div class="card p-8 !rounded-3xl border-primary/20 shadow-2xl relative overflow-hidden">
+                <div class="absolute -top-12 -right-12 w-32 h-32 bg-primary/10 blur-[40px] rounded-full"></div>
+                <div class="relative z-10 text-center mb-8">
+                    <h3 class="text-lg font-black mb-2">Ready to move?</h3>
+                    <p class="text-xs text-muted font-bold">Connect with the owner or start your application.</p>
                 </div>
 
-                <div style="display:flex;flex-direction:column;gap:10px">
+                <div class="flex flex-col gap-4 relative z-10">
                     {% if landlord_phone %}
-                    <a href="https://wa.me/{{ landlord_phone }}?text=Hello, I am interested in your property: {{ property.title }} listed on Zambia Rentals."
-                        target="_blank"
-                        style="width:100%;padding:13px;background:linear-gradient(135deg,#059669,#10b981);color:#fff;border-radius:14px;font-size:14px;font-weight:700;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .18s;box-shadow:0 4px 12px rgba(16,185,129,0.3)"
-                        onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 8px 20px rgba(16,185,129,0.4)'"
-                        onmouseout="this.style.transform='';this.style.boxShadow='0 4px 12px rgba(16,185,129,0.3)'">
-                        <i class="fab fa-whatsapp" style="font-size:17px"></i> WhatsApp Owner
+                    <a href="https://wa.me/{{ landlord_phone }}" target="_blank" class="btn btn-primary !bg-success hover:!bg-success-hover shadow-success/30">
+                        <i class="fab fa-whatsapp text-lg"></i> WhatsApp Owner
                     </a>
-                    {% else %}
-                    <button disabled style="width:100%;padding:13px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.3);border-radius:14px;font-size:14px;font-weight:700;font-family:inherit;cursor:not-allowed">
-                        Contact Unavailable
-                    </button>
                     {% endif %}
-
-                    <a href="{% url 'apply-property' property.id %}"
-                        style="width:100%;padding:13px;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;border-radius:14px;font-size:14px;font-weight:700;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .18s;box-shadow:0 4px 12px rgba(79,70,229,0.35)"
-                        onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 8px 20px rgba(79,70,229,0.45)'"
-                        onmouseout="this.style.transform='';this.style.boxShadow='0 4px 12px rgba(79,70,229,0.35)'">
-                        <i class="fas fa-file-contract" style="font-size:12px"></i> Apply Now
+                    <a href="{% url 'apply-property' property.id %}" class="btn btn-primary">
+                        <i class="fas fa-file-signature text-xs"></i> Submit Application
                     </a>
                 </div>
 
-                <!-- Save / Share / Print -->
-                <div style="display:flex;justify-content:center;gap:20px;margin-top:18px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.07)">
-                    <button class="action-item">
-                        <div class="action-icon-box"><i class="fas fa-heart"></i></div>
-                        <span class="action-label">Save</span>
+                <!-- Utilities -->
+                <div class="flex justify-between items-center mt-10 pt-6 border-t border-color relative z-10">
+                    <button class="flex flex-col items-center gap-2 group">
+                        <div class="w-10 h-10 rounded-full bg-surface border border-color flex items-center justify-center text-muted group-hover:text-primary transition-all">
+                            <i class="fas fa-heart text-xs"></i>
+                        </div>
+                        <span class="text-[9px] font-black uppercase tracking-widest text-muted">Save</span>
                     </button>
-                    <button class="action-item">
-                        <div class="action-icon-box"><i class="fas fa-share-alt"></i></div>
-                        <span class="action-label">Share</span>
+                    <button class="flex flex-col items-center gap-2 group">
+                        <div class="w-10 h-10 rounded-full bg-surface border border-color flex items-center justify-center text-muted group-hover:text-primary transition-all">
+                            <i class="fas fa-share-alt text-xs"></i>
+                        </div>
+                        <span class="text-[9px] font-black uppercase tracking-widest text-muted">Share</span>
                     </button>
-                    <button class="action-item">
-                        <div class="action-icon-box"><i class="fas fa-print"></i></div>
-                        <span class="action-label">Print</span>
+                    <button onclick="window.print()" class="flex flex-col items-center gap-2 group">
+                        <div class="w-10 h-10 rounded-full bg-surface border border-color flex items-center justify-center text-muted group-hover:text-primary transition-all">
+                            <i class="fas fa-print text-xs"></i>
+                        </div>
+                        <span class="text-[9px] font-black uppercase tracking-widest text-muted">Print</span>
                     </button>
                 </div>
             </div>
 
-            <!-- Owner info card -->
-            <div class="db-stat-card">
-                <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
-                    <div style="width:40px;height:40px;border-radius:50%;background:rgba(79,70,229,0.2);border:1px solid rgba(165,180,252,0.2);display:flex;align-items:center;justify-content:center;color:#a5b4fc;font-size:16px;flex-shrink:0">
-                        <i class="fas fa-house-user"></i>
+            <!-- Landlord Info -->
+            <div class="card p-6 border-color">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-2xl bg-primary-light flex items-center justify-center text-primary shadow-inner">
+                        <i class="fas fa-house-user text-lg"></i>
                     </div>
                     <div>
-                        <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.3)">Listed by</div>
-                        <div style="font-size:14px;font-weight:800;color:#fff">Zambia Property Ltd</div>
+                        <div class="text-[9px] font-black uppercase tracking-widest text-muted mb-0.5">Listed By</div>
+                        <div class="text-sm font-black text-main">Zambia Property Ltd</div>
                     </div>
                 </div>
-                <div style="display:flex;flex-direction:column;gap:8px">
-                    <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600">
-                        <span style="color:rgba(255,255,255,0.35)">Response Rate</span>
-                        <span style="color:#6ee7b7">98% · High</span>
+                <div class="flex flex-col gap-4">
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="font-bold text-muted">Response Rate</span>
+                        <span class="font-black text-success">98% High</span>
                     </div>
-                    <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600">
-                        <span style="color:rgba(255,255,255,0.35)">Response Time</span>
-                        <span style="color:rgba(255,255,255,0.6)">&lt; 1 Hour</span>
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="font-bold text-muted">Experience</span>
+                        <span class="font-black text-main">8+ Years</span>
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
 </div>
 {% endblock %}
@@ -192,21 +199,12 @@
 {% block extra_scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    document.body.classList.add('detail-page');
-
-    const container = document.getElementById('slideshow-container');
-    const slides = container ? container.querySelectorAll('.slide') : [];
+    const slides = document.querySelectorAll('.slide');
     if (slides.length <= 1) return;
 
     let cur = 0;
     const prev = document.getElementById('prevSlide');
     const next = document.getElementById('nextSlide');
-
-    // Show nav buttons on hover (already CSS-handled), but make them always visible on touch
-    const isTouchDevice = () => window.matchMedia('(hover: none)').matches;
-    if (isTouchDevice()) {
-        [prev, next].forEach(btn => { if (btn) btn.style.opacity = '1'; });
-    }
 
     function show(i) {
         slides.forEach((s, idx) => {
@@ -218,20 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (next) next.addEventListener('click', () => { cur = (cur + 1) % slides.length; show(cur); });
     if (prev) prev.addEventListener('click', () => { cur = (cur - 1 + slides.length) % slides.length; show(cur); });
 
-    // Auto-advance
     setInterval(() => { cur = (cur + 1) % slides.length; show(cur); }, 6000);
-
-    // Swipe support for mobile
-    let touchStartX = 0;
-    container.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
-    container.addEventListener('touchend', e => {
-        const diff = touchStartX - e.changedTouches[0].clientX;
-        if (Math.abs(diff) > 50) {
-            if (diff > 0) { cur = (cur + 1) % slides.length; }
-            else          { cur = (cur - 1 + slides.length) % slides.length; }
-            show(cur);
-        }
-    }, { passive: true });
 });
 </script>
 {% endblock %}
