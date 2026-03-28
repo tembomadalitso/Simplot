@@ -3,176 +3,202 @@
 {% block title %}Owner Dashboard | Zambia Rentals{% endblock %}
 
 {% block content %}
-<div class="db-bg-container">
-    <div class="db-bg-img"></div>
-    <div class="db-bg-overlay"></div>
-</div>
-
-<div class="db-container">
-
+<div class="animate-slide-up">
     <!-- Header -->
-    <header class="db-header fade-up delay-1">
+    <header class="flex justify-between items-start mb-10 gap-6">
         <div>
-            <div class="hero-badge" style="margin-bottom:14px;padding:5px 14px;">
-                <i class="fas fa-columns text-xs"></i> Management Console
+            <div class="badge badge-primary mb-4">
+                <i class="fas fa-columns text-[10px] mr-1"></i> Management Console
             </div>
-            <h1 class="font-black tracking-tighter mb-2" style="font-size:clamp(1.8rem,4vw,2.6rem);line-height:1.1">Property Portfolio</h1>
-            <p class="text-sm font-medium" style="color:var(--text-secondary);">Manage your listings, applications, and finances.</p>
+            <h1 class="mb-2">Property Portfolio</h1>
+            <p class="text-secondary font-medium">Manage your listings, applications, and finances.</p>
         </div>
-        <a href="{% url 'add-property' %}" class="btn btn-primary">
-            <i class="fas fa-plus text-xs"></i> List New Property
-        </a>
+        <div class="flex gap-4">
+            <button onclick="window.location.href='{% url 'add-property' %}'" class="btn btn-primary">
+                <i class="fas fa-plus text-xs"></i> List New Property
+            </button>
+            <button id="exportDashboardBtn" class="btn btn-ghost border border-color">
+                <i class="fas fa-file-excel text-xs"></i> Export XLSX
+            </button>
+            <button id="exportPDFBtn" class="btn btn-ghost border border-color">
+                <i class="fas fa-file-pdf text-xs"></i> Export PDF
+            </button>
+        </div>
     </header>
 
-    <!-- Stats -->
-    <div class="db-stat-grid fade-up delay-2">
-        <div class="db-stat-card">
-            <div class="justify-between items-center mb-4 flex-row" style="display:flex;">
+    <!-- Stats Grid -->
+    <div class="stats-grid mb-10">
+        <div class="stat-card">
+            <div class="stat-header">
                 <span class="stat-label">Properties</span>
-                <div class="flex-center" style="width:38px;height:38px;border-radius:12px;background:var(--color-primary-light);border:1px solid var(--color-primary);color:var(--color-primary);font-size:15px"><i class="fas fa-building"></i></div>
+                <div class="stat-icon bg-primary-light text-primary"><i class="fas fa-building"></i></div>
             </div>
             <div class="stat-value">{{ property_count }}</div>
-            <div class="text-xs font-semibold mt-1" style="color:var(--text-muted);">Active Listings</div>
+            <div class="text-[11px] font-bold text-muted uppercase tracking-wider mt-1">Active Listings</div>
         </div>
-        <div class="db-stat-card">
-            <div class="justify-between items-center mb-4 flex-row" style="display:flex;">
+        <div class="stat-card">
+            <div class="stat-header">
                 <span class="stat-label">Est. Tax</span>
-                <div class="flex-center" style="width:38px;height:38px;border-radius:12px;background:var(--color-success-bg);border:1px solid var(--color-success);color:var(--color-success);font-size:15px"><i class="fas fa-file-invoice-dollar"></i></div>
+                <div class="stat-icon bg-success-bg text-success"><i class="fas fa-file-invoice-dollar"></i></div>
             </div>
-            <div class="stat-value" style="color:var(--color-success)">K{{ total_tax }}</div>
-            <div class="text-xs font-semibold mt-1" style="color:var(--text-muted);">Projected ZRA Revenue</div>
+            <div class="stat-value text-success">K{{ total_tax }}</div>
+            <div class="text-[11px] font-bold text-muted uppercase tracking-wider mt-1">Projected ZRA Revenue</div>
         </div>
-        <div class="db-stat-card">
-            <div class="justify-between items-center mb-4 flex-row" style="display:flex;">
-                <span class="stat-label">Expenses</span>
-                <div class="flex-center" style="width:38px;height:38px;border-radius:12px;background:var(--color-warning-bg);border:1px solid var(--color-warning);color:var(--color-warning);font-size:15px"><i class="fas fa-receipt"></i></div>
+        <div class="stat-card">
+            <div class="stat-header">
+                <span class="stat-label">Monthly Expenses</span>
+                <div class="stat-icon bg-warning-bg text-warning"><i class="fas fa-receipt"></i></div>
             </div>
-            <div id="totalExpenses" class="stat-value" style="color:var(--color-warning)">K0.00</div>
-            <div class="text-xs font-semibold mt-1" style="color:var(--text-muted);">Current Month</div>
+            <div id="totalExpenses" class="stat-value text-warning">K0.00</div>
+            <div class="text-[11px] font-bold text-muted uppercase tracking-wider mt-1">Current Period</div>
         </div>
     </div>
 
-    <!-- Main grid -->
-    <div class="db-main-grid fade-up delay-3">
+    <!-- Analytics Section (MANDATORY per plan) -->
+    <div id="analytics-section" class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+        <div class="chart-container">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-base font-bold">Income vs Expenses</h3>
+                <div class="flex gap-2">
+                    <span class="badge badge-primary">Income</span>
+                    <span class="badge badge-error">Expenses</span>
+                </div>
+            </div>
+            <canvas id="incomeExpensesChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-base font-bold">Occupancy Performance</h3>
+                <span class="text-xs font-bold text-primary">Live Data</span>
+            </div>
+            <canvas id="occupancyChart"></canvas>
+        </div>
+    </div>
 
-        <!-- Left -->
-        <div class="flex-column gap-8" style="min-width:0">
-
-            <!-- Properties -->
-            <section>
-                <h3 class="flex-row items-center gap-3 mb-6 font-extrabold" style="font-size:16px;">
-                    <div class="flex-center" style="width:32px;height:32px;border-radius:10px;background:var(--bg-surface);color:var(--text-secondary);font-size:13px"><i class="fas fa-home"></i></div>
+    <!-- Filters & Main View -->
+    <div class="flex flex-col gap-8">
+        <section>
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="flex items-center gap-3">
+                    <div class="stat-icon bg-surface text-secondary !w-10 !h-10 text-base"><i class="fas fa-home"></i></div>
                     Your Listings
                 </h3>
-                <div class="md-grid-cols-2 lg-grid-cols-3 gap-4" style="display:grid;">
-                    {% for prop in properties %}
-                    <div class="property-card" onclick="window.location.href='{% url 'property-detail' prop.id %}'">
-                        <div class="prop-card-img-wrap" style="height:170px;">
-                            {% if prop.main_image_url %}
-                            <img src="{{ prop.main_image_url }}" class="prop-card-img">
+                <!-- Context-Aware Filter Bar -->
+                <div class="filter-bar !mb-0">
+                    <input type="text" id="propSearch" placeholder="Filter by title..." class="filter-input">
+                    <select id="propCategory" class="filter-input">
+                        <option value="">All Categories</option>
+                        <option value="RESIDENTIAL">Residential</option>
+                        <option value="BOARDING">Boarding</option>
+                        <option value="LODGE">Lodge</option>
+                    </select>
+                    <button class="btn btn-ghost btn-sm px-4">
+                        <i class="fas fa-filter text-[10px] mr-1"></i> Apply
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" id="propertiesList">
+                {% for prop in properties %}
+                <div class="card hover:-translate-y-2 group" onclick="window.location.href='{% url 'property-detail' prop.id %}'">
+                    <div class="relative h-48 overflow-hidden">
+                        {% if prop.main_image_url %}
+                        <img src="{{ prop.main_image_url }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                        {% else %}
+                        <div class="w-full h-full flex items-center justify-center bg-body"><i class="fas fa-home text-muted text-3xl"></i></div>
+                        {% endif %}
+                        <span class="badge badge-primary absolute top-4 right-4 !bg-glass !backdrop-blur-md">{{ prop.get_category_display }}</span>
+                    </div>
+                    <div class="p-6">
+                        <h4 class="truncate mb-1">{{ prop.title }}</h4>
+                        <p class="text-xs font-semibold text-muted mb-4"><i class="fas fa-map-pin text-primary mr-1"></i>{{ prop.district }}, {{ prop.area_name }}</p>
+                        <div class="flex justify-between items-center pt-4 border-t" style="border-color: var(--border-color)">
+                            <div>
+                                <span class="text-xl font-black tracking-tighter">K{{ prop.price }}</span>
+                                <span class="text-[10px] font-bold text-muted uppercase ml-1">/ Month</span>
+                            </div>
+                            {% if prop.is_tax_compliant %}
+                            <span class="badge badge-success !bg-success-bg/20"><i class="fas fa-check-circle mr-1"></i>Compliant</span>
                             {% else %}
-                            <div class="w-full h-full flex-center bg-body"><i class="fas fa-home text-muted" style="font-size:2rem"></i></div>
+                            <span class="badge badge-warning !bg-warning-bg/20"><i class="fas fa-clock mr-1"></i>Pending</span>
                             {% endif %}
-                            <span class="badge badge-primary prop-card-badge-right" style="top:12px;right:12px;">{{ prop.get_category_display }}</span>
-                        </div>
-                        <div class="prop-card-body">
-                            <h4 class="prop-card-title">{{ prop.title }}</h4>
-                            <p class="text-xs font-medium mb-4" style="color:var(--text-secondary);"><i class="fas fa-map-pin mr-1" style="color:var(--color-primary);font-size:10px;"></i>{{ prop.district }}, {{ prop.area_name }}</p>
-                            <div class="justify-between items-center pt-4 border-t flex-row" style="display:flex;">
-                                <div><span class="font-black tracking-tighter" style="font-size:1.2rem;">K{{ prop.price }}</span><span class="text-xs font-medium text-muted">/mo</span></div>
-                                {% if prop.is_tax_compliant %}
-                                <span class="badge badge-success"><i class="fas fa-check-circle mr-1"></i>Verified</span>
-                                {% else %}
-                                <span class="badge badge-warning"><i class="fas fa-clock mr-1"></i>Pending</span>
-                                {% endif %}
-                            </div>
-                            <div class="flex-row gap-2 mt-4">
-                                <a href="{% url 'property-detail' prop.id %}" class="btn btn-ghost btn-sm flex-1">View</a>
-                                <button onclick="event.stopPropagation(); deleteProperty({{ prop.id }})" class="btn btn-danger btn-sm" style="width:auto;"><i class="fas fa-trash-alt"></i></button>
-                            </div>
                         </div>
                     </div>
-                    {% empty %}
-                    <div class="text-center p-8 border-dashed border-2 rounded-xl" style="grid-column:1/-1;background:var(--bg-surface);">
-                        <i class="fas fa-home text-muted mb-4" style="font-size:2.5rem;display:block;"></i>
-                        <h4 class="font-extrabold mb-2" style="color:var(--text-secondary);">No Listings Yet</h4>
-                        <p class="text-sm text-muted mb-6">Start by listing your first property.</p>
-                        <a href="{% url 'add-property' %}" class="btn btn-primary btn-sm">
-                            <i class="fas fa-plus"></i> Create Listing
-                        </a>
-                    </div>
-                    {% endfor %}
                 </div>
-            </section>
+                {% empty %}
+                <div class="col-span-full py-16 text-center card border-dashed border-2">
+                    <i class="fas fa-home text-muted text-4xl mb-4 block"></i>
+                    <h4 class="text-secondary">No Listings Yet</h4>
+                    <p class="text-sm text-muted mb-6">Start by listing your first property.</p>
+                    <a href="{% url 'add-property' %}" class="btn btn-primary btn-sm">Create Listing</a>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
 
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Applications -->
-            <section>
-                <h3 class="flex-row items-center gap-3 mb-6 font-extrabold" style="font-size:16px;">
-                    <div class="flex-center" style="width:32px;height:32px;border-radius:10px;background:var(--color-primary-light);color:var(--color-primary);font-size:13px"><i class="fas fa-file-contract"></i></div>
-                    Incoming Applications
+            <section class="lg:col-span-2">
+                <h3 class="flex items-center gap-3 mb-6">
+                    <div class="stat-icon bg-primary-light text-primary !w-10 !h-10 text-base"><i class="fas fa-file-contract"></i></div>
+                    Pending Applications
                 </h3>
-                <div class="card">
+                <div class="table-container">
                     <div id="applicationsContainer">
-                        <div class="text-center p-8" style="padding:48px;">
-                            <i class="fas fa-circle-notch fa-spin mb-4" style="font-size:1.8rem;color:var(--color-primary);display:block;"></i>
-                            <p class="text-xs font-semibold" style="color:var(--text-muted);">Loading applications…</p>
+                        <div class="p-12 text-center">
+                            <i class="fas fa-circle-notch fa-spin text-primary text-2xl mb-2"></i>
+                            <p class="text-xs font-bold text-muted">Synchronizing data...</p>
                         </div>
                     </div>
                 </div>
             </section>
-        </div>
 
-        <!-- Right -->
-        <div>
-            <div style="position:sticky;top:80px">
-                <h3 class="flex-row items-center gap-3 mb-6 font-extrabold" style="font-size:16px;">
-                    <div class="flex-center" style="width:32px;height:32px;border-radius:10px;background:var(--color-warning-bg);color:var(--color-warning);font-size:13px"><i class="fas fa-wallet"></i></div>
+            <!-- Finance Ledger -->
+            <section>
+                <h3 class="flex items-center gap-3 mb-6">
+                    <div class="stat-icon bg-warning-bg text-warning !w-10 !h-10 text-base"><i class="fas fa-wallet"></i></div>
                     Finance Ledger
                 </h3>
-
-                <!-- Expense form -->
-                <div class="db-stat-card mb-4">
-                    <form id="expenseForm" class="flex-column gap-3">
-                        <div>
-                            <label class="form-label">Property</label>
-                            <select id="expenseProperty" required class="form-select">
+                <div class="stat-card !bg-surface-solid mb-4 border-primary/20">
+                    <h4 class="text-sm mb-4">Record New Expense</h4>
+                    <form id="expenseForm" class="flex flex-col gap-4">
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-[11px] font-bold text-muted uppercase tracking-wider">Property</label>
+                            <select id="expenseProperty" required class="filter-input w-full">
                                 <option value="">Select property…</option>
                                 {% for prop in user_properties %}
                                 <option value="{{ prop.id }}">{{ prop.title }}</option>
                                 {% endfor %}
                             </select>
                         </div>
-                        <div>
-                            <label class="form-label">Description</label>
-                            <input type="text" id="expenseDescription" required placeholder="e.g. Plumbing repair" class="form-input" />
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-[11px] font-bold text-muted uppercase tracking-wider">Amount (ZMW)</label>
+                            <input type="number" id="expenseAmount" required min="0" step="0.01" placeholder="0.00" class="filter-input w-full">
                         </div>
-                        <div>
-                            <label class="form-label">Amount (ZMW)</label>
-                            <input type="number" id="expenseAmount" required min="0" step="0.01" placeholder="0.00" class="form-input" />
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-[11px] font-bold text-muted uppercase tracking-wider">Description</label>
+                            <input type="text" id="expenseDescription" required placeholder="Repair, utility, etc." class="filter-input w-full">
                         </div>
-                        <button type="submit" class="btn btn-primary btn-full">
-                            Record Expense
+                        <button type="submit" class="btn btn-primary btn-full mt-2">
+                            Add Transaction
                         </button>
                     </form>
                 </div>
-
-                <!-- Expenses list -->
                 <div class="card">
-                    <div class="justify-between items-center p-4 border-b flex-row" style="display:flex;">
-                        <span class="stat-label">Recent Activity</span>
-                        <div class="footer-status-dot"></div>
+                    <div class="flex justify-between items-center p-4 border-b border-color">
+                        <span class="text-[10px] font-black uppercase tracking-widest text-muted">Recent Activity</span>
+                        <div class="w-2 h-2 rounded-full bg-success animate-pulse"></div>
                     </div>
-                    <div id="expensesList" style="max-height:360px;overflow-y:auto">
-                        <div class="text-center p-8 text-xs font-semibold italic" style="color:var(--text-muted);">No expenses recorded yet.</div>
+                    <div id="expensesList" class="max-h-80 overflow-y-auto">
+                        <div class="p-8 text-center text-xs text-muted italic">Initializing ledger...</div>
                     </div>
                 </div>
-            </div>
+            </section>
         </div>
     </div>
 </div>
 {% endblock %}
 
 {% block extra_scripts %}
-<script>document.addEventListener('DOMContentLoaded',()=>document.body.classList.add('dashboard-page'));</script>
 <script src="{% static 'js/dashboard.js' %}"></script>
 {% endblock %}

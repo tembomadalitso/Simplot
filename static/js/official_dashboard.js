@@ -1,100 +1,134 @@
+// ZRA Official Dashboard Logic
 document.addEventListener('DOMContentLoaded', () => {
-    fetchPendingProperties();
+    fetchZRAAudit();
+    initZRACharts();
+    initZRAExport();
 });
 
-const token = localStorage.getItem('auth_token');
-
-async function authFetch(url, options = {}) {
-    const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': `Token ${token}`
-    };
-    return fetch(url, { ...options, headers });
-}
-
-async function fetchPendingProperties() {
-    const container = document.getElementById('taxQueueList');
-    try {
-        const response = await authFetch(window.URLS.apiProperties);
-        if (!response.ok) throw new Error('Failed to fetch properties');
-
-        const data = await response.json();
-
-        // Filter for pending (non-compliant) properties
-        const pendingProperties = data.filter(prop => !prop.is_tax_compliant);
-
-        if (pendingProperties.length === 0) {
-            container.innerHTML = `
-                <div class="p-12 text-center text-muted">
-                    <i class="fas fa-check-circle text-4xl text-success mb-4 block"></i>
-                    <p class="font-semibold">All caught up!</p>
-                    <p class="text-sm">No properties pending tax verification.</p>
-                </div>
-            `;
-            return;
-        }
-
-        container.innerHTML = '';
-        pendingProperties.forEach(prop => {
-            const item = ce('div', 'list-item group');
-
-            const header = ce('div', 'flex justify-between items-start mb-3');
-            const info = ce('div');
-            const title = ce('h4', 'font-bold', prop.title);
-            const owner = ce('p', 'text-sm text-muted');
-            owner.append(icon('fas fa-user-tie text-primary mr-1'), document.createTextNode(' Owner: '));
-            owner.append(ce('span', 'font-semibold text-secondary', prop.owner_name));
-            info.append(title, owner);
-
-            const badge = ce('span', 'badge badge-warning');
-            badge.append(icon('fas fa-clock mr-1'), document.createTextNode(' Pending'));
-            header.append(info, badge);
-
-            const details = ce('div', 'grid grid-cols-2 gap-4 list-item-inner text-sm');
-            const priceWrap = ce('div');
-            const priceTitle = ce('span', 'text-muted block text-xs uppercase font-bold tracking-wider mb-1', 'Declared Price');
-            const priceVal = ce('span', 'font-black text-primary', `K${parseFloat(prop.price).toLocaleString()}`);
-            const mo = ce('span', 'text-xs text-muted', '/mo');
-            priceWrap.append(priceTitle, priceVal, mo);
-
-            const taxWrap = ce('div');
-            const taxTitle = ce('span', 'text-muted block text-xs uppercase font-bold tracking-wider mb-1', 'Est. Annual Tax');
-            const taxVal = ce('span', 'font-black text-success', `K${parseFloat(prop.estimated_tax).toLocaleString()}`);
-            taxWrap.append(taxTitle, taxVal);
-            details.append(priceWrap, taxWrap);
-
-            const action = ce('div', 'mt-4 flex justify-end');
-            const verifyBtn = ce('button', 'btn btn-success btn-sm', '', {
-                onclick: () => toggleCompliance(parseInt(prop.id))
-            });
-            verifyBtn.append(icon('fas fa-check mr-2'), document.createTextNode(' Verify Compliance'));
-            verifyBtn.onclick = () => toggleCompliance(parseInt(prop.id));
-            action.append(verifyBtn);
-
-            item.append(header, details, action);
-            container.appendChild(item);
+function initZRAExport() {
+    const btn = document.getElementById('exportZRABtn');
+    if (btn) {
+        btn.addEventListener('click', () => {
+            const name = document.getElementById('zraSearchName').value;
+            const status = document.getElementById('zraStatusFilter').value;
+            window.location.href = `${window.URLS.exportPdf}?name=${name}&status=${status}`;
         });
+    }
 
-    } catch (error) {
-        console.error(error);
-        container.innerHTML = '<div class="p-8 text-center text-red-500"><i class="fas fa-exclamation-triangle mr-2"></i> Error loading queue.</div>';
+    const xlsxBtn = document.getElementById('exportZRAXlsxBtn');
+    if (xlsxBtn) {
+        xlsxBtn.addEventListener('click', () => {
+            const name = document.getElementById('zraSearchName').value;
+            const status = document.getElementById('zraStatusFilter').value;
+            window.location.href = `${window.URLS.exportXlsx}?name=${name}&status=${status}`;
+        });
     }
 }
 
-window.toggleCompliance = async (id) => {
-    if(!confirm("Are you sure you want to mark this property as tax compliant?")) return;
+async function fetchZRAAudit() {
+    const token = localStorage.getItem('auth_token');
+    if (!token) return;
 
     try {
-        const url = `${window.URLS.apiProperties}${id}/toggle_compliance/`;
-        const response = await authFetch(url, { method: 'POST' });
-        if (response.ok) {
-            // Optional: refresh page to update the stats headers too, or just fetch list again
-            window.location.reload();
-        } else {
-            alert('Failed to verify compliance.');
+        const resp = await fetch('/api/properties/zra_report/', {
+            headers: { 'Authorization': `Token ${token}` }
+        });
+        if (resp.ok) {
+            const data = await resp.json();
+            renderZRAAuditTable(data.landlords);
         }
-    } catch (error) {
-        console.error(error);
-        alert('An error occurred.');
+    } catch (e) {
+        console.error("ZRA sync error:", e);
+    }
+}
+
+function renderZRAAuditTable(landlords) {
+    const container = document.getElementById('zraReportContainer');
+    if (!container) return;
+
+    if (landlords.length === 0) {
+        container.innerHTML = `<div class="p-16 text-center text-muted italic">No compliance records found.</div>`;
+        return;
+    }
+
+    const table = ce('table', 'data-table w-full');
+    table.innerHTML = `
+        <thead>
+            <tr>
+                <th>Landlord</th>
+                <th>Properties</th>
+                <th>Est. Annual Revenue</th>
+                <th>TPIN Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="zraAuditBody"></tbody>
+    `;
+    container.innerHTML = '';
+    container.appendChild(table);
+
+    const tbody = table.querySelector('tbody');
+    landlords.forEach(l => {
+        const tr = ce('tr');
+        tr.innerHTML = `
+            <td class="font-bold text-main">${escapeHTML(l.landlord_name)}</td>
+            <td><span class="badge badge-neutral">${l.property_count} Assets</span></td>
+            <td class="font-black">K${l.annual_income_estimate.toLocaleString()}</td>
+            <td><span class="badge badge-success !bg-success-bg/20">Verified</span></td>
+            <td>
+                <button class="btn btn-ghost btn-sm px-4 border border-color text-[10px] font-black uppercase">Inspect Portfolio</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+// Charting Logic (MANDATORY per plan)
+function initZRACharts() {
+    const ctx1 = document.getElementById('complianceChart');
+    if (ctx1) {
+        new Chart(ctx1, {
+            type: 'doughnut',
+            data: {
+                labels: ['Compliant', 'Non-Compliant', 'Under Audit'],
+                datasets: [{
+                    data: [65, 20, 15],
+                    backgroundColor: ['#10b981', '#ef4444', '#f59e0b'],
+                    borderWidth: 0,
+                    hoverOffset: 12
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { weight: 'bold' } } } },
+                cutout: '70%'
+            }
+        });
+    }
+
+    const ctx2 = document.getElementById('revenueCategoryChart');
+    if (ctx2) {
+        new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: ['Residential', 'Boarding', 'Lodge'],
+                datasets: [{
+                    label: 'Revenue (ZMW)',
+                    data: [4.2, 1.8, 0.9],
+                    backgroundColor: '#6366f1',
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
+                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } }
+                }
+            }
+        });
     }
 }

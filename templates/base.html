@@ -11,6 +11,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/global.css' %}">
+
+    <!-- Chart.js CDN (MANDATORY per plan) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     {% block extra_head %}{% endblock %}
 
     <script>
@@ -29,10 +33,12 @@
             authMe: "/auth/users/me/",
             authLogout: "/auth/token/logout/",
             propertyDetail: "{% url 'property-detail' 0 %}",
+            exportXlsx: "{% url 'export-xlsx' %}",
+            exportPdf: "{% url 'export-pdf' %}",
         };
     </script>
 </head>
-<body class="flex flex-col min-h-screen antialiased" data-theme="dark">
+<body class="antialiased" data-theme="dark">
     <script>
         (function() {
             const savedTheme = localStorage.getItem('theme') || 'dark';
@@ -52,16 +58,26 @@
         </div>
     </div>
 
-    {% include 'navbar.html' %}
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        {% include 'sidebar.html' %}
 
-    <main class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 animate-fade-in">
-        {% block content %}{% endblock %}
-    </main>
+        <!-- Main Workspace -->
+        <main id="main-content" class="main-content" style="padding-left: var(--sidebar-width);">
+            {% include 'navbar.html' %}
 
-    {% include 'footer.html' %}
+            <div class="content-container animate-slide-up">
+                {% block content %}{% endblock %}
+            </div>
+
+            {% include 'footer.html' %}
+        </main>
+    </div>
 
     <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/navbar.js' %}"></script>
     <script src="{% static 'js/logout.js' %}"></script>
+    <script src="{% static 'js/responsive.js' %}"></script>
     {% block extra_scripts %}{% endblock %}
 </body>
 </html>

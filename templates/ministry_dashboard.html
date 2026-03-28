@@ -1,115 +1,98 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Ministry Occupancy Portal | Zambia Rentals{% endblock %}
+{% block title %}Occupancy | Home Affairs{% endblock %}
 
 {% block content %}
-<div class="db-bg-container">
-    <div class="db-bg-img"></div>
-    <div class="db-bg-overlay"></div>
-</div>
-
-<div class="db-container">
-
+<div class="animate-slide-up">
     <!-- Header -->
-    <header class="db-header fade-up delay-1">
+    <header class="flex justify-between items-start mb-10 gap-6">
         <div>
-            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px">
-                <div class="hero-badge" style="margin-bottom:0">
-                    <i class="fas fa-building-columns" style="font-size:9px"></i> Ministry of Home Affairs
-                </div>
-                <div class="badge badge-primary">
-                    <i class="fas fa-users-rays" style="font-size:9px"></i> Occupancy Census
-                </div>
+            <div class="badge badge-primary mb-4">
+                <i class="fas fa-landmark text-[10px] mr-1"></i> Home Affairs Ministry
             </div>
-            <h1 style="font-size:clamp(1.8rem,4vw,2.6rem);font-weight:900;letter-spacing:-0.04em;margin-bottom:6px;line-height:1.1">Occupancy Intelligence Portal</h1>
-            <p style="color:var(--text-secondary);font-size:15px;font-weight:500">National rental density and residential population tracking by district.</p>
+            <h1 class="mb-2">Occupancy & Census Control</h1>
+            <p class="text-secondary font-medium">Real-time monitoring of population density and rental agreements.</p>
+        </div>
+        <div class="flex gap-4">
+            <button id="exportCensusBtn" class="btn btn-primary">
+                <i class="fas fa-file-pdf text-xs"></i> Export PDF Report
+            </button>
+            <button id="exportCensusXlsxBtn" class="btn btn-ghost border border-color">
+                <i class="fas fa-file-excel text-xs"></i> Export XLSX
+            </button>
         </div>
     </header>
 
-    <!-- Stats -->
-    <div class="db-stat-grid fade-up delay-2">
-        <div class="db-stat-card" style="background:var(--color-primary-light); border-color:var(--color-primary);">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-                <span class="stat-label" style="color:var(--color-primary)">Residents Tracked</span>
-                <div style="width:38px;height:38px;border-radius:12px;background:var(--color-primary-light);border:1px solid var(--color-primary);display:flex;align-items:center;justify-content:center;color:var(--color-primary);font-size:15px"><i class="fas fa-users"></i></div>
+    <!-- Context-Aware Filter Bar -->
+    <div class="filter-bar mb-8 p-6 !bg-card !border-primary/20">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 w-full">
+            <div class="flex flex-col gap-1.5">
+                <label class="text-[10px] font-black uppercase tracking-widest text-muted ml-1">Search District</label>
+                <input type="text" id="censusSearchDistrict" placeholder="e.g. Lusaka, Ndola..." class="filter-input w-full">
             </div>
-            <div class="stat-value" style="color:var(--color-primary)">{% if occupancy_stats %}{{ occupancy_stats.0.total_people|default:0 }}{% else %}0{% endif %}+</div>
-            <div style="font-size:11px;font-weight:600;color:var(--text-muted);margin-top:5px">Across all districts</div>
-        </div>
-        <div class="db-stat-card">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-                <span class="stat-label">Units Monitored</span>
-                <div style="width:38px;height:38px;border-radius:12px;background:var(--bg-body);border:1px solid var(--border-color);display:flex;align-items:center;justify-content:center;color:var(--text-secondary);font-size:15px"><i class="fas fa-house-chimney"></i></div>
+            <div class="flex flex-col gap-1.5">
+                <label class="text-[10px] font-black uppercase tracking-widest text-muted ml-1">Occupancy Density</label>
+                <select id="censusDensityFilter" class="filter-input w-full">
+                    <option value="">All Density Levels</option>
+                    <option value="HIGH">High (>1000)</option>
+                    <option value="MED">Medium (500-1000)</option>
+                    <option value="LOW">Low (<500)</option>
+                </select>
             </div>
-            <div class="stat-value">{% if occupancy_stats %}{{ occupancy_stats.0.property_count|default:0 }}{% else %}0{% endif %}</div>
-            <div style="font-size:11px;font-weight:600;color:var(--text-muted);margin-top:5px">Verified active listings</div>
-        </div>
-        <div class="db-stat-card">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-                <span class="stat-label">Districts</span>
-                <div style="width:38px;height:38px;border-radius:12px;background:var(--bg-body);border:1px solid var(--border-color);display:flex;align-items:center;justify-content:center;color:var(--text-secondary);font-size:15px"><i class="fas fa-map-marked-alt"></i></div>
+            <div class="flex flex-col gap-1.5">
+                <label class="text-[10px] font-black uppercase tracking-widest text-muted ml-1">Property Category</label>
+                <select id="censusCategoryFilter" class="filter-input w-full">
+                    <option value="">All Categories</option>
+                    <option value="RESIDENTIAL">Residential</option>
+                    <option value="BOARDING">Boarding</option>
+                    <option value="LODGE">Lodge</option>
+                </select>
             </div>
-            <div class="stat-value">{{ occupancy_stats|length }}</div>
-            <div style="font-size:11px;font-weight:600;color:var(--text-muted);margin-top:5px">With active agreements</div>
+            <div class="flex flex-end pt-5">
+                <button class="btn btn-primary w-full btn-sm">
+                    <i class="fas fa-filter text-[10px] mr-1"></i> Apply Filters
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- Table header -->
-    <div style="display:flex;align-items:center;gap:14px;margin-bottom:22px" class="fade-up delay-3">
-        <div style="width:40px;height:40px;border-radius:12px;background:var(--bg-surface);border:1px solid var(--border-color);display:flex;align-items:center;justify-content:center;color:var(--text-secondary);font-size:16px"><i class="fas fa-map-marked-alt"></i></div>
-        <div>
-            <h3 style="font-size:16px;font-weight:800;margin-bottom:2px">District Heatmap Registry</h3>
-            <p class="section-label" style="margin-bottom:0">Density mapping by administrative district</p>
+    <!-- Analytics Section -->
+    <div id="analytics-section" class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+        <div class="chart-container">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-base font-bold">Regional Distribution</h3>
+                <span class="badge badge-primary">Demographics</span>
+            </div>
+            <canvas id="regionalChart"></canvas>
         </div>
-        <div style="margin-left:auto" class="badge badge-primary">{{ occupancy_stats|length }} Districts</div>
+        <div class="chart-container">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-base font-bold">Occupancy Growth Trends</h3>
+                <span class="text-xs font-bold text-muted">Annual Data</span>
+            </div>
+            <canvas id="growthChart"></canvas>
+        </div>
     </div>
 
-    <!-- Table -->
-    <div class="data-table-wrapper fade-up delay-4">
-        <div style="overflow-x:auto">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>District</th>
-                        <th>Population</th>
-                        <th>Units</th>
-                        <th style="width:30%">Density Index</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for stat in occupancy_stats %}
-                    <tr>
-                        <td style="font-weight:800;">{{ stat.property__district }}</td>
-                        <td>
-                            <span class="badge badge-primary">
-                                <i class="fas fa-users" style="font-size:10px; margin-right: 6px;"></i> {{ stat.total_people }}
-                            </span>
-                        </td>
-                        <td style="font-weight:600;color:var(--text-muted)">{{ stat.property_count }} Listings</td>
-                        <td>
-                            <div style="display:flex;align-items:center;gap:12px">
-                                <div style="flex:1;height:5px;background:var(--border-color);border-radius:9999px;overflow:hidden">
-                                    <div style="height:100%;background:linear-gradient(90deg,var(--color-primary),var(--color-primary-hover));border-radius:9999px;transition:width .8s ease;width:{% if stat.total_people > 50 %}85{% elif stat.total_people > 20 %}50{% else %}20{% endif %}%"></div>
-                                </div>
-                                <span style="font-size:10px;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;min-width:28px">{% if stat.total_people > 50 %}HIGH{% elif stat.total_people > 20 %}MED{% else %}LOW{% endif %}</span>
-                            </div>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="4" style="padding:60px;text-align:center">
-                            <i class="fas fa-database" style="font-size:2rem;color:var(--text-muted);display:block;margin-bottom:12px"></i>
-                            <p style="color:var(--text-muted);font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em">No Active Agreement Records</p>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+    <!-- Main Table View -->
+    <div class="table-container">
+        <div class="flex justify-between items-center p-6 border-b border-color">
+            <h3 class="text-base font-bold">District-Wise Occupancy Audit</h3>
+            <div class="flex gap-4">
+                <button class="btn btn-ghost btn-sm px-4 border border-color"><i class="fas fa-sort-amount-down text-[10px] mr-1"></i> Sort</button>
+                <div class="w-2 h-2 rounded-full bg-primary animate-pulse self-center"></div>
+            </div>
+        </div>
+        <div id="censusReportContainer">
+            <div class="p-16 text-center">
+                <i class="fas fa-sync fa-spin text-primary text-3xl mb-4"></i>
+                <p class="text-sm font-bold text-muted">Generating population density map...</p>
+            </div>
         </div>
     </div>
 </div>
 {% endblock %}
 
 {% block extra_scripts %}
-<script>document.addEventListener('DOMContentLoaded',()=>document.body.classList.add('ministry-page'));</script>
+<script src="{% static 'js/census_dashboard.js' %}"></script>
 {% endblock %}
