@@ -54,13 +54,23 @@ function initSidebar() {
     });
 
     function toggleSidebar(collapsed) {
+        const isLegacyPage = document.body.classList.contains('index-page') ||
+                             document.body.classList.contains('auth-page') ||
+                             document.body.classList.contains('detail-page') ||
+                             document.body.classList.contains('add-prop-page') ||
+                             document.body.classList.contains('apply-page');
+
         if (collapsed) {
             sidebar.classList.add('collapsed');
-            mainContent.style.paddingLeft = 'var(--sidebar-collapsed-width)';
+            if (!isLegacyPage) {
+                mainContent.style.paddingLeft = 'var(--sidebar-collapsed-width)';
+            }
             collapseIcon.style.transform = 'rotate(180deg)';
         } else {
             sidebar.classList.remove('collapsed');
-            mainContent.style.paddingLeft = 'var(--sidebar-width)';
+            if (!isLegacyPage) {
+                mainContent.style.paddingLeft = 'var(--sidebar-width)';
+            }
             collapseIcon.style.transform = 'rotate(0deg)';
         }
         localStorage.setItem('sidebar-collapsed', collapsed);

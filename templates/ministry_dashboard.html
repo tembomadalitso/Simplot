@@ -3,7 +3,13 @@
 {% block title %}Occupancy | Home Affairs{% endblock %}
 
 {% block content %}
-<div class="animate-slide-up">
+<!-- Fixed full-page background -->
+<div class="db-bg-container">
+    <div class="db-bg-img"></div>
+    <div class="db-bg-overlay"></div>
+</div>
+
+<div class="db-container animate-fade-in">
     <!-- Header -->
     <header class="flex justify-between items-start mb-10 gap-6">
         <div>
@@ -91,6 +97,8 @@
         </div>
     </div>
 </div>
+</div>
+
 {% endblock %}
 
 {% block extra_scripts %}
