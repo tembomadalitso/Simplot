@@ -1,58 +1,42 @@
 {% load static %}
-<nav id="main-nav">
-    <div class="nav-container">
-        <div class="nav-content">
-
-            <!-- Logo -->
-            <a href="{% url 'index' %}" class="nav-logo">
-                <div class="nav-logo-icon">
-                    <i class="fas fa-home" style="color:#fff;font-size:15px"></i>
-                </div>
-                <div class="nav-logo-text">
-                    <span class="nav-logo-main">ZAMBIA</span>
-                    <span class="nav-logo-sub">RENTALS</span>
-                </div>
-            </a>
-
-            <!-- Center links -->
-            <div class="hidden md:flex nav-links" id="desktopNavLinks">
-                <a href="{% url 'index' %}" class="nav-link">Find Homes</a>
-            </div>
-
-            <!-- Right section -->
-            <div style="display:flex;align-items:center;gap:10px" id="authSection">
-
-                <!-- Theme Toggle -->
-                <button id="themeToggle" class="theme-toggle" title="Toggle Theme">
-                    <i class="fas fa-moon" id="themeIcon"></i>
-                </button>
-
-                <!-- Profile badge -->
-                <div id="userProfileBadge" class="nav-profile" style="display:none;">
-                    <div class="nav-profile-avatar">
-                        <span id="userInitials" class="nav-profile-initials"></span>
-                    </div>
-                    <div class="hidden sm:flex nav-profile-info">
-                        <span id="userName" class="nav-profile-name"></span>
-                        <span id="userRoleBadge" class="nav-profile-role"></span>
-                    </div>
-                </div>
-
-                <!-- Dashboard button -->
-                <a href="#" id="dashboardBtn" style="display:none;"></a>
-
-                <!-- Login -->
-                <a href="{% url 'login' %}" id="authBtn" class="nav-btn">
-                    <i class="fas fa-sign-in-alt" style="font-size:11px"></i> Sign In
-                </a>
-
-                <!-- Logout -->
-                <button id="logoutBtn" class="btn btn-ghost btn-sm" style="display:none;">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span class="hidden sm:inline">Logout</span>
-                </button>
-            </div>
+<nav class="top-nav">
+    <!-- Search / Info Bar (Optional as per user) -->
+    <div class="flex items-center gap-4 flex-1">
+        <div class="relative w-full max-w-xs group">
+            <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-muted transition-colors group-focus-within:text-primary"></i>
+            <input type="text" placeholder="Search listing ID, tenant name..." class="filter-input w-full pl-11 group-focus:border-primary">
         </div>
     </div>
+
+    <!-- Right section -->
+    <div class="flex items-center gap-6" id="topNavActions">
+        <!-- Theme Toggle -->
+        <button id="themeToggle" class="theme-toggle" title="Toggle Theme">
+            <i class="fas fa-moon" id="themeIcon"></i>
+        </button>
+
+        <!-- Profile badge -->
+        <div id="userProfileBadge" class="nav-profile flex items-center gap-3 cursor-pointer p-1 rounded-full hover:bg-surface-solid transition-colors" style="display:none; border-left: none;">
+            <div class="nav-profile-avatar">
+                <span id="userInitials" class="nav-profile-initials"></span>
+            </div>
+            <div class="hidden sm:flex flex-col min-w-0">
+                <span id="userName" class="text-sm font-bold truncate"></span>
+                <span id="userRoleBadge" class="text-[9px] font-black uppercase tracking-widest text-muted"></span>
+            </div>
+            <i class="fas fa-chevron-down text-[10px] text-muted ml-1"></i>
+        </div>
+
+        <!-- Auth Section -->
+        <div id="authLinks" class="flex gap-4 items-center">
+            <a href="{% url 'login' %}" id="authBtn" class="btn btn-primary btn-sm px-6">
+                Sign In
+            </a>
+        </div>
+
+        <!-- Logout (Slim version for top nav) -->
+        <button id="logoutBtn" class="btn btn-ghost btn-sm px-4" style="display:none;">
+            <i class="fas fa-sign-out-alt"></i>
+        </button>
+    </div>
 </nav>
-<script src="{% static 'js/navbar.js' %}"></script>

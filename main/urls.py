@@ -12,6 +12,7 @@ from core.views import (
     occupancy_dashboard_page,
     apply_page,
 )
+from core.exports import export_xlsx_view, export_pdf_report
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,6 +27,8 @@ urlpatterns = [
     path('gov/zra/', zra_dashboard_page, name='zra-dashboard'),
     path('gov/occupancy/', occupancy_dashboard_page, name='occupancy-dashboard'),
     path('property/<int:pk>/apply/', apply_page, name='apply-property'),
+    path('export/xlsx/', export_xlsx_view, name='export-xlsx'),
+    path('export/pdf/', export_pdf_report, name='export-pdf'),
 ]
 
 if settings.DEBUG:

@@ -1,82 +1,114 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}ZRA Tax Portal | Zambia Rentals{% endblock %}
+{% block title %}Tax Compliance | ZRA Official{% endblock %}
 
 {% block content %}
-<div class="db-bg-container">
-    <div class="db-bg-img"></div>
-    <div class="db-bg-overlay"></div>
-</div>
-
-<div class="db-container">
-
+<div class="animate-slide-up">
     <!-- Header -->
-    <header class="db-header fade-up delay-1">
+    <header class="flex justify-between items-start mb-10 gap-6">
         <div>
-            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px">
-                <div class="hero-badge" style="margin-bottom:0">
-                    <i class="fas fa-landmark" style="font-size:9px"></i> ZRA Official Portal
-                </div>
-                <div class="badge badge-success">
-                    <i class="fas fa-shield-halved" style="font-size:9px"></i> Revenue Registry
-                </div>
+            <div class="badge badge-error mb-4">
+                <i class="fas fa-shield-alt text-[10px] mr-1"></i> Official Portal
             </div>
-            <h1 style="font-size:clamp(1.8rem,4vw,2.6rem);font-weight:900;letter-spacing:-0.04em;margin-bottom:6px;line-height:1.1">Tax Compliance Interface</h1>
-            <p style="color:var(--text-secondary);font-size:15px;font-weight:500">Monitor real estate turnover tax collection and property verification queues.</p>
+            <h1 class="mb-2">Tax Compliance Dashboard</h1>
+            <p class="text-secondary font-medium">Monitoring property revenue and landlord compliance in real-time.</p>
+        </div>
+        <div class="flex gap-4">
+            <button id="exportZRABtn" class="btn btn-primary">
+                <i class="fas fa-file-pdf text-xs"></i> Export PDF Audit
+            </button>
+            <button id="exportZRAXlsxBtn" class="btn btn-ghost border border-color">
+                <i class="fas fa-file-excel text-xs"></i> Export XLSX
+            </button>
         </div>
     </header>
 
-    <!-- Stats -->
-    <div class="db-stat-grid fade-up delay-2">
-        <!-- Revenue -->
-        <div class="db-stat-card" style="background:var(--color-success-bg); border-color:var(--color-success);">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-                <span class="stat-label" style="color:var(--color-success)">Total Revenue</span>
-                <div style="width:38px;height:38px;border-radius:12px;background:var(--color-success-bg);border:1px solid var(--color-success);display:flex;align-items:center;justify-content:center;color:var(--color-success);font-size:15px"><i class="fas fa-money-bill-trend-up"></i></div>
+    <!-- Context-Aware Filter Bar -->
+    <div class="filter-bar mb-8 p-6 !bg-card !border-primary/20">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 w-full">
+            <div class="flex flex-col gap-1.5">
+                <label class="text-[10px] font-black uppercase tracking-widest text-muted ml-1">Search Landlord</label>
+                <input type="text" id="zraSearchName" placeholder="Name or NRC..." class="filter-input w-full">
             </div>
-            <div class="stat-value" style="color:var(--color-success)">K{{ total_tax|floatformat:2 }}</div>
-            <div style="font-size:11px;font-weight:600;color:var(--color-success);margin-top:5px;opacity:0.7">Aggregate Turnover Tax</div>
-        </div>
-        <!-- Compliance rate -->
-        <div class="db-stat-card" style="background:var(--color-primary-light); border-color:var(--color-primary);">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-                <span class="stat-label" style="color:var(--color-primary)">Compliance Rate</span>
-                <div style="width:38px;height:38px;border-radius:12px;background:var(--color-primary-light);border:1px solid var(--color-primary);display:flex;align-items:center;justify-content:center;color:var(--color-primary);font-size:15px"><i class="fas fa-check-double"></i></div>
+            <div class="flex flex-col gap-1.5">
+                <label class="text-[10px] font-black uppercase tracking-widest text-muted ml-1">Compliance Status</label>
+                <select id="zraStatusFilter" class="filter-input w-full">
+                    <option value="">All Statuses</option>
+                    <option value="true">Compliant</option>
+                    <option value="false">Non-Compliant</option>
+                </select>
             </div>
-            <div class="stat-value" style="color:var(--color-primary)">{{ compliance_rate|floatformat:1 }}%</div>
-            <div style="height:5px;background:var(--border-color);border-radius:9999px;overflow:hidden;margin-top:12px">
-                <div style="height:100%;background:linear-gradient(90deg,var(--color-primary),var(--color-primary-hover));border-radius:9999px;width:{{ compliance_rate|floatformat:0 }}%;transition:width .8s ease"></div>
+            <div class="flex flex-col gap-1.5">
+                <label class="text-[10px] font-black uppercase tracking-widest text-muted ml-1">Province/District</label>
+                <input type="text" id="zraDistrictFilter" placeholder="e.g. Lusaka..." class="filter-input w-full">
             </div>
-        </div>
-        <!-- Pending -->
-        <div class="db-stat-card" style="background:var(--color-warning-bg); border-color:var(--color-warning);">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-                <span class="stat-label" style="color:var(--color-warning)">Pending</span>
-                <div style="width:38px;height:38px;border-radius:12px;background:var(--color-warning-bg);border:1px solid var(--color-warning);display:flex;align-items:center;justify-content:center;color:var(--color-warning);font-size:15px"><i class="fas fa-list-check"></i></div>
+            <div class="flex flex-end pt-5">
+                <button class="btn btn-primary w-full btn-sm">
+                    <i class="fas fa-filter text-[10px] mr-1"></i> Apply Filters
+                </button>
             </div>
-            <div class="stat-value" style="color:var(--color-warning)">{{ non_compliant_count }}</div>
-            <div style="font-size:11px;font-weight:600;color:var(--color-warning);margin-top:5px;opacity:0.7">Awaiting Verification</div>
         </div>
     </div>
 
-    <!-- Queue section -->
-    <div style="display:flex;align-items:center;gap:14px;margin-bottom:22px" class="fade-up delay-3">
-        <div style="width:40px;height:40px;border-radius:12px;background:var(--color-primary-light);border:1px solid var(--color-primary);display:flex;align-items:center;justify-content:center;color:var(--color-primary);font-size:16px"><i class="fas fa-file-shield"></i></div>
-        <div>
-            <h3 style="font-size:16px;font-weight:800;margin-bottom:2px">Verification Backlog</h3>
-            <p class="section-label" style="margin-bottom:0">Properties pending tax compliance approval</p>
+    <!-- Stats Grid -->
+    <div class="stats-grid mb-10">
+        <div class="stat-card">
+            <div class="stat-header">
+                <span class="stat-label">Total Est. Revenue</span>
+                <div class="stat-icon bg-success-bg text-success"><i class="fas fa-money-bill-wave"></i></div>
+            </div>
+            <div class="stat-value text-success">K{{ total_tax|floatformat:2 }}</div>
+            <div class="text-[11px] font-bold text-muted uppercase tracking-wider mt-1">Projected Annual</div>
         </div>
-        <div style="margin-left:auto" class="badge badge-warning">{{ non_compliant_count }} Enquiries</div>
+        <div class="stat-card">
+            <div class="stat-header">
+                <span class="stat-label">Compliance Rate</span>
+                <div class="stat-icon bg-primary-light text-primary"><i class="fas fa-check-double"></i></div>
+            </div>
+            <div class="stat-value text-primary">{{ compliance_rate|floatformat:1 }}%</div>
+            <div class="text-[11px] font-bold text-muted uppercase tracking-wider mt-1">Verified Portfolio</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-header">
+                <span class="stat-label">Non-Compliant Cases</span>
+                <div class="stat-icon bg-error-bg text-error"><i class="fas fa-exclamation-triangle"></i></div>
+            </div>
+            <div class="stat-value text-error">{{ non_compliant_count }}</div>
+            <div class="text-[11px] font-bold text-muted uppercase tracking-wider mt-1">Requires Action</div>
+        </div>
     </div>
 
-    <div class="card fade-up delay-4">
-        <div style="padding:14px 22px;border-bottom:1px solid var(--border-color);display:flex;justify-content:space-between;align-items:center;background:var(--bg-body)">
-            <span class="stat-label">Turnover Tax Registry</span>
+    <!-- Analytics Section -->
+    <div id="analytics-section" class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+        <div class="chart-container">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-base font-bold">Compliance Trends</h3>
+                <span class="badge badge-success">Live</span>
+            </div>
+            <canvas id="complianceChart"></canvas>
         </div>
-        <div id="taxQueueList" style="max-height:700px;overflow-y:auto">
-            <div style="padding:56px;text-align:center;color:var(--text-muted)">
-                <i class="fas fa-circle-notch fa-spin" style="font-size:1.8rem;color:var(--color-primary);display:block;margin-bottom:12px"></i>
-                <p style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em">Synchronizing Registry…</p>
+        <div class="chart-container">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-base font-bold">Revenue by Category</h3>
+                <span class="text-xs font-bold text-muted">ZMW Millions</span>
+            </div>
+            <canvas id="revenueCategoryChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Main Table View -->
+    <div class="table-container">
+        <div class="flex justify-between items-center p-6 border-b border-color">
+            <h3 class="text-base font-bold">Landlord Performance Audit</h3>
+            <div class="flex gap-4">
+                <button class="btn btn-ghost btn-sm px-4 border border-color"><i class="fas fa-sort-amount-down text-[10px] mr-1"></i> Sort</button>
+                <div class="w-2 h-2 rounded-full bg-success animate-pulse self-center"></div>
+            </div>
+        </div>
+        <div id="zraReportContainer">
+            <div class="p-16 text-center">
+                <i class="fas fa-sync fa-spin text-primary text-3xl mb-4"></i>
+                <p class="text-sm font-bold text-muted">Generating real-time audit report...</p>
             </div>
         </div>
     </div>
@@ -84,6 +116,5 @@
 {% endblock %}
 
 {% block extra_scripts %}
-<script>document.addEventListener('DOMContentLoaded',()=>document.body.classList.add('zra-page'));</script>
 <script src="{% static 'js/official_dashboard.js' %}"></script>
 {% endblock %}
