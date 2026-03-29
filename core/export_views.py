@@ -18,8 +18,8 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_GET
 
 # ── internal import (your real models) ──
-# from .models import Property, RentalApplication, Expense
-
+from django.db.models import Sum, Count, Q
+from .models import Property, RentalAgreement, Expense
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
@@ -176,41 +176,49 @@ def _xl_header_row(ws, cols, row_n):
 
 def _get_zra_data(request):
     """
-    Replace this with your actual ORM query.
-    Returns a list of dicts with the 8 required fields.
+    Returns filtered property data for ZRA exports.
     """
-    # ── REAL QUERY (uncomment and adapt) ──────────────────────
-    # properties = Property.objects.select_related('owner').all()
-    # data = []
-    # for prop in properties:
-    #     rent_amount = float(prop.price)
-    #     apartments  = getattr(prop, 'apartment_count', 1)
-    #     total       = rent_amount * apartments
-    #     rate        = 0.10
-    #     tax         = total * rate
-    #     data.append({
-    #         'id':        prop.pk,
-    #         'landlord':  prop.owner.get_full_name() or prop.owner.username,
-    #         'apartments': apartments,
-    #         'rent':      rent_amount,
-    #         'total':     total,
-    #         'rate':      rate,
-    #         'tax':       tax,
-    #         'after_tax': total - tax,
-    #     })
-    # return data
+    queryset = Property.objects.select_related('owner').all()
 
-    # ── SAMPLE DATA (remove once ORM is wired) ────────────────
-    return [
-        {"id":1001,"landlord":"Mulenga Banda",  "apartments":4,"rent":14000,"total":56000, "rate":0.10,"tax":5600, "after_tax":50400},
-        {"id":1002,"landlord":"Grace Phiri",    "apartments":2,"rent":8500, "total":17000, "rate":0.10,"tax":1700, "after_tax":15300},
-        {"id":1003,"landlord":"David Mwale",    "apartments":6,"rent":12000,"total":72000, "rate":0.10,"tax":7200, "after_tax":64800},
-        {"id":1004,"landlord":"Patricia Zimba", "apartments":3,"rent":9500, "total":28500, "rate":0.10,"tax":2850, "after_tax":25650},
-        {"id":1005,"landlord":"Joseph Lungu",   "apartments":8,"rent":18000,"total":144000,"rate":0.10,"tax":14400,"after_tax":129600},
-        {"id":1006,"landlord":"Charity Mutale", "apartments":1,"rent":6000, "total":6000,  "rate":0.10,"tax":600,  "after_tax":5400},
-        {"id":1007,"landlord":"Emmanuel Tembo", "apartments":5,"rent":11000,"total":55000, "rate":0.10,"tax":5500, "after_tax":49500},
-        {"id":1008,"landlord":"Nkandu Sakala",  "apartments":3,"rent":7800, "total":23400, "rate":0.10,"tax":2340, "after_tax":21060},
-    ]
+    # Apply filters from request
+    status = request.GET.get('status')
+    search = request.GET.get('search')
+
+    if status == 'pending':
+        queryset = queryset.filter(is_tax_compliant=False)
+    elif status == 'compliant':
+        queryset = queryset.filter(is_tax_compliant=True)
+
+    if search:
+        queryset = queryset.filter(
+            Q(title__icontains=search) |
+            Q(owner__full_name__icontains=search) |
+            Q(owner__username__icontains=search) |
+            Q(owner__tpin_number__icontains=search) |
+            Q(owner__nrc_number__icontains=search) |
+            Q(id__icontains=search)
+        )
+
+    data = []
+    for prop in queryset:
+        rent_amount = float(prop.price)
+        apartments  = prop.apartment_count
+        total       = rent_amount * apartments
+        rate        = 0.10
+        tax         = float(prop.estimated_annual_tax())
+        data.append({
+            'id':        prop.pk,
+            'landlord':  prop.owner.full_name or prop.owner.username,
+            'tpin':      prop.owner.tpin_number or "N/A",
+            'nrc':       prop.owner.nrc_number or "N/A",
+            'apartments': apartments,
+            'rent':      rent_amount,
+            'total':     total,
+            'rate':      rate,
+            'tax':       tax,
+            'after_tax': total - tax,
+        })
+    return data
 
 
 @require_GET
@@ -272,21 +280,21 @@ def zra_export_pdf(request):
             textColor=C['slate_700'], spaceBefore=4, spaceAfter=5, letterSpacing=1)))
 
     # ── Data table ──
-    HDR = ["Landlord Name","ID","Apartments","Rent Amount",
+    HDR = ["Landlord Name","TPIN","NRC","Apartments","Rent Amount",
            "Total Amount","Tax Rate","Tax Amount","Amount after Tax"]
     rows = [[
-        r['landlord'], str(r['id']), str(r['apartments']),
+        r['landlord'], r['tpin'], r['nrc'], str(r['apartments']),
         f"ZMW {r['rent']:,.2f}", f"ZMW {r['total']:,.2f}",
         f"{r['rate']*100:.1f}%",
         f"ZMW {r['tax']:,.2f}",  f"ZMW {r['after_tax']:,.2f}",
     ] for r in data]
     rows.append([
-        "TOTALS","",str(sum(r['apartments'] for r in data)),"",
+        "TOTALS","","",str(sum(r['apartments'] for r in data)),"",
         f"ZMW {tot_r:,.2f}","",f"ZMW {tot_t:,.2f}",f"ZMW {tot_a:,.2f}",
     ])
     nd = len(rows) - 1
 
-    col_w = [52*mm,16*mm,20*mm,28*mm,28*mm,16*mm,26*mm,28*mm]
+    col_w = [40*mm,25*mm,25*mm,18*mm,26*mm,26*mm,14*mm,25*mm,25*mm]
     tbl   = Table([HDR]+rows, colWidths=col_w, repeatRows=1)
     tbl.setStyle(TableStyle([
         ('BACKGROUND',    (0,0), (-1,0),  C['primary']),
@@ -376,7 +384,7 @@ def zra_export_excel(request):
         ws.row_dimensions[6].height=8
 
     # ── Header row (row 7) ──
-    COLS = ["Landlord Name","ID","Count of Apartments","Rent Amount",
+    COLS = ["Landlord Name","TPIN","NRC","Apartments","Rent Amount",
             "Total Amount","Tax Rate","Tax Amount","Amount after Tax"]
     HDR_ROW = 7
     _xl_header_row(ws, COLS, HDR_ROW)
@@ -386,7 +394,7 @@ def zra_export_excel(request):
     for ri, r in enumerate(data):
         rn   = DS + ri
         fill = HEX['white'] if ri % 2 == 0 else HEX['sl50']
-        vals = [r['landlord'], r['id'], r['apartments'],
+        vals = [r['landlord'], r['tpin'], r['nrc'], r['apartments'],
                 r['rent'], r['total'], r['rate'], r['tax'], r['after_tax']]
         for ci, val in enumerate(vals, 1):
             c = ws.cell(row=rn, column=ci, value=val)
@@ -394,7 +402,7 @@ def zra_export_excel(request):
             c.fill   = _solid(fill)
             c.border = _brd(HEX['sl200'])
             c.alignment = Alignment(
-                horizontal='center' if ci==2 else 'right' if ci in(3,4,5,7,8) else 'left',
+                horizontal='center' if ci in(2,3) else 'right' if ci in(4,5,6,8,9) else 'left',
                 vertical='center')
             if ci in (4,5,7,8): c.number_format='"ZMW "#,##0.00'
             elif ci==6:          c.number_format='0.0%'
@@ -407,12 +415,13 @@ def zra_export_excel(request):
     for ci, (val, align, col, fmt) in enumerate([
         ("TOTALS","left", HEX['white'],False),
         ("","center",     HEX['white'],False),
-        (f'=SUM(C{DS}:C{TROW-1})',"right",HEX['white'],False),
-        ("","right",      HEX['white'],False),
-        (f'=SUM(E{DS}:E{TROW-1})',"right",HEX['white'],True),
         ("","center",     HEX['white'],False),
-        (f'=SUM(G{DS}:G{TROW-1})',"right",HEX['warning'],True),
-        (f'=SUM(H{DS}:H{TROW-1})',"right",HEX['success'],True),
+        (f'=SUM(D{DS}:D{TROW-1})',"right",HEX['white'],False),
+        ("","right",      HEX['white'],False),
+        (f'=SUM(F{DS}:F{TROW-1})',"right",HEX['white'],True),
+        ("","center",     HEX['white'],False),
+        (f'=SUM(H{DS}:H{TROW-1})',"right",HEX['warning'],True),
+        (f'=SUM(I{DS}:I{TROW-1})',"right",HEX['success'],True),
     ], 1):
         c=ws.cell(row=TROW,column=ci,value=val)
         c.font=Font(bold=True,size=9,name='Arial',color=col)
@@ -422,7 +431,7 @@ def zra_export_excel(request):
         if fmt: c.number_format='"ZMW "#,##0.00'
     ws.row_dimensions[TROW].height=22
 
-    for i,w in enumerate([30,10,18,20,20,10,20,22],1):
+    for i,w in enumerate([30,15,15,12,18,18,10,18,20],1):
         ws.column_dimensions[get_column_letter(i)].width=w
     ws.freeze_panes=f"A{DS}"
     ws.auto_filter.ref=f"A{HDR_ROW}:H{TROW-1}"
@@ -447,18 +456,32 @@ def zra_export_excel(request):
 # ══════════════════════════════════════════════════════════════════
 
 def _get_ministry_data(request):
-    # Replace with: RentalApplication.objects.values('property__district')
-    #               .annotate(total_people=Sum('number_of_occupants'),
-    #                         property_count=Count('property',distinct=True))
-    return [
-        {"district":"Lusaka",      "total_people":312,"property_count":48,"density":"HIGH"},
-        {"district":"Kitwe",       "total_people":198,"property_count":31,"density":"HIGH"},
-        {"district":"Ndola",       "total_people":145,"property_count":24,"density":"MED"},
-        {"district":"Livingstone", "total_people":87, "property_count":14,"density":"MED"},
-        {"district":"Kabwe",       "total_people":54, "property_count":9, "density":"MED"},
-        {"district":"Chipata",     "total_people":32, "property_count":5, "density":"LOW"},
-        {"district":"Solwezi",     "total_people":18, "property_count":3, "density":"LOW"},
-    ]
+    search = request.GET.get('search')
+
+    queryset = RentalAgreement.objects.filter(is_active=True)
+    if search:
+        queryset = queryset.filter(property__district__icontains=search)
+
+    stats = (
+        queryset.values('property__district')
+        .annotate(
+            total_people=Sum('number_of_occupants'),
+            property_count=Count('property', distinct=True)
+        )
+        .order_by('-total_people')
+    )
+
+    data = []
+    for stat in stats:
+        tp = stat['total_people'] or 0
+        density = "HIGH" if tp > 50 else "MED" if tp > 20 else "LOW"
+        data.append({
+            "district": stat['property__district'],
+            "total_people": tp,
+            "property_count": stat['property_count'],
+            "density": density
+        })
+    return data
 
 
 @require_GET

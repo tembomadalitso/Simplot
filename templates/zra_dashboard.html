@@ -3,10 +3,6 @@
 {% block title %}ZRA Tax Portal | Zambia Rentals{% endblock %}
 
 {% block extra_head %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
 <style>
 /* ── SHARED SIDEBAR SYSTEM ── */
 .sb-layout{display:flex;min-height:calc(100vh - 64px);background:var(--bg-body)}
@@ -162,10 +158,10 @@
         <span class="sb-nav-badge">{{ non_compliant_count }}</span>
       </a>
       <div class="sb-section-label">Export</div>
-      <a href="{% url 'zra-export-pdf' %}" class="sb-filter-btn export-pdf">
+      <a onclick="exportDynamic('pdf')" class="sb-filter-btn export-pdf">
         <i class="fas fa-file-pdf"></i> Export PDF
       </a>
-      <a href="{% url 'zra-export-excel' %}" class="sb-filter-btn export-xl">
+      <a onclick="exportDynamic('excel')" class="sb-filter-btn export-xl">
         <i class="fas fa-file-excel"></i> Export Excel
       </a>
     </nav>
@@ -196,13 +192,13 @@
       </div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
         <div class="flex gap-4">
-          <a href="{% url 'zra-export-pdf' %}" class="btn btn-outline">
+          <button onclick="exportDynamic('pdf')" class="btn btn-outline">
               <i class="fas fa-file-pdf mr-2"></i> Export PDF
-          </a>
+          </button>
           
-          <a href="{% url 'zra-export-excel' %}" class="btn btn-success">
+          <button onclick="exportDynamic('excel')" class="btn btn-success">
               <i class="fas fa-file-excel mr-2"></i> Export Excel
-          </a>
+          </button>
       </div>
       </div>
     </div>
@@ -284,10 +280,10 @@
         </h3>
         <div style="display:flex;gap:8px;align-items:center">
           <span class="count-badge" id="pendingCountBadge">{{ non_compliant_count }} pending</span>
-          <button class="sb-filter-btn export-pdf" onclick="exportPDF()" style="padding:5px 12px;font-size:11px">
+          <button class="sb-filter-btn export-pdf" onclick="exportDynamic('pdf')" style="padding:5px 12px;font-size:11px">
             <i class="fas fa-file-pdf"></i> PDF
           </button>
-          <button class="sb-filter-btn export-xl" onclick="exportExcel()" style="padding:5px 12px;font-size:11px">
+          <button class="sb-filter-btn export-xl" onclick="exportDynamic('excel')" style="padding:5px 12px;font-size:11px">
             <i class="fas fa-file-excel"></i> Excel
           </button>
         </div>
@@ -322,9 +318,9 @@
           </tbody>
           <tfoot id="registryFoot">
             <tr>
-              <td class="total-label"></td>
-              <td class="total-label">TOTALS</td>
+              <td class="total-label" colspan="2">TOTALS</td>
               <td class="num" id="ft-apts">—</td>
+              <td colspan="2"></td>
               <td class="num">—</td>
               <td class="num" id="ft-total">—</td>
               <td></td>
@@ -382,33 +378,33 @@ let filteredProperties = [];
 // ─── Registry load ─────────────────────────────────────────────
 async function loadRegistry(){
   try{
-    const res = await authFetch(window.URLS.apiProperties);
+    const q = document.getElementById('zraSearch').value;
+    const status = document.getElementById('statusFilter').value;
+    const url = new URL(window.URLS.apiProperties, window.location.origin);
+    if(q) url.searchParams.append('search', q);
+    if(status) url.searchParams.append('status', status);
+
+    const res = await authFetch(url.toString());
     if(!res.ok) throw new Error();
     const data = await res.json();
 
     // Build enriched rows (adding turnover tax fields)
-    allProperties = data.map((p,i) => ({
+    filteredProperties = data.map((p,i) => ({
       id:        p.id,
       landlord:  p.owner_name || 'Unknown',
+      tpin:      p.owner_tpin || 'N/A',
+      nrc:       p.owner_nrc || 'N/A',
       apartments:p.apartment_count || 1,
       rent:      parseFloat(p.price)||0,
-      total:     parseFloat(p.price)||0,          // total = rent × apartments
+      total:     (parseFloat(p.price)||0) * (p.apartment_count || 1),
       rate:      0.10,
       tax:       parseFloat(p.estimated_tax)||0,
-      after_tax: (parseFloat(p.price)||0) - (parseFloat(p.estimated_tax)||0),
+      after_tax: ((parseFloat(p.price)||0) * (p.apartment_count || 1)) - (parseFloat(p.estimated_tax)||0),
       compliant: p.is_tax_compliant,
       prop_id:   p.id,
       title:     p.title,
     }));
 
-    // Recalc totals
-    allProperties.forEach(p=>{
-      p.total     = p.rent * p.apartments;
-      p.tax       = p.total * p.rate;
-      p.after_tax = p.total - p.tax;
-    });
-
-    filteredProperties = [...allProperties];
     renderTable(filteredProperties);
   }catch(e){
     document.getElementById('tblLoader').innerHTML=
@@ -427,7 +423,7 @@ function renderTable(rows){
 
   if(rows.length===0){
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td colspan="9" style="text-align:center;padding:48px;color:var(--text-muted)"><i class="fas fa-check-circle" style="font-size:1.8rem;color:var(--color-success);display:block;margin-bottom:10px"></i><p style="font-weight:700">All caught up! No pending properties.</p></td>`;
+    tr.innerHTML=`<td colspan="11" style="text-align:center;padding:48px;color:var(--text-muted)"><i class="fas fa-check-circle" style="font-size:1.8rem;color:var(--color-success);display:block;margin-bottom:10px"></i><p style="font-weight:700">No properties found.</p></td>`;
     body.appendChild(tr);
     clearFooter();
     document.getElementById('registryCount').textContent=0;
@@ -445,6 +441,8 @@ function renderTable(rows){
       <td class="id-cell">#${r.id}</td>
       <td class="landlord">${escHTML(r.landlord)}</td>
       <td class="num">${r.apartments}</td>
+      <td class="num">${escHTML(r.tpin)}</td>
+      <td class="num">${escHTML(r.nrc)}</td>
       <td class="num">K${fmt(r.rent)}</td>
       <td class="num">K${fmt(r.total)}</td>
       <td class="tax-rate"><span style="font-weight:700;color:var(--color-primary)">${(r.rate*100).toFixed(1)}%</span></td>
@@ -478,14 +476,7 @@ function escHTML(s){const d=document.createElement('div');d.textContent=s;return
 
 // ─── Filtering ─────────────────────────────────────────────────
 function filterRegistry(){
-  const q      = document.getElementById('zraSearch').value.toLowerCase();
-  const status = document.getElementById('statusFilter').value;
-  filteredProperties = allProperties.filter(r=>{
-    const matchQ = !q || r.landlord.toLowerCase().includes(q) || String(r.id).includes(q);
-    const matchS = !status || (status==='pending'&&!r.compliant) || (status==='compliant'&&r.compliant);
-    return matchQ && matchS;
-  });
-  renderTable(filteredProperties);
+  loadRegistry();
 }
 
 // ─── Verify Compliance ─────────────────────────────────────────
@@ -495,172 +486,22 @@ async function verifyCompliance(id, btn){
   try{
     const url=`${window.URLS.apiProperties}${id}/toggle_compliance/`;
     const res=await authFetch(url,{method:'POST'});
-    if(res.ok) location.reload();
+    if(res.ok) loadRegistry();
     else{btn.disabled=false;btn.innerHTML='<i class="fas fa-check"></i> Verify';alert('Failed.');}
   }catch{btn.disabled=false;btn.innerHTML='<i class="fas fa-check"></i> Verify';}
 }
 
-// ─── EXPORT PDF (jsPDF + AutoTable) ────────────────────────────
-function exportPDF(){
-  const {jsPDF} = window.jspdf;
-  const doc = new jsPDF({orientation:'landscape',unit:'mm',format:'a4'});
-  const w   = doc.internal.pageSize.getWidth();
-  const h   = doc.internal.pageSize.getHeight();
-  const now = new Date().toLocaleString('en-ZM',{dateStyle:'long',timeStyle:'short'});
+// ─── Dynamic Export ─────────────────────────────────────────────
+function exportDynamic(type){
+  const q = document.getElementById('zraSearch').value;
+  const status = document.getElementById('statusFilter').value;
+  const baseUrl = type === 'pdf' ? "{% url 'zra-export-pdf' %}" : "{% url 'zra-export-excel' %}";
+  const url = new URL(baseUrl, window.location.origin);
+  if(q) url.searchParams.append('search', q);
+  if(status) url.searchParams.append('status', status);
 
-  // ── header bar ──
-  doc.setFillColor(79,70,229);
-  doc.rect(0,0,w,16,'F');
-  doc.setTextColor(255,255,255);
-  doc.setFont('helvetica','bold');
-  doc.setFontSize(11);
-  doc.text('ZAMBIA RENTALS',10,10);
-  doc.setFont('helvetica','normal');
-  doc.setFontSize(8.5);
-  doc.setTextColor(199,210,254);
-  doc.text('ZRA Official Portal',w-10,10,{align:'right'});
-  // accent
-  doc.setFillColor(16,185,129);
-  doc.rect(0,16,w,1,'F');
-
-  // ── title block ──
-  doc.setTextColor(79,70,229);
-  doc.setFont('helvetica','bold');
-  doc.setFontSize(18);
-  doc.text('Turnover Tax Registry',10,30);
-  doc.setFont('helvetica','normal');
-  doc.setFontSize(9);
-  doc.setTextColor(100,116,139);
-  doc.text(`Generated: ${now}`,10,37);
-  doc.line(10,40,w-10,40);
-
-  // ── KPI summary boxes ──
-  const rows = filteredProperties;
-  const sumTotal = rows.reduce((a,r)=>a+r.total,0);
-  const sumTax   = rows.reduce((a,r)=>a+r.tax,0);
-  const sumAfter = rows.reduce((a,r)=>a+r.after_tax,0);
-
-  const kpis = [
-    {lbl:'Total Landlords', val:rows.length.toString()},
-    {lbl:'Total Rental Income', val:'K'+sumTotal.toLocaleString('en-ZM',{minimumFractionDigits:2})},
-    {lbl:'Total Tax Collected', val:'K'+sumTax.toLocaleString('en-ZM',{minimumFractionDigits:2})},
-    {lbl:'Net After Tax', val:'K'+sumAfter.toLocaleString('en-ZM',{minimumFractionDigits:2})},
-  ];
-  const kpiW = (w-20)/4;
-  kpis.forEach((k,i)=>{
-    const x=10+i*kpiW;
-    doc.setFillColor(241,245,249);
-    doc.roundedRect(x,43,kpiW-2,14,2,2,'F');
-    doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(100,116,139);
-    doc.text(k.lbl.toUpperCase(),x+kpiW/2-1,50,{align:'center'});
-    doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(79,70,229);
-    doc.text(k.val,x+kpiW/2-1,57,{align:'center'});
-  });
-
-  // ── Section label ──
-  doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(100,116,139);
-  doc.text('DETAILED REGISTRY',10,65);
-
-  // ── AutoTable ──
-  const tableRows = rows.map(r=>[
-    '#'+r.id,
-    r.landlord,
-    r.apartments,
-    'K'+Number(r.rent).toFixed(2),
-    'K'+Number(r.total).toFixed(2),
-    (r.rate*100).toFixed(1)+'%',
-    'K'+Number(r.tax).toFixed(2),
-    'K'+Number(r.after_tax).toFixed(2),
-  ]);
-  tableRows.push([
-    '','TOTALS',
-    rows.reduce((a,r)=>a+r.apartments,0),'',
-    'K'+sumTotal.toFixed(2),'',
-    'K'+sumTax.toFixed(2),
-    'K'+sumAfter.toFixed(2),
-  ]);
-
-  doc.autoTable({
-    head:[['ID','Landlord Name','Apartments','Rent (K)','Total (K)','Tax Rate','Tax (K)','After Tax (K)']],
-    body: tableRows,
-    startY:68,
-    styles:{fontSize:8,cellPadding:3,font:'helvetica'},
-    headStyles:{fillColor:[79,70,229],textColor:255,fontStyle:'bold',fontSize:7.5,halign:'center'},
-    columnStyles:{
-      0:{halign:'center',cellWidth:14},
-      2:{halign:'right',cellWidth:20},
-      3:{halign:'right',cellWidth:24},
-      4:{halign:'right',cellWidth:26},
-      5:{halign:'center',cellWidth:18},
-      6:{halign:'right',cellWidth:24,textColor:[245,158,11]},
-      7:{halign:'right',cellWidth:26,textColor:[16,185,129]},
-    },
-    alternateRowStyles:{fillColor:[248,250,252]},
-    willDrawCell:(data)=>{
-      if(data.row.index===tableRows.length-1){
-        data.cell.styles.fillColor=[6,78,59];
-        data.cell.styles.textColor=[255,255,255];
-        data.cell.styles.fontStyle='bold';
-      }
-    },
-    didDrawPage:(data)=>{
-      const pg=doc.internal.getNumberOfPages();
-      doc.setFillColor(241,245,249);
-      doc.rect(0,h-8,w,8,'F');
-      doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(100,116,139);
-      doc.text(`Generated: ${now}  |  Zambia Rentals — Confidential`,10,h-2.5);
-      doc.text(`Page ${data.pageNumber}`,w-10,h-2.5,{align:'right'});
-    }
-  });
-
-  const fname=`ZRA_Tax_Registry_${new Date().toISOString().slice(0,10)}.pdf`;
-  doc.save(fname);
-  showToast('PDF exported — '+fname);
-}
-
-// ─── EXPORT EXCEL (SheetJS) ────────────────────────────────────
-function exportExcel(){
-  const rows = filteredProperties;
-  const now  = new Date().toLocaleString('en-ZM',{dateStyle:'long'});
-
-  // Build worksheet data
-  const wsData = [
-    ['ZAMBIA RENTALS — TURNOVER TAX REGISTRY','','','','','','',''],
-    [`ZRA Official Portal  |  Generated: ${now}`,'','','','','','',''],
-    ['','','','','','','',''],
-    ['ID','Landlord Name','Count of Apartments','Rent Amount (K)',
-     'Total Amount (K)','Tax Rate','Tax Amount (K)','Amount after Tax (K)'],
-    ...rows.map(r=>[
-      r.id, r.landlord, r.apartments,
-      r.rent, r.total, r.rate, r.tax, r.after_tax,
-    ]),
-    [
-      '', 'TOTALS',
-      rows.reduce((a,r)=>a+r.apartments,0),
-      '',
-      rows.reduce((a,r)=>a+r.total,0),
-      '',
-      rows.reduce((a,r)=>a+r.tax,0),
-      rows.reduce((a,r)=>a+r.after_tax,0),
-    ],
-  ];
-
-  const ws   = XLSX.utils.aoa_to_sheet(wsData);
-  const wb   = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb,'Turnover Tax Report',ws);
-
-  // Column widths
-  ws['!cols']=[{wch:8},{wch:28},{wch:18},{wch:18},{wch:18},{wch:10},{wch:18},{wch:20}];
-
-  // Merge title rows
-  ws['!merges']=[
-    {s:{r:0,c:0},e:{r:0,c:7}},
-    {s:{r:1,c:0},e:{r:1,c:7}},
-  ];
-
-  const fname=`ZRA_Tax_Registry_${new Date().toISOString().slice(0,10)}.xlsx`;
-  XLSX.writeFile(wb, fname);
-  showToast('Excel exported — '+fname);
+  window.location.href = url.toString();
+  showToast(`${type.toUpperCase()} export started...`);
 }
 
 // ─── Toast ─────────────────────────────────────────────────────

@@ -119,9 +119,14 @@
 
             <div class="sb-section-label">Export</div>
 
-            <a class="sb-nav-item" onclick="exportDistrictsCSV()">
-                <div class="sb-nav-icon"><i class="fas fa-file-csv"></i></div>
-                <span class="sb-nav-label">Export CSV</span>
+            <a class="sb-nav-item" onclick="exportMinistry('pdf')">
+                <div class="sb-nav-icon"><i class="fas fa-file-pdf"></i></div>
+                <span class="sb-nav-label">Export PDF</span>
+            </a>
+
+            <a class="sb-nav-item" onclick="exportMinistry('excel')">
+                <div class="sb-nav-icon"><i class="fas fa-file-excel"></i></div>
+                <span class="sb-nav-label">Export Excel</span>
             </a>
 
             <a class="sb-nav-item" onclick="window.print()">
@@ -156,8 +161,11 @@
                 <p style="font-size:13px;color:var(--text-muted);font-weight:500">National rental density and residential population tracking by district.</p>
             </div>
             <div style="display:flex;gap:8px">
-                <button class="sb-filter-btn" onclick="exportDistrictsCSV()">
-                    <i class="fas fa-download"></i> Export
+                <button class="sb-filter-btn" onclick="exportMinistry('pdf')">
+                    <i class="fas fa-file-pdf"></i> PDF
+                </button>
+                <button class="sb-filter-btn" onclick="exportMinistry('excel')">
+                    <i class="fas fa-file-excel"></i> Excel
                 </button>
             </div>
         </div>
@@ -305,9 +313,14 @@
         <div id="section-analytics" class="sb-table-card sb-fade-4">
             <div class="sb-table-header">
                 <h3><i class="fas fa-chart-pie" style="color:var(--color-primary);margin-right:8px"></i> Density Analytics</h3>
-                <button class="sb-filter-btn" onclick="exportDistrictsCSV()">
-                    <i class="fas fa-download"></i> Export CSV
-                </button>
+                <div style="display:flex;gap:8px">
+                    <button class="sb-filter-btn" onclick="exportMinistry('pdf')">
+                        <i class="fas fa-file-pdf"></i> PDF
+                    </button>
+                    <button class="sb-filter-btn" onclick="exportMinistry('excel')">
+                        <i class="fas fa-file-excel"></i> Excel
+                    </button>
+                </div>
             </div>
             <div style="padding:20px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
                 {% for stat in occupancy_stats %}
@@ -392,20 +405,23 @@ function sortDistricts(val) {
     rows.forEach(r => tbody.appendChild(r));
 }
 
-function exportDistrictsCSV() {
+let currentSearch = '';
+
+function filterDistricts(q) {
+    currentSearch = q;
     const rows = document.querySelectorAll('#districtsTable tbody tr');
-    let csv = 'District,Population,Units,Density\n';
-    rows.forEach(row => {
-        const cells = row.querySelectorAll('td');
-        if (cells.length > 1) {
-            csv += `"${cells[1].textContent.trim()}","${cells[2].textContent.trim()}","${cells[3].textContent.trim()}","${cells[5].textContent.trim()}"\n`;
-        }
+    const cards = document.querySelectorAll('.district-card');
+    [...rows, ...cards].forEach(item => {
+        item.style.display = item.textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none';
     });
-    const blob = new Blob([csv], { type:'text/csv' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'ministry_districts.csv';
-    a.click();
+}
+
+function exportMinistry(type) {
+    const baseUrl = type === 'pdf' ? "{% url 'ministry-export-pdf' %}" : "{% url 'ministry-export-excel' %}";
+    const url = new URL(baseUrl, window.location.origin);
+    if(currentSearch) url.searchParams.append('search', currentSearch);
+
+    window.location.href = url.toString();
 }
 </script>
 {% endblock %}
