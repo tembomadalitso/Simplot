@@ -207,17 +207,17 @@ def _get_zra_data(request):
         rate        = 0.10
         tax         = float(prop.estimated_annual_tax())
         data.append({
-            'id':        prop.pk,
-            'landlord':  prop.owner.full_name or prop.owner.username,
-            'tpin':      prop.owner.tpin_number or "N/A",
-            'nrc':       prop.owner.nrc_number or "N/A",
-            'apartments': apartments,
-            'rent':      rent_amount,
-            'total':     total,
-            'rate':      rate,
-            'tax':       tax,
-            'after_tax': total - tax,
-        })
+    'id':        prop.pk,
+    'landlord':  prop.owner.full_name or prop.owner.username,
+    'apartments': apartments,
+    'tpin':      prop.owner.tpin_number or "N/A",
+    'nrc':       prop.owner.nrc_number or "N/A",
+    'rent':      rent_amount,
+    'total':     total,
+    'rate':      rate,
+    'tax':       tax,
+    'after_tax': total - tax,
+})
     return data
 
 
@@ -280,21 +280,35 @@ def zra_export_pdf(request):
             textColor=C['slate_700'], spaceBefore=4, spaceAfter=5, letterSpacing=1)))
 
     # ── Data table ──
-    HDR = ["Landlord Name","TPIN","NRC","Apartments","Rent Amount",
-           "Total Amount","Tax Rate","Tax Amount","Amount after Tax"]
+    HDR = ["ID","Landlord Name","Apartments","TPIN","NRC",
+       "Rent Amount","Total Amount","Tax Rate","Tax Amount","Amount after Tax"]
     rows = [[
-        r['landlord'], r['tpin'], r['nrc'], str(r['apartments']),
-        f"ZMW {r['rent']:,.2f}", f"ZMW {r['total']:,.2f}",
-        f"{r['rate']*100:.1f}%",
-        f"ZMW {r['tax']:,.2f}",  f"ZMW {r['after_tax']:,.2f}",
-    ] for r in data]
+    str(r['id']),
+    r['landlord'],
+    str(r['apartments']),
+    r['tpin'],
+    r['nrc'],
+    f"ZMW {r['rent']:,.2f}",
+    f"ZMW {r['total']:,.2f}",
+    f"{r['rate']*100:.1f}%",
+    f"ZMW {r['tax']:,.2f}",
+    f"ZMW {r['after_tax']:,.2f}",
+] for r in data]
     rows.append([
-        "TOTALS","","",str(sum(r['apartments'] for r in data)),"",
-        f"ZMW {tot_r:,.2f}","",f"ZMW {tot_t:,.2f}",f"ZMW {tot_a:,.2f}",
-    ])
+    "",
+    "TOTALS",
+    str(sum(r['apartments'] for r in data)),
+    "",
+    "",
+    "",
+    f"ZMW {tot_r:,.2f}",
+    "",
+    f"ZMW {tot_t:,.2f}",
+    f"ZMW {tot_a:,.2f}",
+])
     nd = len(rows) - 1
 
-    col_w = [40*mm,25*mm,25*mm,18*mm,26*mm,26*mm,14*mm,25*mm,25*mm]
+    col_w = [18*mm,40*mm,18*mm,25*mm,25*mm,26*mm,26*mm,14*mm,25*mm,25*mm]
     tbl   = Table([HDR]+rows, colWidths=col_w, repeatRows=1)
     tbl.setStyle(TableStyle([
         ('BACKGROUND',    (0,0), (-1,0),  C['primary']),
@@ -394,35 +408,49 @@ def zra_export_excel(request):
     for ri, r in enumerate(data):
         rn   = DS + ri
         fill = HEX['white'] if ri % 2 == 0 else HEX['sl50']
-        vals = [r['landlord'], r['tpin'], r['nrc'], r['apartments'],
-                r['rent'], r['total'], r['rate'], r['tax'], r['after_tax']]
+        vals = [
+    r['id'],
+    r['landlord'],
+    r['apartments'],
+    r['tpin'],
+    r['nrc'],
+    r['rent'],
+    r['total'],
+    r['rate'],
+    r['tax'],
+    r['after_tax']
+]
         for ci, val in enumerate(vals, 1):
             c = ws.cell(row=rn, column=ci, value=val)
             c.font   = Font(size=9, name='Arial', color=HEX['sl700'])
             c.fill   = _solid(fill)
             c.border = _brd(HEX['sl200'])
             c.alignment = Alignment(
-                horizontal='center' if ci in(2,3) else 'right' if ci in(4,5,6,8,9) else 'left',
-                vertical='center')
-            if ci in (4,5,7,8): c.number_format='"ZMW "#,##0.00'
-            elif ci==6:          c.number_format='0.0%'
-            if ci==7: c.font=Font(size=9,name='Arial',color=HEX['warning'],bold=True)
-            if ci==8: c.font=Font(size=9,name='Arial',color=HEX['success'],bold=True)
+    horizontal='center' if ci in (1,3,4,5)
+    else 'right' if ci in (6,7,9,10)
+    else 'left',
+    vertical='center'
+)
+            if ci in (6,7,9,10): c.number_format='"ZMW "#,##0.00'
+            elif ci==8:          c.number_format='0.0%'
+            if ci==8: c.font=Font(size=9,name='Arial',color=HEX['warning'],bold=True)
+            if ci==9: c.font=Font(size=9,name='Arial',color=HEX['success'],bold=True)
         ws.row_dimensions[rn].height = 18
 
     # ── Totals row ──
     TROW = DS + len(data)
     for ci, (val, align, col, fmt) in enumerate([
-        ("TOTALS","left", HEX['white'],False),
-        ("","center",     HEX['white'],False),
-        ("","center",     HEX['white'],False),
-        (f'=SUM(D{DS}:D{TROW-1})',"right",HEX['white'],False),
-        ("","right",      HEX['white'],False),
-        (f'=SUM(F{DS}:F{TROW-1})',"right",HEX['white'],True),
-        ("","center",     HEX['white'],False),
-        (f'=SUM(H{DS}:H{TROW-1})',"right",HEX['warning'],True),
-        (f'=SUM(I{DS}:I{TROW-1})',"right",HEX['success'],True),
-    ], 1):
+    ("","center", HEX['white'],False),
+    ("TOTALS","left", HEX['white'],False),
+    (f'=SUM(C{DS}:C{TROW-1})',"right",HEX['white'],False),
+    ("","center", HEX['white'],False),
+    ("","center", HEX['white'],False),
+    ("","right", HEX['white'],False),
+    (f'=SUM(G{DS}:G{TROW-1})',"right",HEX['white'],True),
+    ("","center", HEX['white'],False),
+    (f'=SUM(I{DS}:I{TROW-1})',"right",HEX['warning'],True),
+    (f'=SUM(J{DS}:J{TROW-1})',"right",HEX['success'],True),
+], 1):
         c=ws.cell(row=TROW,column=ci,value=val)
         c.font=Font(bold=True,size=9,name='Arial',color=col)
         c.fill=_solid(HEX['dark_green'])
@@ -431,10 +459,10 @@ def zra_export_excel(request):
         if fmt: c.number_format='"ZMW "#,##0.00'
     ws.row_dimensions[TROW].height=22
 
-    for i,w in enumerate([30,15,15,12,18,18,10,18,20],1):
+    for i,w in enumerate([10,30,12,15,15,18,18,10,18,20],1):
         ws.column_dimensions[get_column_letter(i)].width=w
     ws.freeze_panes=f"A{DS}"
-    ws.auto_filter.ref=f"A{HDR_ROW}:H{TROW-1}"
+    ws.auto_filter.ref=f"A{HDR_ROW}:J{TROW-1}"
     ws.page_setup.orientation=ws.ORIENTATION_LANDSCAPE
     ws.page_setup.paperSize=ws.PAPERSIZE_A4
     ws.page_setup.fitToWidth=1
