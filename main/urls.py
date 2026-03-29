@@ -11,7 +11,14 @@ from core.views import (
     zra_dashboard_page,
     occupancy_dashboard_page,
     apply_page,
+    zra_export_pdf,
+    zra_export_excel,
+    ministry_export_pdf,
+    ministry_export_excel,
+    landlord_export_pdf,
+    landlord_export_excel,
 )
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,6 +33,16 @@ urlpatterns = [
     path('gov/zra/', zra_dashboard_page, name='zra-dashboard'),
     path('gov/occupancy/', occupancy_dashboard_page, name='occupancy-dashboard'),
     path('property/<int:pk>/apply/', apply_page, name='apply-property'),
+
+    # ZRA
+    path('zra/export/pdf/',              zra_export_pdf,         name='zra-export-pdf'),
+    path('zra/export/excel/',            zra_export_excel,       name='zra-export-excel'),
+    # Ministry
+    path('ministry/export/pdf/',         ministry_export_pdf,    name='ministry-export-pdf'),
+    path('ministry/export/excel/',       ministry_export_excel,  name='ministry-export-excel'),
+    # Landlord dashboard
+    path('dashboard/export/pdf/',        landlord_export_pdf,    name='landlord-export-pdf'),
+    path('dashboard/export/excel/',      landlord_export_excel,  name='landlord-export-excel'),
 ]
 
 if settings.DEBUG:

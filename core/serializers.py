@@ -16,6 +16,8 @@ class PropertyImageSerializer(serializers.ModelSerializer):
 class PropertySerializer(serializers.ModelSerializer):
     # These fields help the frontend display readable names instead of IDs
     owner_name = serializers.ReadOnlyField(source='owner.username')
+    owner_tpin = serializers.ReadOnlyField(source='owner.tpin_number')
+    owner_nrc = serializers.ReadOnlyField(source='owner.nrc_number')
     category_display = serializers.CharField(source='get_category_display', read_only=True)
     estimated_tax = serializers.ReadOnlyField(source='estimated_annual_tax')
     images = PropertyImageSerializer(many=True, read_only=True)
@@ -23,7 +25,7 @@ class PropertySerializer(serializers.ModelSerializer):
     class Meta:
         model = Property
         fields = [
-            'id', 'owner', 'owner_name', 'title', 'description', 'category', 'category_display',
+            'id', 'owner', 'owner_name', 'owner_tpin', 'owner_nrc', 'title', 'description', 'category', 'category_display',
             'price', 'province', 'district', 'area_name', 'street_address', 
             'is_tax_compliant', 'estimated_tax', 'created_at', 'images'
         ]
