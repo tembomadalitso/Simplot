@@ -31,6 +31,18 @@
             propertyDetail: "{% url 'property-detail' 0 %}",
         };
     </script>
+
+    <style>
+        /* ── SIDEBAR-AWARE MAIN WRAPPER ── */
+        /* When body has a sidebar-page class, remove the standard padding from <main> */
+        body.dashboard-page > main,
+        body.zra-page > main,
+        body.ministry-page > main {
+            max-width: 100% !important;
+            padding: 0 !important;
+            overflow: hidden;
+        }
+    </style>
 </head>
 <body class="flex flex-col min-h-screen antialiased" data-theme="dark">
     <script>

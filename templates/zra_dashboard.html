@@ -2,88 +2,344 @@
 {% load static %}
 {% block title %}ZRA Tax Portal | Zambia Rentals{% endblock %}
 
+{% block extra_head %}
+<style>
+/* ── SHARED SIDEBAR SYSTEM (same as dashboard) ── */
+.sb-layout { display:flex; min-height:calc(100vh - 64px); background:var(--bg-body); }
+.sb-sidebar { width:240px; min-height:100%; background:var(--bg-surface-solid); border-right:1px solid var(--border-color); display:flex; flex-direction:column; flex-shrink:0; transition:width .25s cubic-bezier(.4,0,.2,1); position:sticky; top:64px; height:calc(100vh - 64px); overflow:hidden; z-index:40; }
+.sb-sidebar.collapsed { width:64px; }
+.sb-sidebar-header { padding:20px 16px 16px; border-bottom:1px solid var(--border-color); display:flex; align-items:center; justify-content:space-between; min-height:64px; }
+.sb-logo { display:flex; align-items:center; gap:10px; overflow:hidden; white-space:nowrap; }
+.sb-logo-icon { width:32px; height:32px; border-radius:10px; background:var(--color-success); display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:13px; color:#fff; }
+.sb-logo-text { font-size:11px; font-weight:900; letter-spacing:.1em; text-transform:uppercase; color:var(--text-main); opacity:1; transition:opacity .2s ease; }
+.sb-sidebar.collapsed .sb-logo-text { opacity:0; width:0; }
+.sb-collapse-btn { width:28px; height:28px; border-radius:8px; background:var(--bg-body); border:1px solid var(--border-color); display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--text-muted); font-size:11px; flex-shrink:0; transition:all .2s ease; }
+.sb-collapse-btn:hover { background:var(--color-success-bg); color:var(--color-success); }
+.sb-sidebar.collapsed .sb-collapse-btn { margin:0 auto; }
+.sb-nav { flex:1; padding:12px 0; overflow-y:auto; overflow-x:hidden; }
+.sb-section-label { font-size:9px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--text-muted); padding:8px 16px 4px; white-space:nowrap; overflow:hidden; transition:opacity .2s ease; }
+.sb-sidebar.collapsed .sb-section-label { opacity:0; }
+.sb-nav-item { display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:10px; color:var(--text-secondary); text-decoration:none; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; overflow:hidden; transition:all .15s ease; position:relative; }
+.sb-nav-item:hover { background:var(--color-success-bg); color:var(--color-success); }
+.sb-nav-item.active { background:var(--color-success-bg); color:var(--color-success); }
+.sb-nav-item.active::before { content:''; position:absolute; left:0; top:50%; transform:translateY(-50%); width:3px; height:20px; background:var(--color-success); border-radius:0 3px 3px 0; }
+.sb-nav-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0; }
+.sb-nav-label { flex:1; transition:opacity .2s ease,width .2s ease; }
+.sb-sidebar.collapsed .sb-nav-label { opacity:0; width:0; }
+.sb-nav-badge { background:var(--color-warning-bg); color:var(--color-warning); border:1px solid var(--color-warning); font-size:9px; font-weight:800; padding:2px 6px; border-radius:9999px; flex-shrink:0; transition:opacity .2s ease; }
+.sb-sidebar.collapsed .sb-nav-badge { opacity:0; }
+.sb-sidebar-footer { padding:12px 8px; border-top:1px solid var(--border-color); }
+.sb-main { flex:1; min-width:0; padding:28px 32px 60px; overflow-x:auto; }
+.sb-topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; gap:16px; flex-wrap:wrap; }
+.sb-topbar-left h2 { font-size:22px; font-weight:900; letter-spacing:-.03em; color:var(--text-main); margin-bottom:2px; }
+.sb-stat-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; margin-bottom:28px; }
+.sb-kpi-card { background:var(--bg-surface-solid); border:1px solid var(--border-color); border-radius:14px; padding:18px 20px; transition:all .2s ease; }
+.sb-kpi-card.green { background:linear-gradient(135deg,#10b981 0%,#059669 100%); border-color:transparent; color:#fff; }
+.sb-kpi-card.teal  { background:linear-gradient(135deg,#0891b2 0%,#0e7490 100%); border-color:transparent; color:#fff; }
+.sb-kpi-card.amber { background:linear-gradient(135deg,#f59e0b 0%,#d97706 100%); border-color:transparent; color:#fff; }
+.sb-kpi-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+.sb-kpi-icon { width:36px; height:36px; border-radius:10px; background:rgba(255,255,255,.18); display:flex; align-items:center; justify-content:center; font-size:14px; color:#fff; }
+.sb-kpi-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.07em; opacity:.75; margin-bottom:4px; }
+.sb-kpi-value { font-size:26px; font-weight:900; letter-spacing:-.04em; line-height:1; margin-bottom:2px; }
+.sb-kpi-sub { font-size:11px; font-weight:600; opacity:.65; }
+.sb-filter-bar { display:flex; align-items:center; gap:10px; margin-bottom:20px; flex-wrap:wrap; }
+.sb-filter-btn { display:inline-flex; align-items:center; gap:6px; padding:7px 14px; background:var(--bg-surface-solid); border:1px solid var(--border-color); border-radius:9px; font-size:12px; font-weight:700; color:var(--text-secondary); cursor:pointer; transition:all .15s ease; }
+.sb-filter-btn:hover, .sb-filter-btn.active { background:var(--color-success-bg); border-color:var(--color-success); color:var(--color-success); }
+.sb-table-card { background:var(--bg-surface-solid); border:1px solid var(--border-color); border-radius:14px; overflow:hidden; }
+.sb-table-header { padding:14px 20px; border-bottom:1px solid var(--border-color); display:flex; align-items:center; justify-content:space-between; background:var(--bg-body); }
+.sb-table-header h3 { font-size:13px; font-weight:800; color:var(--text-main); }
+.sb-table-wrap { overflow-x:auto; }
+.sb-table { width:100%; border-collapse:collapse; font-size:13px; }
+.sb-table th { padding:10px 16px; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.1em; color:var(--text-muted); background:var(--bg-body); border-bottom:1px solid var(--border-color); text-align:left; white-space:nowrap; }
+.sb-table td { padding:13px 16px; border-bottom:1px solid var(--border-color); color:var(--text-main); vertical-align:middle; }
+.sb-table tr:last-child td { border-bottom:none; }
+.sb-table tr:hover td { background:rgba(16,185,129,.04); }
+.sb-form-input, .sb-form-select { width:100%; padding:9px 12px; background:var(--bg-body); border:1px solid var(--border-color); border-radius:9px; font-size:13px; font-family:inherit; font-weight:500; color:var(--text-main); outline:none; transition:all .2s ease; }
+.sb-form-input:focus, .sb-form-select:focus { border-color:var(--color-success); box-shadow:0 0 0 3px var(--color-success-bg); }
+@keyframes sbFadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+.sb-fade-1 { animation:sbFadeUp .4s ease both .05s; }
+.sb-fade-2 { animation:sbFadeUp .4s ease both .1s; }
+.sb-fade-3 { animation:sbFadeUp .4s ease both .15s; }
+.sb-fade-4 { animation:sbFadeUp .4s ease both .2s; }
+.sb-sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:99; }
+.sb-sidebar-overlay.visible { display:block; }
+@media(max-width:768px){
+    .sb-sidebar{position:fixed;left:0;top:64px;bottom:0;transform:translateX(-100%);transition:transform .25s ease;z-index:100;box-shadow:var(--shadow-lg);}
+    .sb-sidebar.mobile-open{transform:translateX(0);}
+    .sb-main{padding:20px 16px 60px;}
+}
+
+/* Progress bar */
+.zra-progress { height:5px; background:var(--bg-body); border-radius:9999px; overflow:hidden; margin-top:10px; }
+.zra-progress-fill { height:100%; border-radius:9999px; background:linear-gradient(90deg,#10b981,#059669); transition:width .8s ease; }
+
+/* Queue list item */
+.queue-item { padding:16px 20px; border-bottom:1px solid var(--border-color); transition:background .15s ease; }
+.queue-item:last-child { border-bottom:none; }
+.queue-item:hover { background:rgba(16,185,129,.03); }
+.queue-item-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; }
+.queue-item-meta { display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:10px 12px; background:var(--bg-body); border-radius:10px; margin-bottom:10px; }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="db-bg-container">
-    <div class="db-bg-img"></div>
-    <div class="db-bg-overlay"></div>
-</div>
+<div class="sb-sidebar-overlay" id="sbOverlay" onclick="toggleSidebar()"></div>
 
-<div class="db-container">
+<div class="sb-layout">
 
-    <!-- Header -->
-    <header class="db-header fade-up delay-1">
-        <div>
-            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px">
-                <div class="hero-badge" style="margin-bottom:0">
-                    <i class="fas fa-landmark" style="font-size:9px"></i> ZRA Official Portal
+    <!-- ── SIDEBAR ── -->
+    <aside class="sb-sidebar" id="mainSidebar">
+        <div class="sb-sidebar-header">
+            <div class="sb-logo">
+                <div class="sb-logo-icon"><i class="fas fa-landmark"></i></div>
+                <span class="sb-logo-text">ZRA Portal</span>
+            </div>
+            <button class="sb-collapse-btn" onclick="toggleSidebar()">
+                <i class="fas fa-chevron-left" id="collapseBtnIcon"></i>
+            </button>
+        </div>
+
+        <nav class="sb-nav">
+            <div class="sb-section-label">ZRA Tools</div>
+
+            <a href="#section-overview" class="sb-nav-item active" onclick="sbNav(this)">
+                <div class="sb-nav-icon"><i class="fas fa-th-large"></i></div>
+                <span class="sb-nav-label">Overview</span>
+            </a>
+
+            <a href="#section-queue" class="sb-nav-item" onclick="sbNav(this)">
+                <div class="sb-nav-icon"><i class="fas fa-file-shield"></i></div>
+                <span class="sb-nav-label">Verification Queue</span>
+                <span class="sb-nav-badge">{{ non_compliant_count }}</span>
+            </a>
+
+            <a href="#section-reports" class="sb-nav-item" onclick="sbNav(this)">
+                <div class="sb-nav-icon"><i class="fas fa-chart-bar"></i></div>
+                <span class="sb-nav-label">Tax Reports</span>
+            </a>
+
+            <div class="sb-section-label">Export</div>
+
+            <a class="sb-nav-item" onclick="exportQueueCSV()">
+                <div class="sb-nav-icon"><i class="fas fa-file-csv"></i></div>
+                <span class="sb-nav-label">Export CSV</span>
+            </a>
+
+            <a class="sb-nav-item" onclick="exportQueuePDF()">
+                <div class="sb-nav-icon"><i class="fas fa-file-pdf"></i></div>
+                <span class="sb-nav-label">Export PDF</span>
+            </a>
+        </nav>
+
+        <div class="sb-sidebar-footer">
+            <a href="{% url 'index' %}" class="sb-nav-item">
+                <div class="sb-nav-icon"><i class="fas fa-arrow-left"></i></div>
+                <span class="sb-nav-label">Back to Home</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- ── MAIN ── -->
+    <main class="sb-main">
+
+        <!-- Topbar -->
+        <div class="sb-topbar sb-fade-1">
+            <div>
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+                    <div class="hero-badge" style="margin:0;padding:4px 12px;background:var(--color-success-bg);border-color:var(--color-success);color:var(--color-success)">
+                        <i class="fas fa-shield-halved" style="font-size:9px"></i> Revenue Registry
+                    </div>
+                    <div class="hero-badge" style="margin:0;padding:4px 12px">
+                        <i class="fas fa-landmark" style="font-size:9px"></i> ZRA Official Portal
+                    </div>
                 </div>
-                <div class="badge badge-success">
-                    <i class="fas fa-shield-halved" style="font-size:9px"></i> Revenue Registry
+                <h2 style="font-size:22px;font-weight:900;letter-spacing:-.03em;margin-bottom:2px">Tax Compliance Interface</h2>
+                <p style="font-size:13px;color:var(--text-muted);font-weight:500">Monitor real estate turnover tax collection and property verification queues.</p>
+            </div>
+            <div style="display:flex;gap:8px">
+                <button class="sb-filter-btn" onclick="exportQueueCSV()">
+                    <i class="fas fa-download"></i> Export
+                </button>
+                <button class="sb-filter-btn" onclick="window.location.reload()">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="sb-stat-row sb-fade-2" id="section-overview">
+            <div class="sb-kpi-card green">
+                <div class="sb-kpi-top">
+                    <div>
+                        <div class="sb-kpi-label">Total Revenue</div>
+                        <div class="sb-kpi-value">K{{ total_tax|floatformat:2 }}</div>
+                    </div>
+                    <div class="sb-kpi-icon"><i class="fas fa-money-bill-trend-up"></i></div>
+                </div>
+                <div class="sb-kpi-sub">Aggregate Turnover Tax</div>
+            </div>
+
+            <div class="sb-kpi-card teal">
+                <div class="sb-kpi-top">
+                    <div>
+                        <div class="sb-kpi-label">Compliance Rate</div>
+                        <div class="sb-kpi-value">{{ compliance_rate|floatformat:1 }}%</div>
+                    </div>
+                    <div class="sb-kpi-icon"><i class="fas fa-check-double"></i></div>
+                </div>
+                <div class="zra-progress">
+                    <div class="zra-progress-fill" style="width:{{ compliance_rate|floatformat:0 }}%"></div>
                 </div>
             </div>
-            <h1 style="font-size:clamp(1.8rem,4vw,2.6rem);font-weight:900;letter-spacing:-0.04em;margin-bottom:6px;line-height:1.1">Tax Compliance Interface</h1>
-            <p style="color:var(--text-secondary);font-size:15px;font-weight:500">Monitor real estate turnover tax collection and property verification queues.</p>
-        </div>
-    </header>
 
-    <!-- Stats -->
-    <div class="db-stat-grid fade-up delay-2">
-        <!-- Revenue -->
-        <div class="db-stat-card" style="background:var(--color-success-bg); border-color:var(--color-success);">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-                <span class="stat-label" style="color:var(--color-success)">Total Revenue</span>
-                <div style="width:38px;height:38px;border-radius:12px;background:var(--color-success-bg);border:1px solid var(--color-success);display:flex;align-items:center;justify-content:center;color:var(--color-success);font-size:15px"><i class="fas fa-money-bill-trend-up"></i></div>
-            </div>
-            <div class="stat-value" style="color:var(--color-success)">K{{ total_tax|floatformat:2 }}</div>
-            <div style="font-size:11px;font-weight:600;color:var(--color-success);margin-top:5px;opacity:0.7">Aggregate Turnover Tax</div>
-        </div>
-        <!-- Compliance rate -->
-        <div class="db-stat-card" style="background:var(--color-primary-light); border-color:var(--color-primary);">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-                <span class="stat-label" style="color:var(--color-primary)">Compliance Rate</span>
-                <div style="width:38px;height:38px;border-radius:12px;background:var(--color-primary-light);border:1px solid var(--color-primary);display:flex;align-items:center;justify-content:center;color:var(--color-primary);font-size:15px"><i class="fas fa-check-double"></i></div>
-            </div>
-            <div class="stat-value" style="color:var(--color-primary)">{{ compliance_rate|floatformat:1 }}%</div>
-            <div style="height:5px;background:var(--border-color);border-radius:9999px;overflow:hidden;margin-top:12px">
-                <div style="height:100%;background:linear-gradient(90deg,var(--color-primary),var(--color-primary-hover));border-radius:9999px;width:{{ compliance_rate|floatformat:0 }}%;transition:width .8s ease"></div>
+            <div class="sb-kpi-card amber">
+                <div class="sb-kpi-top">
+                    <div>
+                        <div class="sb-kpi-label">Pending</div>
+                        <div class="sb-kpi-value">{{ non_compliant_count }}</div>
+                    </div>
+                    <div class="sb-kpi-icon"><i class="fas fa-list-check"></i></div>
+                </div>
+                <div class="sb-kpi-sub">Awaiting Verification</div>
             </div>
         </div>
-        <!-- Pending -->
-        <div class="db-stat-card" style="background:var(--color-warning-bg); border-color:var(--color-warning);">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-                <span class="stat-label" style="color:var(--color-warning)">Pending</span>
-                <div style="width:38px;height:38px;border-radius:12px;background:var(--color-warning-bg);border:1px solid var(--color-warning);display:flex;align-items:center;justify-content:center;color:var(--color-warning);font-size:15px"><i class="fas fa-list-check"></i></div>
-            </div>
-            <div class="stat-value" style="color:var(--color-warning)">{{ non_compliant_count }}</div>
-            <div style="font-size:11px;font-weight:600;color:var(--color-warning);margin-top:5px;opacity:0.7">Awaiting Verification</div>
-        </div>
-    </div>
 
-    <!-- Queue section -->
-    <div style="display:flex;align-items:center;gap:14px;margin-bottom:22px" class="fade-up delay-3">
-        <div style="width:40px;height:40px;border-radius:12px;background:var(--color-primary-light);border:1px solid var(--color-primary);display:flex;align-items:center;justify-content:center;color:var(--color-primary);font-size:16px"><i class="fas fa-file-shield"></i></div>
-        <div>
-            <h3 style="font-size:16px;font-weight:800;margin-bottom:2px">Verification Backlog</h3>
-            <p class="section-label" style="margin-bottom:0">Properties pending tax compliance approval</p>
+        <!-- Filter bar -->
+        <div class="sb-filter-bar sb-fade-3">
+            <div style="position:relative">
+                <i class="fas fa-search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--text-muted)"></i>
+                <input type="text" placeholder="Search properties…" oninput="filterQueue(this.value)"
+                    style="padding:7px 12px 7px 30px;background:var(--bg-surface-solid);border:1px solid var(--border-color);border-radius:9px;font-size:12px;font-weight:500;color:var(--text-main);outline:none;width:240px;transition:all .2s ease"
+                    onfocus="this.style.borderColor='var(--color-success)'" onblur="this.style.borderColor='var(--border-color)'">
+            </div>
+            <button class="sb-filter-btn active" onclick="setFilter('all',this)">All Properties</button>
+            <button class="sb-filter-btn" onclick="setFilter('pending',this)">Pending Only</button>
+            <span style="margin-left:auto;font-size:12px;color:var(--text-muted);font-weight:600">
+                Showing <strong id="queueCountLabel" style="color:var(--text-main)">{{ non_compliant_count }}</strong> properties
+            </span>
         </div>
-        <div style="margin-left:auto" class="badge badge-warning">{{ non_compliant_count }} Enquiries</div>
-    </div>
 
-    <div class="card fade-up delay-4">
-        <div style="padding:14px 22px;border-bottom:1px solid var(--border-color);display:flex;justify-content:space-between;align-items:center;background:var(--bg-body)">
-            <span class="stat-label">Turnover Tax Registry</span>
-        </div>
-        <div id="taxQueueList" style="max-height:700px;overflow-y:auto">
-            <div style="padding:56px;text-align:center;color:var(--text-muted)">
-                <i class="fas fa-circle-notch fa-spin" style="font-size:1.8rem;color:var(--color-primary);display:block;margin-bottom:12px"></i>
-                <p style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em">Synchronizing Registry…</p>
+        <!-- Verification Queue -->
+        <div class="sb-table-card sb-fade-4" id="section-queue">
+            <div class="sb-table-header">
+                <h3><i class="fas fa-file-shield" style="color:var(--color-success);margin-right:8px"></i> Turnover Tax Registry</h3>
+                <span class="badge badge-warning" style="font-size:9px">{{ non_compliant_count }} ENQUIRIES</span>
+            </div>
+            <div id="taxQueueList" style="max-height:600px;overflow-y:auto">
+                <div style="padding:48px;text-align:center;color:var(--text-muted)">
+                    <i class="fas fa-circle-notch fa-spin" style="font-size:1.6rem;color:var(--color-success);display:block;margin-bottom:12px"></i>
+                    <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em">Synchronizing Registry…</p>
+                </div>
             </div>
         </div>
-    </div>
+
+        <!-- Reports section -->
+        <div id="section-reports" style="margin-top:24px">
+            <div class="sb-table-card sb-fade-4">
+                <div class="sb-table-header">
+                    <h3><i class="fas fa-chart-bar" style="color:var(--color-primary);margin-right:8px"></i> Tax Summary Report</h3>
+                    <button class="sb-filter-btn" onclick="exportQueueCSV()">
+                        <i class="fas fa-download"></i> Download Report
+                    </button>
+                </div>
+                <div style="padding:24px">
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px">
+                        <div style="padding:16px;background:var(--bg-body);border-radius:12px;border:1px solid var(--border-color)">
+                            <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:8px">Total Tax Collected</div>
+                            <div style="font-size:24px;font-weight:900;color:var(--color-success)">K{{ total_tax|floatformat:2 }}</div>
+                        </div>
+                        <div style="padding:16px;background:var(--bg-body);border-radius:12px;border:1px solid var(--border-color)">
+                            <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:8px">Compliance Rate</div>
+                            <div style="font-size:24px;font-weight:900;color:var(--color-primary)">{{ compliance_rate|floatformat:1 }}%</div>
+                        </div>
+                        <div style="padding:16px;background:var(--bg-body);border-radius:12px;border:1px solid var(--border-color)">
+                            <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:8px">Non-Compliant</div>
+                            <div style="font-size:24px;font-weight:900;color:var(--color-warning)">{{ non_compliant_count }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
 </div>
 {% endblock %}
 
 {% block extra_scripts %}
 <script>document.addEventListener('DOMContentLoaded',()=>document.body.classList.add('zra-page'));</script>
 <script src="{% static 'js/official_dashboard.js' %}"></script>
+<script>
+function toggleSidebar() {
+    const sb = document.getElementById('mainSidebar');
+    const icon = document.getElementById('collapseBtnIcon');
+    if (window.innerWidth <= 768) {
+        sb.classList.toggle('mobile-open');
+        document.getElementById('sbOverlay').classList.toggle('visible', sb.classList.contains('mobile-open'));
+    } else {
+        sb.classList.toggle('collapsed');
+        icon.className = sb.classList.contains('collapsed') ? 'fas fa-chevron-right' : 'fas fa-chevron-left';
+    }
+}
+
+function sbNav(el) {
+    document.querySelectorAll('.sb-nav-item').forEach(i => i.classList.remove('active'));
+    el.classList.add('active');
+    const target = el.getAttribute('href');
+    if (target && target.startsWith('#')) {
+        const sec = document.querySelector(target);
+        if (sec) sec.scrollIntoView({ behavior:'smooth', block:'start' });
+    }
+}
+
+let currentFilter = 'all';
+let searchTerm = '';
+
+function filterQueue(q) {
+    searchTerm = q.toLowerCase();
+    applyQueueFilter();
+}
+
+function setFilter(filter, btn) {
+    currentFilter = filter;
+    document.querySelectorAll('.sb-filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    applyQueueFilter();
+}
+
+function applyQueueFilter() {
+    const items = document.querySelectorAll('#taxQueueList .list-item');
+    let visible = 0;
+    items.forEach(item => {
+        const text = item.textContent.toLowerCase();
+        const matchSearch = !searchTerm || text.includes(searchTerm);
+        const matchFilter = currentFilter === 'all' || (currentFilter === 'pending' && item.querySelector('.badge-warning'));
+        const show = matchSearch && matchFilter;
+        item.style.display = show ? '' : 'none';
+        if (show) visible++;
+    });
+    const lbl = document.getElementById('queueCountLabel');
+    if (lbl) lbl.textContent = visible;
+}
+
+function exportQueueCSV() {
+    const items = document.querySelectorAll('#taxQueueList .list-item');
+    let csv = 'Property,Owner,Declared Price,Estimated Tax,Status\n';
+    items.forEach(item => {
+        const title = item.querySelector('h4')?.textContent || '';
+        const owner = item.querySelector('.text-secondary')?.textContent || '';
+        const price = item.querySelector('.text-primary')?.textContent || '';
+        const tax = item.querySelector('.text-success')?.textContent || '';
+        csv += `"${title}","${owner}","${price}","${tax}","Pending"\n`;
+    });
+    const blob = new Blob([csv], { type:'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'zra_tax_queue.csv';
+    a.click();
+}
+
+function exportQueuePDF() {
+    window.print();
+}
+</script>
 {% endblock %}

@@ -2,114 +2,410 @@
 {% load static %}
 {% block title %}Ministry Occupancy Portal | Zambia Rentals{% endblock %}
 
+{% block extra_head %}
+<style>
+/* ── SHARED SIDEBAR SYSTEM ── */
+.sb-layout{display:flex;min-height:calc(100vh - 64px);background:var(--bg-body)}
+.sb-sidebar{width:240px;min-height:100%;background:var(--bg-surface-solid);border-right:1px solid var(--border-color);display:flex;flex-direction:column;flex-shrink:0;transition:width .25s cubic-bezier(.4,0,.2,1);position:sticky;top:64px;height:calc(100vh - 64px);overflow:hidden;z-index:40}
+.sb-sidebar.collapsed{width:64px}
+.sb-sidebar-header{padding:20px 16px 16px;border-bottom:1px solid var(--border-color);display:flex;align-items:center;justify-content:space-between;min-height:64px}
+.sb-logo{display:flex;align-items:center;gap:10px;overflow:hidden;white-space:nowrap}
+.sb-logo-icon{width:32px;height:32px;border-radius:10px;background:var(--color-primary);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px;color:#fff}
+.sb-logo-text{font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--text-main);opacity:1;transition:opacity .2s ease}
+.sb-sidebar.collapsed .sb-logo-text{opacity:0;width:0}
+.sb-collapse-btn{width:28px;height:28px;border-radius:8px;background:var(--bg-body);border:1px solid var(--border-color);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted);font-size:11px;flex-shrink:0;transition:all .2s ease}
+.sb-collapse-btn:hover{background:var(--color-primary-light);color:var(--color-primary)}
+.sb-sidebar.collapsed .sb-collapse-btn{margin:0 auto}
+.sb-nav{flex:1;padding:12px 0;overflow-y:auto;overflow-x:hidden}
+.sb-section-label{font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);padding:8px 16px 4px;white-space:nowrap;overflow:hidden;transition:opacity .2s ease}
+.sb-sidebar.collapsed .sb-section-label{opacity:0}
+.sb-nav-item{display:flex;align-items:center;gap:10px;padding:9px 14px;margin:1px 8px;border-radius:10px;color:var(--text-secondary);text-decoration:none;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;overflow:hidden;transition:all .15s ease;position:relative}
+.sb-nav-item:hover{background:var(--color-primary-soft);color:var(--color-primary)}
+.sb-nav-item.active{background:var(--color-primary-light);color:var(--color-primary)}
+.sb-nav-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:20px;background:var(--color-primary);border-radius:0 3px 3px 0}
+.sb-nav-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.sb-nav-label{flex:1;transition:opacity .2s ease,width .2s ease}
+.sb-sidebar.collapsed .sb-nav-label{opacity:0;width:0}
+.sb-sidebar-footer{padding:12px 8px;border-top:1px solid var(--border-color)}
+.sb-main{flex:1;min-width:0;padding:28px 32px 60px;overflow-x:auto}
+.sb-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;gap:16px;flex-wrap:wrap}
+.sb-stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:28px}
+.sb-kpi-card{background:var(--bg-surface-solid);border:1px solid var(--border-color);border-radius:14px;padding:18px 20px;transition:all .2s ease}
+.sb-kpi-card.indigo{background:linear-gradient(135deg,#4f46e5 0%,#4338ca 100%);border-color:transparent;color:#fff}
+.sb-kpi-card.green{background:linear-gradient(135deg,#10b981 0%,#059669 100%);border-color:transparent;color:#fff}
+.sb-kpi-card.slate{background:linear-gradient(135deg,#475569 0%,#334155 100%);border-color:transparent;color:#fff}
+.sb-kpi-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.sb-kpi-icon{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff}
+.sb-kpi-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;opacity:.75;margin-bottom:4px}
+.sb-kpi-value{font-size:26px;font-weight:900;letter-spacing:-.04em;line-height:1;margin-bottom:2px}
+.sb-kpi-sub{font-size:11px;font-weight:600;opacity:.65}
+.sb-filter-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:var(--bg-surface-solid);border:1px solid var(--border-color);border-radius:9px;font-size:12px;font-weight:700;color:var(--text-secondary);cursor:pointer;transition:all .15s ease}
+.sb-filter-btn:hover,.sb-filter-btn.active{background:var(--color-primary-light);border-color:var(--color-primary);color:var(--color-primary)}
+.sb-table-card{background:var(--bg-surface-solid);border:1px solid var(--border-color);border-radius:14px;overflow:hidden}
+.sb-table-header{padding:14px 20px;border-bottom:1px solid var(--border-color);display:flex;align-items:center;justify-content:space-between;background:var(--bg-body)}
+.sb-table-header h3{font-size:13px;font-weight:800;color:var(--text-main)}
+.sb-table{width:100%;border-collapse:collapse;font-size:13px}
+.sb-table th{padding:10px 16px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);background:var(--bg-body);border-bottom:1px solid var(--border-color);text-align:left;white-space:nowrap}
+.sb-table td{padding:13px 16px;border-bottom:1px solid var(--border-color);color:var(--text-main);vertical-align:middle}
+.sb-table tr:last-child td{border-bottom:none}
+.sb-table tr:hover td{background:var(--color-primary-soft)}
+@keyframes sbFadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.sb-fade-1{animation:sbFadeUp .4s ease both .05s}
+.sb-fade-2{animation:sbFadeUp .4s ease both .1s}
+.sb-fade-3{animation:sbFadeUp .4s ease both .15s}
+.sb-fade-4{animation:sbFadeUp .4s ease both .2s}
+.sb-sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99}
+.sb-sidebar-overlay.visible{display:block}
+@media(max-width:768px){
+    .sb-sidebar{position:fixed;left:0;top:64px;bottom:0;transform:translateX(-100%);transition:transform .25s ease;z-index:100;box-shadow:var(--shadow-lg)}
+    .sb-sidebar.mobile-open{transform:translateX(0)}
+    .sb-main{padding:20px 16px 60px}
+}
+
+/* Density bar */
+.density-bar{height:5px;background:var(--bg-body);border-radius:9999px;overflow:hidden;flex:1}
+.density-bar-fill{height:100%;border-radius:9999px;background:linear-gradient(90deg,var(--color-primary),var(--color-primary-hover));transition:width .8s ease}
+.density-label{font-size:10px;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:.07em;min-width:28px}
+
+/* District card view */
+.district-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;padding:20px}
+.district-card{background:var(--bg-body);border:1px solid var(--border-color);border-radius:12px;padding:16px;transition:all .2s ease}
+.district-card:hover{border-color:var(--color-primary);box-shadow:0 0 0 3px var(--color-primary-soft)}
+.district-name{font-size:13px;font-weight:800;color:var(--text-main);margin-bottom:6px}
+.district-pop{font-size:22px;font-weight:900;color:var(--color-primary);letter-spacing:-.04em}
+.district-units{font-size:11px;color:var(--text-muted);font-weight:600;margin-top:2px}
+
+/* View toggle */
+.view-toggle{display:flex;gap:4px;background:var(--bg-body);border:1px solid var(--border-color);border-radius:9px;padding:3px}
+.view-btn{padding:4px 10px;border-radius:7px;font-size:11px;font-weight:700;color:var(--text-muted);cursor:pointer;transition:all .15s ease;border:none;background:transparent}
+.view-btn.active{background:var(--bg-surface-solid);color:var(--text-main);box-shadow:var(--shadow-sm)}
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="db-bg-container">
-    <div class="db-bg-img"></div>
-    <div class="db-bg-overlay"></div>
-</div>
+<div class="sb-sidebar-overlay" id="sbOverlay" onclick="toggleSidebar()"></div>
 
-<div class="db-container">
+<div class="sb-layout">
 
-    <!-- Header -->
-    <header class="db-header fade-up delay-1">
-        <div>
-            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px">
-                <div class="hero-badge" style="margin-bottom:0">
-                    <i class="fas fa-building-columns" style="font-size:9px"></i> Ministry of Home Affairs
+    <!-- ── SIDEBAR ── -->
+    <aside class="sb-sidebar" id="mainSidebar">
+        <div class="sb-sidebar-header">
+            <div class="sb-logo">
+                <div class="sb-logo-icon"><i class="fas fa-building-columns"></i></div>
+                <span class="sb-logo-text">Ministry</span>
+            </div>
+            <button class="sb-collapse-btn" onclick="toggleSidebar()">
+                <i class="fas fa-chevron-left" id="collapseBtnIcon"></i>
+            </button>
+        </div>
+
+        <nav class="sb-nav">
+            <div class="sb-section-label">Occupancy</div>
+
+            <a href="#section-overview" class="sb-nav-item active" onclick="sbNav(this)">
+                <div class="sb-nav-icon"><i class="fas fa-th-large"></i></div>
+                <span class="sb-nav-label">Overview</span>
+            </a>
+
+            <a href="#section-districts" class="sb-nav-item" onclick="sbNav(this)">
+                <div class="sb-nav-icon"><i class="fas fa-map-marked-alt"></i></div>
+                <span class="sb-nav-label">District Registry</span>
+            </a>
+
+            <a href="#section-analytics" class="sb-nav-item" onclick="sbNav(this)">
+                <div class="sb-nav-icon"><i class="fas fa-chart-pie"></i></div>
+                <span class="sb-nav-label">Analytics</span>
+            </a>
+
+            <div class="sb-section-label">Export</div>
+
+            <a class="sb-nav-item" onclick="exportDistrictsCSV()">
+                <div class="sb-nav-icon"><i class="fas fa-file-csv"></i></div>
+                <span class="sb-nav-label">Export CSV</span>
+            </a>
+
+            <a class="sb-nav-item" onclick="window.print()">
+                <div class="sb-nav-icon"><i class="fas fa-print"></i></div>
+                <span class="sb-nav-label">Print Report</span>
+            </a>
+        </nav>
+
+        <div class="sb-sidebar-footer">
+            <a href="{% url 'index' %}" class="sb-nav-item">
+                <div class="sb-nav-icon"><i class="fas fa-arrow-left"></i></div>
+                <span class="sb-nav-label">Back to Home</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- ── MAIN ── -->
+    <main class="sb-main">
+
+        <!-- Topbar -->
+        <div class="sb-topbar sb-fade-1">
+            <div>
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+                    <div class="hero-badge" style="margin:0;padding:4px 12px">
+                        <i class="fas fa-building-columns" style="font-size:9px"></i> Ministry of Home Affairs
+                    </div>
+                    <div class="badge badge-primary" style="font-size:9px">
+                        <i class="fas fa-users-rays" style="font-size:9px"></i> Occupancy Census
+                    </div>
                 </div>
-                <div class="badge badge-primary">
-                    <i class="fas fa-users-rays" style="font-size:9px"></i> Occupancy Census
+                <h2 style="font-size:22px;font-weight:900;letter-spacing:-.03em;margin-bottom:2px">Occupancy Intelligence Portal</h2>
+                <p style="font-size:13px;color:var(--text-muted);font-weight:500">National rental density and residential population tracking by district.</p>
+            </div>
+            <div style="display:flex;gap:8px">
+                <button class="sb-filter-btn" onclick="exportDistrictsCSV()">
+                    <i class="fas fa-download"></i> Export
+                </button>
+            </div>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="sb-stat-row sb-fade-2" id="section-overview">
+            <div class="sb-kpi-card indigo">
+                <div class="sb-kpi-top">
+                    <div>
+                        <div class="sb-kpi-label">Residents Tracked</div>
+                        <div class="sb-kpi-value">{% if occupancy_stats %}{{ occupancy_stats.0.total_people|default:0 }}{% else %}0{% endif %}+</div>
+                    </div>
+                    <div class="sb-kpi-icon"><i class="fas fa-users"></i></div>
+                </div>
+                <div class="sb-kpi-sub">Across all districts</div>
+            </div>
+
+            <div class="sb-kpi-card green">
+                <div class="sb-kpi-top">
+                    <div>
+                        <div class="sb-kpi-label">Units Monitored</div>
+                        <div class="sb-kpi-value">{% if occupancy_stats %}{{ occupancy_stats.0.property_count|default:0 }}{% else %}0{% endif %}</div>
+                    </div>
+                    <div class="sb-kpi-icon"><i class="fas fa-house-chimney"></i></div>
+                </div>
+                <div class="sb-kpi-sub">Verified active listings</div>
+            </div>
+
+            <div class="sb-kpi-card slate">
+                <div class="sb-kpi-top">
+                    <div>
+                        <div class="sb-kpi-label">Districts</div>
+                        <div class="sb-kpi-value">{{ occupancy_stats|length }}</div>
+                    </div>
+                    <div class="sb-kpi-icon"><i class="fas fa-map"></i></div>
+                </div>
+                <div class="sb-kpi-sub">With active agreements</div>
+            </div>
+        </div>
+
+        <!-- Filter & View toggle -->
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap" class="sb-fade-3">
+            <div style="position:relative">
+                <i class="fas fa-search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--text-muted)"></i>
+                <input type="text" placeholder="Search districts…" oninput="filterDistricts(this.value)"
+                    style="padding:7px 12px 7px 30px;background:var(--bg-surface-solid);border:1px solid var(--border-color);border-radius:9px;font-size:12px;font-weight:500;color:var(--text-main);outline:none;width:220px;transition:all .2s ease"
+                    onfocus="this.style.borderColor='var(--color-primary)'" onblur="this.style.borderColor='var(--border-color)'">
+            </div>
+            <select onchange="sortDistricts(this.value)"
+                style="padding:7px 12px;background:var(--bg-surface-solid);border:1px solid var(--border-color);border-radius:9px;font-size:12px;font-weight:600;color:var(--text-main);outline:none;cursor:pointer">
+                <option value="pop_desc">Sort: Highest Population</option>
+                <option value="pop_asc">Sort: Lowest Population</option>
+                <option value="units_desc">Sort: Most Units</option>
+                <option value="alpha">Sort: A-Z</option>
+            </select>
+            <span style="margin-left:auto">
+                <div class="view-toggle">
+                    <button class="view-btn active" id="viewTable" onclick="setView('table',this)"><i class="fas fa-table"></i></button>
+                    <button class="view-btn" id="viewGrid" onclick="setView('grid',this)"><i class="fas fa-th"></i></button>
+                </div>
+            </span>
+        </div>
+
+        <!-- Table View -->
+        <div class="sb-table-card sb-fade-4" id="section-districts" style="margin-bottom:24px">
+            <div class="sb-table-header">
+                <div style="display:flex;align-items:center;gap:10px">
+                    <div style="width:32px;height:32px;border-radius:9px;background:var(--bg-surface-solid);border:1px solid var(--border-color);display:flex;align-items:center;justify-content:center;color:var(--text-secondary);font-size:13px"><i class="fas fa-map-marked-alt"></i></div>
+                    <h3>District Heatmap Registry</h3>
+                </div>
+                <span class="badge badge-primary" style="font-size:9px">{{ occupancy_stats|length }} Districts</span>
+            </div>
+
+            <!-- Table view -->
+            <div id="tableView">
+                <div style="overflow-x:auto">
+                    <table class="sb-table" id="districtsTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>District</th>
+                                <th>Population</th>
+                                <th>Units</th>
+                                <th>Density Index</th>
+                                <th>Level</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for stat in occupancy_stats %}
+                            <tr>
+                                <td style="color:var(--text-muted);font-weight:700">{{ forloop.counter }}</td>
+                                <td style="font-weight:800">{{ stat.property__district }}</td>
+                                <td>
+                                    <span class="badge badge-primary">
+                                        <i class="fas fa-users" style="font-size:9px;margin-right:4px"></i>
+                                        {{ stat.total_people }}
+                                    </span>
+                                </td>
+                                <td style="font-weight:600;color:var(--text-secondary)">{{ stat.property_count }} listings</td>
+                                <td style="width:180px">
+                                    <div style="display:flex;align-items:center;gap:10px">
+                                        <div class="density-bar">
+                                            <div class="density-bar-fill" style="width:{% if stat.total_people > 50 %}85{% elif stat.total_people > 20 %}50{% else %}20{% endif %}%"></div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if stat.total_people > 50 %}
+                                    <span class="badge badge-error" style="font-size:9px">HIGH</span>
+                                    {% elif stat.total_people > 20 %}
+                                    <span class="badge badge-warning" style="font-size:9px">MED</span>
+                                    {% else %}
+                                    <span class="badge badge-success" style="font-size:9px">LOW</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" style="text-align:center;padding:48px">
+                                    <i class="fas fa-database" style="font-size:2rem;color:var(--text-muted);display:block;margin-bottom:12px"></i>
+                                    <p style="color:var(--text-muted);font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.1em">No Active Agreement Records</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
-            <h1 style="font-size:clamp(1.8rem,4vw,2.6rem);font-weight:900;letter-spacing:-0.04em;margin-bottom:6px;line-height:1.1">Occupancy Intelligence Portal</h1>
-            <p style="color:var(--text-secondary);font-size:15px;font-weight:500">National rental density and residential population tracking by district.</p>
-        </div>
-    </header>
 
-    <!-- Stats -->
-    <div class="db-stat-grid fade-up delay-2">
-        <div class="db-stat-card" style="background:var(--color-primary-light); border-color:var(--color-primary);">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-                <span class="stat-label" style="color:var(--color-primary)">Residents Tracked</span>
-                <div style="width:38px;height:38px;border-radius:12px;background:var(--color-primary-light);border:1px solid var(--color-primary);display:flex;align-items:center;justify-content:center;color:var(--color-primary);font-size:15px"><i class="fas fa-users"></i></div>
-            </div>
-            <div class="stat-value" style="color:var(--color-primary)">{% if occupancy_stats %}{{ occupancy_stats.0.total_people|default:0 }}{% else %}0{% endif %}+</div>
-            <div style="font-size:11px;font-weight:600;color:var(--text-muted);margin-top:5px">Across all districts</div>
-        </div>
-        <div class="db-stat-card">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-                <span class="stat-label">Units Monitored</span>
-                <div style="width:38px;height:38px;border-radius:12px;background:var(--bg-body);border:1px solid var(--border-color);display:flex;align-items:center;justify-content:center;color:var(--text-secondary);font-size:15px"><i class="fas fa-house-chimney"></i></div>
-            </div>
-            <div class="stat-value">{% if occupancy_stats %}{{ occupancy_stats.0.property_count|default:0 }}{% else %}0{% endif %}</div>
-            <div style="font-size:11px;font-weight:600;color:var(--text-muted);margin-top:5px">Verified active listings</div>
-        </div>
-        <div class="db-stat-card">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-                <span class="stat-label">Districts</span>
-                <div style="width:38px;height:38px;border-radius:12px;background:var(--bg-body);border:1px solid var(--border-color);display:flex;align-items:center;justify-content:center;color:var(--text-secondary);font-size:15px"><i class="fas fa-map-marked-alt"></i></div>
-            </div>
-            <div class="stat-value">{{ occupancy_stats|length }}</div>
-            <div style="font-size:11px;font-weight:600;color:var(--text-muted);margin-top:5px">With active agreements</div>
-        </div>
-    </div>
-
-    <!-- Table header -->
-    <div style="display:flex;align-items:center;gap:14px;margin-bottom:22px" class="fade-up delay-3">
-        <div style="width:40px;height:40px;border-radius:12px;background:var(--bg-surface);border:1px solid var(--border-color);display:flex;align-items:center;justify-content:center;color:var(--text-secondary);font-size:16px"><i class="fas fa-map-marked-alt"></i></div>
-        <div>
-            <h3 style="font-size:16px;font-weight:800;margin-bottom:2px">District Heatmap Registry</h3>
-            <p class="section-label" style="margin-bottom:0">Density mapping by administrative district</p>
-        </div>
-        <div style="margin-left:auto" class="badge badge-primary">{{ occupancy_stats|length }} Districts</div>
-    </div>
-
-    <!-- Table -->
-    <div class="data-table-wrapper fade-up delay-4">
-        <div style="overflow-x:auto">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>District</th>
-                        <th>Population</th>
-                        <th>Units</th>
-                        <th style="width:30%">Density Index</th>
-                    </tr>
-                </thead>
-                <tbody>
+            <!-- Grid view -->
+            <div id="gridView" style="display:none">
+                <div class="district-grid">
                     {% for stat in occupancy_stats %}
-                    <tr>
-                        <td style="font-weight:800;">{{ stat.property__district }}</td>
-                        <td>
-                            <span class="badge badge-primary">
-                                <i class="fas fa-users" style="font-size:10px; margin-right: 6px;"></i> {{ stat.total_people }}
-                            </span>
-                        </td>
-                        <td style="font-weight:600;color:var(--text-muted)">{{ stat.property_count }} Listings</td>
-                        <td>
-                            <div style="display:flex;align-items:center;gap:12px">
-                                <div style="flex:1;height:5px;background:var(--border-color);border-radius:9999px;overflow:hidden">
-                                    <div style="height:100%;background:linear-gradient(90deg,var(--color-primary),var(--color-primary-hover));border-radius:9999px;transition:width .8s ease;width:{% if stat.total_people > 50 %}85{% elif stat.total_people > 20 %}50{% else %}20{% endif %}%"></div>
-                                </div>
-                                <span style="font-size:10px;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;min-width:28px">{% if stat.total_people > 50 %}HIGH{% elif stat.total_people > 20 %}MED{% else %}LOW{% endif %}</span>
-                            </div>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="4" style="padding:60px;text-align:center">
-                            <i class="fas fa-database" style="font-size:2rem;color:var(--text-muted);display:block;margin-bottom:12px"></i>
-                            <p style="color:var(--text-muted);font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em">No Active Agreement Records</p>
-                        </td>
-                    </tr>
+                    <div class="district-card">
+                        <div class="district-name">{{ stat.property__district }}</div>
+                        <div class="district-pop">{{ stat.total_people }}</div>
+                        <div class="district-units">{{ stat.property_count }} units · {% if stat.total_people > 50 %}High Density{% elif stat.total_people > 20 %}Medium Density{% else %}Low Density{% endif %}</div>
+                    </div>
                     {% endfor %}
-                </tbody>
-            </table>
+                </div>
+            </div>
         </div>
-    </div>
+
+        <!-- Analytics section -->
+        <div id="section-analytics" class="sb-table-card sb-fade-4">
+            <div class="sb-table-header">
+                <h3><i class="fas fa-chart-pie" style="color:var(--color-primary);margin-right:8px"></i> Density Analytics</h3>
+                <button class="sb-filter-btn" onclick="exportDistrictsCSV()">
+                    <i class="fas fa-download"></i> Export CSV
+                </button>
+            </div>
+            <div style="padding:20px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+                {% for stat in occupancy_stats %}
+                <div style="display:flex;flex-direction:column;gap:6px">
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <span style="font-size:12px;font-weight:700;color:var(--text-main)">{{ stat.property__district }}</span>
+                        <span style="font-size:11px;font-weight:800;color:var(--color-primary)">{{ stat.total_people }}</span>
+                    </div>
+                    <div style="height:6px;background:var(--bg-body);border-radius:9999px;overflow:hidden">
+                        <div style="height:100%;background:linear-gradient(90deg,var(--color-primary),var(--color-primary-hover));border-radius:9999px;width:{% if stat.total_people > 50 %}85{% elif stat.total_people > 20 %}50{% else %}20{% endif %}%;transition:width .8s ease"></div>
+                    </div>
+                </div>
+                {% empty %}
+                <div style="grid-column:1/-1;text-align:center;padding:32px;color:var(--text-muted);font-size:12px;font-weight:700">No data available</div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </main>
 </div>
 {% endblock %}
 
 {% block extra_scripts %}
 <script>document.addEventListener('DOMContentLoaded',()=>document.body.classList.add('ministry-page'));</script>
+<script>
+function toggleSidebar() {
+    const sb = document.getElementById('mainSidebar');
+    const icon = document.getElementById('collapseBtnIcon');
+    if (window.innerWidth <= 768) {
+        sb.classList.toggle('mobile-open');
+        document.getElementById('sbOverlay').classList.toggle('visible', sb.classList.contains('mobile-open'));
+    } else {
+        sb.classList.toggle('collapsed');
+        icon.className = sb.classList.contains('collapsed') ? 'fas fa-chevron-right' : 'fas fa-chevron-left';
+    }
+}
+
+function sbNav(el) {
+    document.querySelectorAll('.sb-nav-item').forEach(i => i.classList.remove('active'));
+    el.classList.add('active');
+    const target = el.getAttribute('href');
+    if (target && target.startsWith('#')) {
+        const sec = document.querySelector(target);
+        if (sec) sec.scrollIntoView({ behavior:'smooth', block:'start' });
+    }
+}
+
+function filterDistricts(q) {
+    const rows = document.querySelectorAll('#districtsTable tbody tr');
+    const cards = document.querySelectorAll('.district-card');
+    [...rows, ...cards].forEach(item => {
+        item.style.display = item.textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none';
+    });
+}
+
+function setView(view, btn) {
+    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tableView').style.display = view === 'table' ? '' : 'none';
+    document.getElementById('gridView').style.display = view === 'grid' ? '' : 'none';
+}
+
+function sortDistricts(val) {
+    const tbody = document.querySelector('#districtsTable tbody');
+    const rows = Array.from(tbody.querySelectorAll('tr'));
+    rows.sort((a, b) => {
+        const getCells = r => r.querySelectorAll('td');
+        const aDistrict = a.cells[1]?.textContent.trim() || '';
+        const bDistrict = b.cells[1]?.textContent.trim() || '';
+        const aPop = parseInt(a.cells[2]?.textContent.replace(/\D/g,'') || 0);
+        const bPop = parseInt(b.cells[2]?.textContent.replace(/\D/g,'') || 0);
+        const aUnits = parseInt(a.cells[3]?.textContent.replace(/\D/g,'') || 0);
+        const bUnits = parseInt(b.cells[3]?.textContent.replace(/\D/g,'') || 0);
+        switch(val) {
+            case 'pop_desc': return bPop - aPop;
+            case 'pop_asc': return aPop - bPop;
+            case 'units_desc': return bUnits - aUnits;
+            case 'alpha': return aDistrict.localeCompare(bDistrict);
+            default: return 0;
+        }
+    });
+    rows.forEach(r => tbody.appendChild(r));
+}
+
+function exportDistrictsCSV() {
+    const rows = document.querySelectorAll('#districtsTable tbody tr');
+    let csv = 'District,Population,Units,Density\n';
+    rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length > 1) {
+            csv += `"${cells[1].textContent.trim()}","${cells[2].textContent.trim()}","${cells[3].textContent.trim()}","${cells[5].textContent.trim()}"\n`;
+        }
+    });
+    const blob = new Blob([csv], { type:'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'ministry_districts.csv';
+    a.click();
+}
+</script>
 {% endblock %}
