@@ -54,7 +54,7 @@ authForm.addEventListener('submit', async (e) => {
                     if (meRes.ok) {
                         const userData = await meRes.json();
                         let redirectUrl = window.URLS.index;
-                        
+
                         if (userData.user_type === 'LANDLORD') {
                             redirectUrl = window.URLS.dashboard;
                         } else if (userData.user_type === 'ZRA') {

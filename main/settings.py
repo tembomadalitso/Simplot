@@ -86,7 +86,12 @@ REST_FRAMEWORK = {
     ],
 }
 
-# Single DJOSER block — all serializers in one place
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+LOGIN_URL = '/auth/login/'
+
+# Djoser Configuration
 DJOSER = {
     'SERIALIZERS': {
         'user': 'core.serializers.UserSerializer',
@@ -94,5 +99,3 @@ DJOSER = {
         'user_create': 'core.serializers.UserCreateSerializer',
     }
 }
-
-LOGIN_URL = '/auth/login/'
