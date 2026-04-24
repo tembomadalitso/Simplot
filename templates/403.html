@@ -1,25 +1,23 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block title %}Access Denied | Zambia Rentals{% endblock %}
 
 {% block content %}
-<div class="flex flex-col items-center justify-center min-h-[60vh] text-center px-4 animate-[fadeIn_0.5s_ease-out]">
-    <div class="glass-card p-12 rounded-3xl max-w-lg shadow-2xl">
-        <div class="w-24 h-24 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
-            <i class="fas fa-lock text-4xl"></i>
-        </div>
-        <h1 class="text-4xl font-black text-slate-900 mb-4">403: Access Denied</h1>
-        <p class="text-slate-600 text-lg mb-8 leading-relaxed">
-            You don't have permission to access this page. This area is reserved for authorized personnel only.
-        </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="{% url 'index' %}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-xl font-bold transition shadow-lg shadow-indigo-200">
-                Back to Home
-            </a>
-            <a href="{% url 'login' %}" class="bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-8 py-3 rounded-xl font-bold transition">
-                Sign In
-            </a>
-        </div>
+<div class="flex-column items-center justify-center text-center fade-up delay-1" style="min-height: 60vh;">
+    <div class="flex-center mb-6" style="width: 80px; height: 80px; border-radius: 24px; background: var(--color-error-bg); border: 1px solid var(--color-error); color: var(--color-error); font-size: 32px; box-shadow: var(--shadow-md);">
+        <i class="fas fa-shield-halved"></i>
+    </div>
+    <h1 class="font-black tracking-tighter mb-4" style="font-size: 3rem;">Access Restricted</h1>
+    <p class="text-lg font-medium mb-8" style="color: var(--text-secondary); max-width: 400px;">
+        You don't have the necessary clearance to view this high-security portal.
+    </p>
+    <div class="flex-row gap-3">
+        <a href="javascript:history.back()" class="btn btn-ghost">
+            <i class="fas fa-arrow-left"></i> Go Back
+        </a>
+        <a href="{% url 'index' %}" class="btn btn-primary">
+            <i class="fas fa-home"></i> Return Home
+        </a>
     </div>
 </div>
 {% endblock %}

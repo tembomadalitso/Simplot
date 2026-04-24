@@ -1,47 +1,650 @@
 {% extends 'base.html' %}
 {% load static %}
+{% block title %}Owner Dashboard | Zambia Rentals{% endblock %}
 
-{% block title %}Landlord Dashboard | Zambia Rentals{% endblock %}
+{% block extra_head %}
+<style>
+/* ── SIDEBAR LAYOUT SYSTEM ── */
+.sb-layout {
+    display: flex;
+    min-height: calc(100vh - 64px);
+    background: var(--bg-body);
+}
+
+/* Sidebar */
+.sb-sidebar {
+    width: 240px;
+    min-height: 100%;
+    background: var(--bg-surface-solid);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    transition: width 0.25s cubic-bezier(0.4,0,0.2,1);
+    position: sticky;
+    top: 64px;
+    height: calc(100vh - 64px);
+    overflow: hidden;
+    z-index: 40;
+}
+
+.sb-sidebar.collapsed { width: 64px; }
+
+.sb-sidebar-header {
+    padding: 20px 16px 16px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 64px;
+}
+
+.sb-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.sb-logo-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    background: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 13px;
+    color: #fff;
+}
+
+.sb-logo-text {
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-main);
+    opacity: 1;
+    transition: opacity 0.2s ease;
+}
+
+.sb-sidebar.collapsed .sb-logo-text { opacity: 0; width: 0; }
+
+.sb-collapse-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: var(--bg-body);
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-size: 11px;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+.sb-collapse-btn:hover { background: var(--color-primary-light); color: var(--color-primary); }
+.sb-sidebar.collapsed .sb-collapse-btn { margin: 0 auto; }
+
+/* Nav section */
+.sb-nav { flex: 1; padding: 12px 0; overflow-y: auto; overflow-x: hidden; }
+
+.sb-section-label {
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 8px 16px 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    transition: opacity 0.2s ease;
+}
+.sb-sidebar.collapsed .sb-section-label { opacity: 0; }
+
+.sb-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 14px;
+    margin: 1px 8px;
+    border-radius: 10px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    transition: all 0.15s ease;
+    position: relative;
+}
+
+.sb-nav-item:hover {
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+}
+
+.sb-nav-item.active {
+    background: var(--color-primary-light);
+    color: var(--color-primary);
+}
+
+.sb-nav-item.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 20px;
+    background: var(--color-primary);
+    border-radius: 0 3px 3px 0;
+}
+
+.sb-nav-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+    transition: background 0.15s ease;
+}
+
+.sb-nav-item.active .sb-nav-icon { background: var(--color-primary-light); }
+
+.sb-nav-label {
+    flex: 1;
+    transition: opacity 0.2s ease, width 0.2s ease;
+}
+.sb-sidebar.collapsed .sb-nav-label { opacity: 0; width: 0; }
+
+.sb-nav-badge {
+    background: var(--color-warning-bg);
+    color: var(--color-warning);
+    border: 1px solid var(--color-warning);
+    font-size: 9px;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 9999px;
+    flex-shrink: 0;
+    transition: opacity 0.2s ease;
+}
+.sb-sidebar.collapsed .sb-nav-badge { opacity: 0; }
+
+/* Sidebar footer */
+.sb-sidebar-footer {
+    padding: 12px 8px;
+    border-top: 1px solid var(--border-color);
+}
+
+/* Main content */
+.sb-main {
+    flex: 1;
+    min-width: 0;
+    padding: 28px 32px 60px;
+    overflow-x: auto;
+}
+
+/* ── TOP BAR ── */
+.sb-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.sb-topbar-left h2 {
+    font-size: 22px;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    color: var(--text-main);
+    margin-bottom: 2px;
+}
+
+.sb-topbar-left p {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.sb-topbar-actions { display: flex; align-items: center; gap: 10px; }
+
+/* ── STAT CARDS ROW ── */
+.sb-stat-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+    margin-bottom: 28px;
+}
+
+.sb-kpi-card {
+    background: var(--bg-surface-solid);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 18px 20px;
+    transition: all 0.2s ease;
+    cursor: default;
+}
+
+.sb-kpi-card:hover {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 4px var(--color-primary-soft);
+    transform: translateY(-1px);
+}
+
+.sb-kpi-card.green {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border-color: transparent;
+    color: #fff;
+}
+.sb-kpi-card.teal {
+    background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+    border-color: transparent;
+    color: #fff;
+}
+.sb-kpi-card.red {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    border-color: transparent;
+    color: #fff;
+}
+.sb-kpi-card.indigo {
+    background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+    border-color: transparent;
+    color: #fff;
+}
+
+.sb-kpi-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.sb-kpi-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: #fff;
+}
+
+.sb-kpi-card:not(.green):not(.teal):not(.red):not(.indigo) .sb-kpi-icon {
+    background: var(--color-primary-light);
+    color: var(--color-primary);
+}
+
+.sb-kpi-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    opacity: 0.75;
+    margin-bottom: 4px;
+}
+
+.sb-kpi-value {
+    font-size: 26px;
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    margin-bottom: 2px;
+}
+
+.sb-kpi-card:not(.green):not(.teal):not(.red):not(.indigo) .sb-kpi-value { color: var(--text-main); }
+
+.sb-kpi-sub {
+    font-size: 11px;
+    font-weight: 600;
+    opacity: 0.65;
+}
+
+/* ── FILTER BAR ── */
+.sb-filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.sb-filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    background: var(--bg-surface-solid);
+    border: 1px solid var(--border-color);
+    border-radius: 9px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.sb-filter-btn:hover, .sb-filter-btn.active {
+    background: var(--color-primary-light);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.sb-search-input {
+    flex: 1;
+    min-width: 200px;
+    max-width: 320px;
+    padding: 7px 12px 7px 34px;
+    background: var(--bg-surface-solid);
+    border: 1px solid var(--border-color);
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-main);
+    outline: none;
+    transition: all 0.2s ease;
+    position: relative;
+}
+.sb-search-input:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px var(--color-primary-soft); }
+
+.sb-search-wrap {
+    position: relative;
+}
+.sb-search-wrap i {
+    position: absolute;
+    left: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 11px;
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+/* ── MAIN CONTENT GRID ── */
+.sb-content-grid {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 20px;
+}
+
+@media (max-width: 1024px) {
+    .sb-content-grid { grid-template-columns: 1fr; }
+}
+
+/* ── DATA TABLE ── */
+.sb-table-card {
+    background: var(--bg-surface-solid);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.sb-table-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-body);
+}
+
+.sb-table-header h3 {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--text-main);
+}
+
+.sb-table-wrap { overflow-x: auto; }
+
+.sb-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.sb-table th {
+    padding: 10px 16px;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    background: var(--bg-body);
+    border-bottom: 1px solid var(--border-color);
+    text-align: left;
+    white-space: nowrap;
+}
+
+.sb-table td {
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-main);
+    vertical-align: middle;
+}
+
+.sb-table tr:last-child td { border-bottom: none; }
+.sb-table tr:hover td { background: var(--color-primary-soft); }
+
+/* ── RIGHT PANEL ── */
+.sb-right-panel { display: flex; flex-direction: column; gap: 16px; }
+
+.sb-panel-card {
+    background: var(--bg-surface-solid);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.sb-panel-header {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.sb-panel-header h3 {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--text-main);
+}
+
+.sb-panel-body { padding: 16px 18px; }
+
+/* Property mini-card */
+.sb-prop-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.sb-prop-row:last-child { border-bottom: none; }
+.sb-prop-row:hover { opacity: 0.85; }
+
+.sb-prop-thumb {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: var(--color-primary-light);
+    overflow: hidden;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary);
+}
+
+.sb-prop-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+.sb-prop-info { flex: 1; min-width: 0; }
+.sb-prop-title { font-size: 13px; font-weight: 700; color: var(--text-main); truncate; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sb-prop-meta { font-size: 11px; color: var(--text-muted); font-weight: 500; }
+
+/* Expense form styles */
+.sb-form-group { margin-bottom: 14px; }
+.sb-form-label { display: block; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 6px; }
+.sb-form-input, .sb-form-select {
+    width: 100%;
+    padding: 9px 12px;
+    background: var(--bg-body);
+    border: 1px solid var(--border-color);
+    border-radius: 9px;
+    font-size: 13px;
+    font-family: inherit;
+    font-weight: 500;
+    color: var(--text-main);
+    outline: none;
+    transition: all 0.2s ease;
+}
+.sb-form-input:focus, .sb-form-select:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px var(--color-primary-soft); }
+.sb-form-select option { background: var(--bg-surface-solid); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+    .sb-sidebar {
+        position: fixed;
+        left: 0;
+        top: 64px;
+        bottom: 0;
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+        z-index: 100;
+        box-shadow: var(--shadow-lg);
+    }
+    .sb-sidebar.mobile-open { transform: translateX(0); }
+    .sb-main { padding: 20px 16px 60px; }
+    .sb-sidebar-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 99;
+    }
+    .sb-sidebar-overlay.visible { display: block; }
+}
+
+/* Scrollbar for sidebar */
+.sb-nav::-webkit-scrollbar { width: 4px; }
+.sb-nav::-webkit-scrollbar-track { background: transparent; }
+.sb-nav::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 9999px; }
+
+/* Animations */
+@keyframes sbFadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.sb-fade-1 { animation: sbFadeUp 0.4s ease both 0.05s; }
+.sb-fade-2 { animation: sbFadeUp 0.4s ease both 0.1s; }
+.sb-fade-3 { animation: sbFadeUp 0.4s ease both 0.15s; }
+.sb-fade-4 { animation: sbFadeUp 0.4s ease both 0.2s; }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="animate-[fadeIn_0.5s_ease-out]">
-    <header class="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-            <h1 class="text-3xl font-bold text-slate-900">Owner Dashboard</h1>
-            <p class="text-slate-500">Manage your properties, applications, and finances.</p>
-        </div>
-        <a href="{% url 'add-property' %}"
-            class="inline-flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-bold transition shadow-lg shadow-indigo-200">
-            <i class="fas fa-plus mr-2"></i> Add Property
-        </a>
-    </header>
+<!-- Mobile overlay -->
+<div class="sb-sidebar-overlay" id="sbOverlay" onclick="toggleSidebar()"></div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-        <div class="glass-card p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center">
-            <div class="bg-indigo-100 text-indigo-600 p-4 rounded-2xl mr-4">
-                <i class="fas fa-building text-2xl"></i>
+<div class="sb-layout">
+
+    <!-- ── SIDEBAR ── -->
+    <aside class="sb-sidebar" id="mainSidebar">
+        <div class="sb-sidebar-header">
+            <div class="sb-logo">
+                <div class="sb-logo-icon"><i class="fas fa-home"></i></div>
+                <span class="sb-logo-text">My Portal</span>
             </div>
-            <div>
-                <p class="text-slate-500 text-sm font-semibold uppercase tracking-wider">Total Properties</p>
-                <h2 class="text-3xl font-black mt-1">{{ property_count }}</h2>
-            </div>
+            <button class="sb-collapse-btn" onclick="toggleSidebar()" id="collapseBtn">
+                <i class="fas fa-chevron-left" id="collapseBtnIcon"></i>
+            </button>
         </div>
-        <div class="glass-card p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center">
-            <div class="bg-emerald-100 text-emerald-600 p-4 rounded-2xl mr-4">
-                <i class="fas fa-money-bill-wave text-2xl"></i>
-            </div>
-            <div>
-                <p class="text-slate-500 text-sm font-semibold uppercase tracking-wider">Est. ZRA Tax</p>
-                <h2 class="text-3xl font-black mt-1 text-emerald-600">K{{ total_tax }}</h2>
-            </div>
+
+        <nav class="sb-nav">
+            <div class="sb-section-label">Main</div>
+
+            <a href="#section-overview" class="sb-nav-item active" onclick="sbNav(this)">
+                <div class="sb-nav-icon"><i class="fas fa-th-large"></i></div>
+                <span class="sb-nav-label">Overview</span>
+            </a>
+
+            <a href="#section-listings" class="sb-nav-item" onclick="sbNav(this)">
+                <div class="sb-nav-icon"><i class="fas fa-building"></i></div>
+                <span class="sb-nav-label">My Listings</span>
+            </a>
+
+            <a href="#section-applications" class="sb-nav-item" onclick="sbNav(this)">
+                <div class="sb-nav-icon"><i class="fas fa-file-contract"></i></div>
+                <span class="sb-nav-label">Applications</span>
+                <span class="sb-nav-badge" id="pendingBadge">–</span>
+            </a>
+
+            <div class="sb-section-label">Finance</div>
+
+            <a href="#section-expenses" class="sb-nav-item" onclick="sbNav(this)">
+                <div class="sb-nav-icon"><i class="fas fa-wallet"></i></div>
+                <span class="sb-nav-label">Expenses</span>
+            </a>
+
+            <a href="#section-statements" class="sb-nav-item" onclick="sbNav(this)">
+                <div class="sb-nav-icon"><i class="fas fa-file-invoice"></i></div>
+                <span class="sb-nav-label">Statements</span>
+            </a>
+
+            <div class="sb-section-label">Manage</div>
+
+            <a href="{% url 'add-property' %}" class="sb-nav-item">
+                <div class="sb-nav-icon"><i class="fas fa-plus"></i></div>
+                <span class="sb-nav-label">Add Property</span>
+            </a>
+        </nav>
+
+        <div class="sb-sidebar-footer">
+            <a href="{% url 'index' %}" class="sb-nav-item">
+                <div class="sb-nav-icon"><i class="fas fa-arrow-left"></i></div>
+                <span class="sb-nav-label">Back to Home</span>
+            </a>
         </div>
-        <div class="glass-card p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center">
-            <div class="bg-amber-100 text-amber-600 p-4 rounded-2xl mr-4">
-                <i class="fas fa-file-invoice-dollar text-2xl"></i>
-            </div>
+    </aside>
+
+    <!-- ── MAIN CONTENT ── -->
+    <main class="sb-main">
+
+        <!-- Top bar -->
+        <div class="sb-topbar sb-fade-1">
             <div>
-                <p class="text-slate-500 text-sm font-semibold uppercase tracking-wider">Expenses</p>
-                <h2 class="text-3xl font-black mt-1 text-amber-600" id="totalExpenses">Loading...</h2>
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+                    <!-- Mobile menu trigger -->
+                    <button class="sb-filter-btn" style="display:none;" id="mobileMenuBtn" onclick="openMobileSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="hero-badge" style="margin:0;padding:4px 12px;">
+                        <i class="fas fa-columns" style="font-size:9px"></i> Management Console
+                    </div>
+                </div>
+                <h2>Property Portfolio</h2>
+                <p>Manage your listings, applications, and finances.</p>
+            </div>
+            <div class="sb-topbar-actions">
+                <button class="sb-filter-btn" onclick="exportDashboard()">
+                    <i class="fas fa-download"></i> Export
+                </button>
+                <a href="{% url 'add-property' %}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-plus text-xs"></i> List Property
+                </a>
             </div>
         </div>
     </div>
@@ -77,60 +680,67 @@
                                 </div>
                             </div>
 
-                            <div class="flex items-center justify-between mb-4 pb-4 border-b border-slate-100">
-                                <p class="font-black text-xl text-indigo-600">K{{ prop.price }}<span
-                                        class="text-sm text-slate-500 font-normal">/mo</span></p>
-                                {% if prop.is_tax_compliant %}
-                                <span
-                                    class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded flex items-center"><i
-                                        class="fas fa-check-circle mr-1"></i> Tax Compliant</span>
-                                {% else %}
-                                <span
-                                    class="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded flex items-center"><i
-                                        class="fas fa-clock mr-1"></i> Pending Verification</span>
-                                {% endif %}
-                            </div>
+        <!-- KPI Cards -->
+        <div class="sb-stat-row sb-fade-2">
+            <div class="sb-kpi-card">
+                <div class="sb-kpi-top">
+                    <div>
+                        <div class="sb-kpi-label">Properties</div>
+                        <div class="sb-kpi-value">{{ property_count }}</div>
+                    </div>
+                    <div class="sb-kpi-icon"><i class="fas fa-building"></i></div>
+                </div>
+                <div class="sb-kpi-sub">Active listings</div>
+            </div>
 
-                            <div class="flex justify-end">
-                                <button
-                                    class="text-red-500 text-sm font-semibold hover:text-red-700 transition flex items-center"
-                                    onclick="deleteProperty({{ prop.id }})"><i class="fas fa-trash-alt mr-1"></i>
-                                    Delete</button>
-                            </div>
-                        </div>
+            <div class="sb-kpi-card green">
+                <div class="sb-kpi-top">
+                    <div>
+                        <div class="sb-kpi-label">Est. Tax</div>
+                        <div class="sb-kpi-value">K{{ total_tax }}</div>
                     </div>
-                    {% empty %}
-                    <div class="col-span-full glass-card p-8 rounded-3xl text-center text-slate-500">
-                        <p>You haven't listed any properties yet.</p>
-                        <a href="{% url 'add-property' %}"
-                            class="text-indigo-600 font-bold hover:underline mt-2 inline-block">List your first
-                            property</a>
-                    </div>
-                    {% endfor %}
+                    <div class="sb-kpi-icon"><i class="fas fa-file-invoice-dollar"></i></div>
                 </div>
-            </section>
+                <div class="sb-kpi-sub">Projected ZRA Revenue</div>
+            </div>
 
-            <section>
-                <div class="flex items-center justify-between mb-6">
-                    <h3 class="text-xl font-bold flex items-center">
-                        <i class="fas fa-file-signature text-indigo-500 mr-2"></i> Rental Applications
-                    </h3>
-                </div>
-                <div class="glass-card rounded-3xl border border-slate-200 overflow-hidden">
-                    <div id="applicationsContainer" class="divide-y divide-slate-100">
-                        <div class="p-8 text-center text-slate-500"><i class="fas fa-spinner fa-spin mr-2"></i> Loading
-                            applications...</div>
+            <div class="sb-kpi-card teal">
+                <div class="sb-kpi-top">
+                    <div>
+                        <div class="sb-kpi-label">Expenses</div>
+                        <div class="sb-kpi-value" id="totalExpenses">K0</div>
                     </div>
+                    <div class="sb-kpi-icon"><i class="fas fa-receipt"></i></div>
                 </div>
-            </section>
+                <div class="sb-kpi-sub">Current Month</div>
+            </div>
+
+            <div class="sb-kpi-card indigo">
+                <div class="sb-kpi-top">
+                    <div>
+                        <div class="sb-kpi-label">Pending Apps</div>
+                        <div class="sb-kpi-value" id="pendingAppsCount">–</div>
+                    </div>
+                    <div class="sb-kpi-icon"><i class="fas fa-clock"></i></div>
+                </div>
+                <div class="sb-kpi-sub">Awaiting decision</div>
+            </div>
         </div>
 
-        <div class="space-y-8">
-            <section>
-                <div class="flex items-center justify-between mb-6">
-                    <h3 class="text-xl font-bold flex items-center">
-                        <i class="fas fa-receipt text-indigo-500 mr-2"></i> Expense Tracker
-                    </h3>
+        <!-- ── LISTINGS SECTION ── -->
+        <div id="section-listings" style="margin-bottom: 28px;">
+            <div class="sb-table-card sb-fade-3">
+                <div class="sb-table-header">
+                    <h3><i class="fas fa-building" style="color:var(--color-primary);margin-right:8px"></i> Your Listings</h3>
+                    <div style="display:flex;gap:8px;align-items:center;">
+                        <div class="sb-search-wrap">
+                            <i class="fas fa-search"></i>
+                            <input type="text" class="sb-search-input" placeholder="Search listings…" oninput="filterListings(this.value)" style="padding-left:30px">
+                        </div>
+                        <a href="{% url 'add-property' %}" class="sb-filter-btn">
+                            <i class="fas fa-plus"></i> Add
+                        </a>
+                    </div>
                 </div>
                 <div class="glass-card p-6 rounded-3xl border border-slate-200 mb-6">
                     <form id="expenseForm" class="space-y-4">
@@ -144,37 +754,73 @@
                                 {% endfor %}
                             </select>
                         </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Description</label>
-                            <input type="text" id="expenseDescription" required placeholder="e.g., Plumbing repair"
-                                class="w-full px-3 py-2 rounded-lg border border-slate-200 outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                    </div>
+                    <div id="applicationsContainer" style="max-height:420px;overflow-y:auto">
+                        <div class="text-center p-8">
+                            <i class="fas fa-circle-notch fa-spin" style="font-size:1.6rem;color:var(--color-primary);display:block;margin-bottom:10px"></i>
+                            <p style="font-size:12px;color:var(--text-muted);font-weight:700">Loading applications…</p>
                         </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Amount (ZMW)</label>
-                            <input type="number" id="expenseAmount" required min="0" step="0.01"
-                                class="w-full px-3 py-2 rounded-lg border border-slate-200 outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
-                        </div>
-                        <button type="submit"
-                            class="w-full bg-slate-800 text-white font-bold py-2 rounded-lg hover:bg-slate-900 transition text-sm">Add
-                            Expense</button>
-                    </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right panel: Expenses -->
+            <div class="sb-right-panel" id="section-expenses">
+                <!-- Expense form -->
+                <div class="sb-panel-card">
+                    <div class="sb-panel-header">
+                        <h3><i class="fas fa-plus-circle" style="color:var(--color-warning);margin-right:8px"></i> Record Expense</h3>
+                    </div>
+                    <div class="sb-panel-body">
+                        <form id="expenseForm">
+                            <div class="sb-form-group">
+                                <label class="sb-form-label">Property</label>
+                                <select id="expenseProperty" required class="sb-form-select">
+                                    <option value="">Select property…</option>
+                                    {% for prop in user_properties %}
+                                    <option value="{{ prop.id }}">{{ prop.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="sb-form-group">
+                                <label class="sb-form-label">Description</label>
+                                <input type="text" id="expenseDescription" required placeholder="e.g. Plumbing repair" class="sb-form-input" />
+                            </div>
+                            <div class="sb-form-group">
+                                <label class="sb-form-label">Amount (ZMW)</label>
+                                <input type="number" id="expenseAmount" required min="0" step="0.01" placeholder="0.00" class="sb-form-input" />
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-full">
+                                <i class="fas fa-plus text-xs"></i> Record Expense
+                            </button>
+                        </form>
+                    </div>
                 </div>
 
-                <div class="glass-card rounded-3xl border border-slate-200 overflow-hidden">
-                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-100">
-                        <h4 class="font-bold text-sm text-slate-700">Recent Expenses</h4>
+                <!-- Expense list + export -->
+                <div class="sb-panel-card" id="section-statements">
+                    <div class="sb-panel-header">
+                        <h3><i class="fas fa-receipt" style="color:var(--color-warning);margin-right:8px"></i> Expense Ledger</h3>
+                        <button onclick="exportExpenses()" class="sb-filter-btn" style="font-size:11px;padding:4px 10px">
+                            <i class="fas fa-download"></i> Export
+                        </button>
                     </div>
-                    <div id="expensesList" class="divide-y divide-slate-100 max-h-96 overflow-y-auto">
-                        <div class="p-6 text-center text-slate-500 text-sm"><i class="fas fa-spinner fa-spin mr-2"></i>
-                            Loading expenses...</div>
+                    <div id="expensesList" style="max-height:300px;overflow-y:auto">
+                        <div class="text-center" style="padding:32px;color:var(--text-muted);font-size:12px;font-weight:600">No expenses yet.</div>
+                    </div>
+                    <div style="padding:12px 18px;border-top:1px solid var(--border-color);display:flex;justify-content:space-between;align-items:center">
+                        <span style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em">Total</span>
+                        <span style="font-size:16px;font-weight:900;color:var(--color-warning)" id="totalExpensesPanel">K0.00</span>
                     </div>
                 </div>
-            </section>
+            </div>
         </div>
-    </div>
+    </main>
 </div>
+
 {% endblock %}
 
 {% block extra_scripts %}
+<script>document.addEventListener('DOMContentLoaded',()=>document.body.classList.add('dashboard-page'));</script>
 <script src="{% static 'js/dashboard.js' %}"></script>
 {% endblock %}

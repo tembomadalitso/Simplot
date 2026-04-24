@@ -1,0 +1,310 @@
+/* ============================================================
+   DARK THEME ADDITIONS — append to global.css
+   ============================================================ */
+
+/* ── Dark page backgrounds ── */
+.page-dark {
+    background: #07071a;
+    min-height: 100vh;
+}
+
+.page-dark-secondary {
+    background: linear-gradient(160deg, #0d0d2b 0%, #0a0e1f 50%, #07071a 100%);
+    min-height: 100vh;
+}
+
+/* ── Fixed bg image (dashboards) ── */
+.page-bg-image {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-image: url('/static/images/hero_bg.png');
+    background-size: cover;
+    background-position: center;
+}
+
+.page-bg-image::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(160deg,
+        rgba(7, 7, 26, 0.88) 0%,
+        rgba(20, 14, 60, 0.75) 45%,
+        rgba(7, 7, 26, 0.88) 100%
+    );
+}
+
+/* ── Glass panel (dark context) ── */
+.glass-dark {
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(20px) saturate(1.4);
+    -webkit-backdrop-filter: blur(20px) saturate(1.4);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 24px;
+    box-shadow:
+        0 0 0 1px rgba(255,255,255,0.04) inset,
+        0 24px 48px rgba(0,0,0,0.4);
+}
+
+.glass-dark-sm {
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+
+/* Hover state for glass panels */
+.glass-dark:hover {
+    background: rgba(255,255,255,0.09);
+    border-color: rgba(255,255,255,0.14);
+}
+
+/* ── Typography on dark ── */
+.text-white-primary   { color: #ffffff; }
+.text-white-secondary { color: rgba(255,255,255,0.7); }
+.text-white-muted     { color: rgba(255,255,255,0.4); }
+.text-white-faint     { color: rgba(255,255,255,0.25); }
+
+/* ── Dark stat card ── */
+.stat-card-dark {
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 24px;
+    transition: all 0.2s ease;
+}
+
+.stat-card-dark:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.16);
+    transform: translateY(-2px);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+}
+
+/* ── Dark form inputs ── */
+.form-input-dark,
+.form-select-dark,
+.form-textarea-dark {
+    width: 100%;
+    padding: 12px 16px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    font-size: 15px;
+    font-family: inherit;
+    font-weight: 500;
+    color: #ffffff;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.form-input-dark::placeholder,
+.form-textarea-dark::placeholder { color: rgba(255,255,255,0.3); }
+
+.form-input-dark:focus,
+.form-select-dark:focus,
+.form-textarea-dark:focus {
+    background: rgba(255,255,255,0.11);
+    border-color: rgba(165,180,252,0.5);
+    box-shadow: 0 0 0 3px rgba(79,70,229,0.2);
+}
+
+.form-select-dark option {
+    background: #1e1b4b;
+    color: #fff;
+}
+
+.form-label-dark {
+    display: block;
+    font-size: 11px;
+    font-weight: 800;
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+}
+
+/* ── Dark table ── */
+.dark-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.dark-table th {
+    padding: 14px 20px;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.35);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    text-align: left;
+    background: rgba(255,255,255,0.03);
+}
+
+.dark-table td {
+    padding: 16px 20px;
+    font-size: 14px;
+    color: rgba(255,255,255,0.8);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    vertical-align: middle;
+}
+
+.dark-table tr:hover td {
+    background: rgba(255,255,255,0.04);
+}
+
+.dark-table tr:last-child td { border-bottom: none; }
+
+/* ── Dark progress bar ── */
+.progress-dark {
+    height: 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 9999px;
+    overflow: hidden;
+}
+
+.progress-dark-fill {
+    height: 100%;
+    border-radius: 9999px;
+    background: linear-gradient(90deg, #4f46e5, #10b981);
+    transition: width 0.8s ease;
+}
+
+/* ── Dark divider ── */
+.divider-dark {
+    border: none;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    margin: 24px 0;
+}
+
+/* ── Dark badge variants ── */
+.badge-dark-emerald {
+    background: rgba(16,185,129,0.15);
+    border: 1px solid rgba(16,185,129,0.25);
+    color: #6ee7b7;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.badge-dark-amber {
+    background: rgba(245,158,11,0.15);
+    border: 1px solid rgba(245,158,11,0.25);
+    color: #fcd34d;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.badge-dark-indigo {
+    background: rgba(79,70,229,0.2);
+    border: 1px solid rgba(165,180,252,0.3);
+    color: #a5b4fc;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.badge-dark-slate {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.6);
+    padding: 4px 12px;
+    border-radius: 9999px;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* ── Dark icon box ── */
+.icon-box-dark {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+/* ── Shimmer for dark skeleton ── */
+@keyframes shimmerDark {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.skel-dark {
+    background: linear-gradient(90deg,
+        rgba(255,255,255,0.04) 25%,
+        rgba(255,255,255,0.09) 50%,
+        rgba(255,255,255,0.04) 75%);
+    background-size: 200% 100%;
+    animation: shimmerDark 1.6s infinite;
+    border-radius: 6px;
+}
+
+/* ── Page content wrapper ── */
+.dark-page-content {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+}
+
+@media (min-width: 640px)  { .dark-page-content { padding: 48px 32px 80px; } }
+@media (min-width: 1024px) { .dark-page-content { padding: 56px 48px 80px; } }
+
+/* ── Dark navbar override (for non-index pages) ── */
+body.dark-nav nav {
+    background: rgba(7,7,26,0.8) !important;
+    border-bottom-color: rgba(255,255,255,0.08) !important;
+    backdrop-filter: blur(20px) !important;
+}
+
+body.dark-nav .nav-logo-text-main  { color: #fff !important; }
+body.dark-nav .nav-logo-text-sub   { color: #a5b4fc !important; }
+body.dark-nav .nav-center-link     { color: rgba(255,255,255,0.6) !important; }
+body.dark-nav .nav-center-link:hover { color: #fff !important; background: rgba(255,255,255,0.08) !important; }
+body.dark-nav #userName            { color: #fff !important; }
+body.dark-nav #userRoleBadge       { color: rgba(255,255,255,0.5) !important; }
+body.dark-nav #userInitials        { color: #a5b4fc !important; }
+body.dark-nav .nav-profile-badge   { background: rgba(79,70,229,0.3) !important; border-color: rgba(165,180,252,0.4) !important; }
+body.dark-nav #logoutBtn           { color: rgba(255,255,255,0.4) !important; }
+body.dark-nav #logoutBtn:hover     { color: #fca5a5 !important; }
+
+/* ── Dark footer ── */
+.footer-dark {
+    background: rgba(7,7,26,0.9);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding: 48px 0;
+    margin-top: auto;
+}

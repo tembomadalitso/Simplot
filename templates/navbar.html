@@ -12,15 +12,24 @@
                 <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-100 to-indigo-200 border-2 border-indigo-500 flex items-center justify-center shadow-sm">
                     <span id="userInitials" class="text-indigo-700 font-bold text-sm"></span>
                 </div>
-                <div class="flex flex-col hidden sm:flex">
-                    <span id="userName" class="text-sm font-bold text-slate-800 leading-tight">User</span>
-                    <span id="userRoleBadge" class="text-[10px] uppercase font-black tracking-wider px-2 py-0.5 rounded bg-indigo-100 text-indigo-700 mt-0.5 inline-block w-max">Role</span>
+                <div class="nav-logo-text">
+                    <span class="nav-logo-main">ZAMBIA</span>
+                    <span class="nav-logo-sub">RENTALS</span>
                 </div>
+            </a>
+
+            <!-- Center links -->
+            <div class="hidden md:flex nav-links" id="desktopNavLinks">
+                <a href="{% url 'index' %}" class="nav-link">Find Homes</a>
             </div>
 
-            <a href="{% url 'login' %}" id="authBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-indigo-200 transition-all hover:-translate-y-0.5 flex items-center gap-2">
-                <i class="fas fa-sign-in-alt"></i> Login
-            </a>
+            <!-- Right section -->
+            <div style="display:flex;align-items:center;gap:10px" id="authSection">
+
+                <!-- Theme Toggle -->
+                <button id="themeToggle" class="theme-toggle" title="Toggle Theme">
+                    <i class="fas fa-moon" id="themeIcon"></i>
+                </button>
 
             <a href="#" id="dashboardBtn" class="hidden px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md transition-all hover:-translate-y-0.5 items-center gap-2">
                 <!-- Content set by JS -->
@@ -32,5 +41,4 @@
         </div>
     </div>
 </nav>
-
 <script src="{% static 'js/navbar.js' %}"></script>

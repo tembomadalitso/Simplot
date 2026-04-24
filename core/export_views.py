@@ -1,14 +1,3 @@
-# core/views.py
-from django.shortcuts import render, get_object_or_404, redirect
-from django.db.models import Sum, Count, Q
-from rest_framework import viewsets, permissions, status
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from rest_framework.authtoken.models import Token
-
-from .models import Property, RentalAgreement, User, Expense
-from .serializers import PropertySerializer, RentalAgreementSerializer, ExpenseSerializer
-
 """
 export_views.py  —  Drop these functions into your Django views.py
 ─────────────────────────────────────────────────────────────────
@@ -29,8 +18,8 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_GET
 
 # ── internal import (your real models) ──
-# from .models import Property, RentalApplication, Expense
-
+from django.db.models import Sum, Count, Q
+from .models import Property, RentalAgreement, Expense
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
@@ -187,20 +176,17 @@ def _xl_header_row(ws, cols, row_n):
 
 def _get_zra_data(request):
     """
-    Returns filtered dynamic data from the database.
-    Includes TPIN and NRC for Landlords.
+    Returns filtered property data for ZRA exports.
     """
-    from .models import Property, TaxPolicy
+    queryset = Property.objects.select_related('owner').all()
 
-    # Use the same logic as PropertyViewSet.get_queryset
-    queryset = Property.objects.all().select_related('owner')
-
-    status_filter = request.GET.get('status')
+    # Apply filters from request
+    status = request.GET.get('status')
     search = request.GET.get('search')
 
-    if status_filter == 'pending':
+    if status == 'pending':
         queryset = queryset.filter(is_tax_compliant=False)
-    elif status_filter == 'compliant':
+    elif status == 'compliant':
         queryset = queryset.filter(is_tax_compliant=True)
 
     if search:
@@ -213,27 +199,25 @@ def _get_zra_data(request):
             Q(id__icontains=search)
         )
 
-    policy = TaxPolicy.objects.first()
-    rate = float(policy.percentage) / 100.0 if policy else 0.10
-
     data = []
     for prop in queryset:
-        rent = float(prop.price)
-        apts = prop.apartment_count
-        total = rent * apts * 12 # Annual
-        tax = float(prop.estimated_annual_tax())
+        rent_amount = float(prop.price)
+        apartments  = prop.apartment_count
+        total       = rent_amount * apartments
+        rate        = 0.10
+        tax         = float(prop.estimated_annual_tax())
         data.append({
-            'landlord': prop.owner.full_name or prop.owner.username,
-            'tpin': prop.owner.tpin_number or 'N/A',
-            'nrc': prop.owner.nrc_number or 'N/A',
-            'id': prop.pk,
-            'apartments': apts,
-            'rent': rent,
-            'total': total,
-            'rate': rate,
-            'tax': tax,
-            'after_tax': total - tax,
-        })
+    'id':        prop.pk,
+    'landlord':  prop.owner.full_name or prop.owner.username,
+    'apartments': apartments,
+    'tpin':      prop.owner.tpin_number or "N/A",
+    'nrc':       prop.owner.nrc_number or "N/A",
+    'rent':      rent_amount,
+    'total':     total,
+    'rate':      rate,
+    'tax':       tax,
+    'after_tax': total - tax,
+})
     return data
 
 
@@ -296,22 +280,35 @@ def zra_export_pdf(request):
             textColor=C['slate_700'], spaceBefore=4, spaceAfter=5, letterSpacing=1)))
 
     # ── Data table ──
-    HDR = ["Landlord Name", "TPIN", "NRC", "ID", "Apts", "Rent (ZMW)",
-           "Total (ZMW)", "Rate", "Tax (ZMW)", "Net (ZMW)"]
+    HDR = ["ID","Landlord Name","Apartments","TPIN","NRC",
+       "Rent Amount","Total Amount","Tax Rate","Tax Amount","Amount after Tax"]
     rows = [[
-        r['landlord'], r['tpin'], r['nrc'], str(r['id']), str(r['apartments']),
-        f"{r['rent']:,.2f}", f"{r['total']:,.2f}",
-        f"{r['rate']*100:.1f}%",
-        f"{r['tax']:,.2f}", f"{r['after_tax']:,.2f}",
-    ] for r in data]
+    str(r['id']),
+    r['landlord'],
+    str(r['apartments']),
+    r['tpin'],
+    r['nrc'],
+    f"ZMW {r['rent']:,.2f}",
+    f"ZMW {r['total']:,.2f}",
+    f"{r['rate']*100:.1f}%",
+    f"ZMW {r['tax']:,.2f}",
+    f"ZMW {r['after_tax']:,.2f}",
+] for r in data]
     rows.append([
-        "TOTALS", "", "", "", str(sum(r['apartments'] for r in data)),
-        "", f"{tot_r:,.2f}", "", f"{tot_t:,.2f}", f"{tot_a:,.2f}",
-    ])
+    "",
+    "TOTALS",
+    str(sum(r['apartments'] for r in data)),
+    "",
+    "",
+    "",
+    f"ZMW {tot_r:,.2f}",
+    "",
+    f"ZMW {tot_t:,.2f}",
+    f"ZMW {tot_a:,.2f}",
+])
     nd = len(rows) - 1
 
-    # Total width is ~267mm in landscape A4 (297 - 30 margins)
-    col_w = [42*mm, 28*mm, 28*mm, 14*mm, 14*mm, 28*mm, 30*mm, 18*mm, 28*mm, 30*mm]
+    col_w = [18*mm,40*mm,18*mm,25*mm,25*mm,26*mm,26*mm,14*mm,25*mm,25*mm]
     tbl   = Table([HDR]+rows, colWidths=col_w, repeatRows=1)
     tbl.setStyle(TableStyle([
         ('BACKGROUND',    (0,0), (-1,0),  C['primary']),
@@ -328,17 +325,19 @@ def zra_export_pdf(request):
         ('TEXTCOLOR',     (0,1), (-1,-2), C['slate_700']),
         ('ROWBACKGROUNDS',(0,1), (-1,-2), [C['white'], C['slate_50']]),
         ('LINEBELOW',     (0,0), (-1,-2), 0.4, C['slate_200']),
-        ('ALIGN',         (4,1), (-1,-2),  'RIGHT'),
-        ('ALIGN',         (7,1), (7,-2),  'CENTER'),
-        ('TEXTCOLOR',     (8,1), (8,-2),  C['warning']),
-        ('FONTNAME',      (8,1), (8,-2),  'Helvetica-Bold'),
-        ('TEXTCOLOR',     (9,1), (9,-2),  C['success']),
-        ('FONTNAME',      (9,1), (9,-2),  'Helvetica-Bold'),
+        ('ALIGN',         (2,1), (2,-2),  'RIGHT'),
+        ('ALIGN',         (3,1), (5,-2),  'RIGHT'),
+        ('ALIGN',         (5,1), (5,-2),  'CENTER'),
+        ('ALIGN',         (6,1), (7,-2),  'RIGHT'),
+        ('TEXTCOLOR',     (6,1), (6,-2),  C['warning']),
+        ('FONTNAME',      (6,1), (6,-2),  'Helvetica-Bold'),
+        ('TEXTCOLOR',     (7,1), (7,-2),  C['success']),
+        ('FONTNAME',      (7,1), (7,-2),  'Helvetica-Bold'),
         ('BACKGROUND',    (0,nd+1),(-1,nd+1), C['dark_green']),
         ('TEXTCOLOR',     (0,nd+1),(-1,nd+1), C['white']),
         ('FONTNAME',      (0,nd+1),(-1,nd+1), 'Helvetica-Bold'),
         ('FONTSIZE',      (0,nd+1),(-1,nd+1), 8),
-        ('ALIGN',         (4,nd+1),(-1,nd+1), 'RIGHT'),
+        ('ALIGN',         (2,nd+1),(-1,nd+1), 'RIGHT'),
         ('LINEABOVE',     (0,nd+1),(-1,nd+1), 1.5, C['success']),
         ('VALIGN',        (0,0),  (-1,-1),    'MIDDLE'),
     ]))
@@ -399,8 +398,8 @@ def zra_export_excel(request):
         ws.row_dimensions[6].height=8
 
     # ── Header row (row 7) ──
-    COLS = ["Landlord Name", "TPIN", "NRC", "ID", "Apts", "Rent Amount",
-            "Total Amount", "Tax Rate", "Tax Amount", "Amount after Tax"]
+    COLS = ["Landlord Name","TPIN","NRC","Apartments","Rent Amount",
+            "Total Amount","Tax Rate","Tax Amount","Amount after Tax"]
     HDR_ROW = 7
     _xl_header_row(ws, COLS, HDR_ROW)
 
@@ -409,36 +408,49 @@ def zra_export_excel(request):
     for ri, r in enumerate(data):
         rn   = DS + ri
         fill = HEX['white'] if ri % 2 == 0 else HEX['sl50']
-        vals = [r['landlord'], r['tpin'], r['nrc'], r['id'], r['apartments'],
-                r['rent'], r['total'], r['rate'], r['tax'], r['after_tax']]
+        vals = [
+    r['id'],
+    r['landlord'],
+    r['apartments'],
+    r['tpin'],
+    r['nrc'],
+    r['rent'],
+    r['total'],
+    r['rate'],
+    r['tax'],
+    r['after_tax']
+]
         for ci, val in enumerate(vals, 1):
             c = ws.cell(row=rn, column=ci, value=val)
             c.font   = Font(size=9, name='Arial', color=HEX['sl700'])
             c.fill   = _solid(fill)
             c.border = _brd(HEX['sl200'])
             c.alignment = Alignment(
-                horizontal='center' if ci in (2,3,4) else 'right' if ci in (5,6,7,9,10) else 'left',
-                vertical='center')
+    horizontal='center' if ci in (1,3,4,5)
+    else 'right' if ci in (6,7,9,10)
+    else 'left',
+    vertical='center'
+)
             if ci in (6,7,9,10): c.number_format='"ZMW "#,##0.00'
             elif ci==8:          c.number_format='0.0%'
-            if ci==9: c.font=Font(size=9,name='Arial',color=HEX['warning'],bold=True)
-            if ci==10: c.font=Font(size=9,name='Arial',color=HEX['success'],bold=True)
+            if ci==8: c.font=Font(size=9,name='Arial',color=HEX['warning'],bold=True)
+            if ci==9: c.font=Font(size=9,name='Arial',color=HEX['success'],bold=True)
         ws.row_dimensions[rn].height = 18
 
     # ── Totals row ──
     TROW = DS + len(data)
     for ci, (val, align, col, fmt) in enumerate([
-        ("TOTALS","left", HEX['white'],False),
-        ("","center",     HEX['white'],False),
-        ("","center",     HEX['white'],False),
-        ("","center",     HEX['white'],False),
-        (f'=SUM(E{DS}:E{TROW-1})',"right",HEX['white'],False),
-        ("","right",      HEX['white'],False),
-        (f'=SUM(G{DS}:G{TROW-1})',"right",HEX['white'],True),
-        ("","center",     HEX['white'],False),
-        (f'=SUM(I{DS}:I{TROW-1})',"right",HEX['warning'],True),
-        (f'=SUM(J{DS}:J{TROW-1})',"right",HEX['success'],True),
-    ], 1):
+    ("","center", HEX['white'],False),
+    ("TOTALS","left", HEX['white'],False),
+    (f'=SUM(C{DS}:C{TROW-1})',"right",HEX['white'],False),
+    ("","center", HEX['white'],False),
+    ("","center", HEX['white'],False),
+    ("","right", HEX['white'],False),
+    (f'=SUM(G{DS}:G{TROW-1})',"right",HEX['white'],True),
+    ("","center", HEX['white'],False),
+    (f'=SUM(I{DS}:I{TROW-1})',"right",HEX['warning'],True),
+    (f'=SUM(J{DS}:J{TROW-1})',"right",HEX['success'],True),
+], 1):
         c=ws.cell(row=TROW,column=ci,value=val)
         c.font=Font(bold=True,size=9,name='Arial',color=col)
         c.fill=_solid(HEX['dark_green'])
@@ -447,10 +459,10 @@ def zra_export_excel(request):
         if fmt: c.number_format='"ZMW "#,##0.00'
     ws.row_dimensions[TROW].height=22
 
-    for i,w in enumerate([30,16,16,10,10,18,20,10,20,22],1):
+    for i,w in enumerate([10,30,12,15,15,18,18,10,18,20],1):
         ws.column_dimensions[get_column_letter(i)].width=w
     ws.freeze_panes=f"A{DS}"
-    ws.auto_filter.ref=f"A{HDR_ROW}:H{TROW-1}"
+    ws.auto_filter.ref=f"A{HDR_ROW}:J{TROW-1}"
     ws.page_setup.orientation=ws.ORIENTATION_LANDSCAPE
     ws.page_setup.paperSize=ws.PAPERSIZE_A4
     ws.page_setup.fitToWidth=1
@@ -472,18 +484,32 @@ def zra_export_excel(request):
 # ══════════════════════════════════════════════════════════════════
 
 def _get_ministry_data(request):
-    # Replace with: RentalApplication.objects.values('property__district')
-    #               .annotate(total_people=Sum('number_of_occupants'),
-    #                         property_count=Count('property',distinct=True))
-    return [
-        {"district":"Lusaka",      "total_people":312,"property_count":48,"density":"HIGH"},
-        {"district":"Kitwe",       "total_people":198,"property_count":31,"density":"HIGH"},
-        {"district":"Ndola",       "total_people":145,"property_count":24,"density":"MED"},
-        {"district":"Livingstone", "total_people":87, "property_count":14,"density":"MED"},
-        {"district":"Kabwe",       "total_people":54, "property_count":9, "density":"MED"},
-        {"district":"Chipata",     "total_people":32, "property_count":5, "density":"LOW"},
-        {"district":"Solwezi",     "total_people":18, "property_count":3, "density":"LOW"},
-    ]
+    search = request.GET.get('search')
+
+    queryset = RentalAgreement.objects.filter(is_active=True)
+    if search:
+        queryset = queryset.filter(property__district__icontains=search)
+
+    stats = (
+        queryset.values('property__district')
+        .annotate(
+            total_people=Sum('number_of_occupants'),
+            property_count=Count('property', distinct=True)
+        )
+        .order_by('-total_people')
+    )
+
+    data = []
+    for stat in stats:
+        tp = stat['total_people'] or 0
+        density = "HIGH" if tp > 50 else "MED" if tp > 20 else "LOW"
+        data.append({
+            "district": stat['property__district'],
+            "total_people": tp,
+            "property_count": stat['property_count'],
+            "density": density
+        })
+    return data
 
 
 @require_GET
@@ -806,267 +832,3 @@ def landlord_export_excel(request):
     resp=HttpResponse(buf,content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     resp['Content-Disposition']=f'attachment; filename="{fname}"'
     return resp
-
-
-# ---------------------------------------------------------------
-# HELPER: Resolve the real user from token (cookie or header)
-# This bypasses Django's unreliable session-based request.user
-# ---------------------------------------------------------------
-def get_user_from_request(request):
-    # 1. Try Authorization header
-    auth_header = request.META.get('HTTP_AUTHORIZATION', '')
-    if auth_header.startswith('Token '):
-        token_key = auth_header.split(' ')[1]
-        try:
-            return Token.objects.get(key=token_key).user
-        except Token.DoesNotExist:
-            pass
-
-    # 2. Try auth_token cookie
-    token_key = request.COOKIES.get('auth_token')
-    if token_key:
-        try:
-            return Token.objects.get(key=token_key).user
-        except Token.DoesNotExist:
-            pass
-
-    return None  # Not authenticated
-
-
-# ---------------------------------------------------------------
-# FRONTEND VIEWS
-# ---------------------------------------------------------------
-
-def index_page(request):
-    return render(request, 'index.html')
-
-
-def auth_page(request):
-    return render(request, 'auth.html')
-
-
-def property_detail_page(request, pk):
-    property_obj = get_object_or_404(Property, pk=pk)
-    landlord_phone = property_obj.owner.phone_number
-    return render(request, 'property_detail.html', {
-        'property': property_obj,
-        'landlord_phone': landlord_phone,
-    })
-
-
-def apply_page(request, pk):
-    user = get_user_from_request(request)
-    if not user:
-        return redirect('/auth/login/')
-    property_obj = get_object_or_404(Property, pk=pk)
-    return render(request, 'apply.html', {'property': property_obj})
-
-
-def add_property_page(request):
-    user = get_user_from_request(request)
-    if not user:
-        return redirect('/auth/login/')
-    return render(request, 'add_property.html')
-
-
-def dashboard_page(request):
-    """Landlord dashboard."""
-    user = get_user_from_request(request)
-    if not user:
-        return redirect('/auth/login/')
-
-    user_properties = Property.objects.filter(owner=user)
-    total_tax = sum(p.estimated_annual_tax() for p in user_properties)
-
-    return render(request, 'dashboard.html', {
-        'properties': user_properties,
-        'user_properties': user_properties,
-        'total_tax': total_tax,
-        'property_count': user_properties.count(),
-    })
-
-
-def zra_dashboard_page(request):
-    """ZRA Tax Compliance dashboard."""
-    user = get_user_from_request(request)
-    if not user:
-        return redirect('/auth/login/')
-    if user.user_type != 'ZRA':
-        return render(request, '403.html')
-
-    all_properties = Property.objects.all()
-    total_tax = sum(p.estimated_annual_tax() for p in all_properties)
-    compliant_count = all_properties.filter(is_tax_compliant=True).count()
-    non_compliant_count = all_properties.filter(is_tax_compliant=False).count()
-    total_count = all_properties.count()
-
-    return render(request, 'zra_dashboard.html', {
-        'total_tax': total_tax,
-        'compliance_rate': (compliant_count / total_count * 100) if total_count > 0 else 0,
-        'non_compliant_count': non_compliant_count,
-    })
-
-
-def occupancy_dashboard_page(request):
-    """Ministry of Home Affairs dashboard."""
-    user = get_user_from_request(request)
-    if not user:
-        return redirect('/auth/login/')
-    if user.user_type != 'MINISTRY':
-        return render(request, '403.html')
-
-    occupancy_stats = (
-        RentalAgreement.objects.filter(is_active=True)
-        .values('property__district')
-        .annotate(
-            total_people=Sum('number_of_occupants'),
-            property_count=Count('property', distinct=True)
-        )
-        .order_by('-total_people')
-    )
-
-    return render(request, 'ministry_dashboard.html', {
-        'occupancy_stats': occupancy_stats,
-    })
-
-
-# ---------------------------------------------------------------
-# API VIEWSETS
-# ---------------------------------------------------------------
-
-class PropertyViewSet(viewsets.ModelViewSet):
-    queryset = Property.objects.all()
-    serializer_class = PropertySerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
-    def get_queryset(self):
-        queryset = Property.objects.all()
-        
-        # Add dynamic filtering
-        status = self.request.query_params.get('status')
-        search = self.request.query_params.get('search')
-
-        if status == 'pending':
-            queryset = queryset.filter(is_tax_compliant=False)
-        elif status == 'compliant':
-            queryset = queryset.filter(is_tax_compliant=True)
-
-        if search:
-            queryset = queryset.filter(
-                Q(title__icontains=search) | 
-                Q(owner__full_name__icontains=search) |
-                Q(owner__username__icontains=search) |
-                Q(owner__tpin_number__icontains=search) |
-                Q(owner__nrc_number__icontains=search) |
-                Q(id__icontains=search)
-            )
-        return queryset
-
-    def perform_create(self, serializer):
-        property_obj = serializer.save(owner=self.request.user)
-        images = self.request.FILES.getlist('images')
-        captions = self.request.POST.getlist('captions')
-        try:
-            main_index = int(self.request.POST.get('main_image_index', '0'))
-        except ValueError:
-            main_index = 0
-
-        from .models import PropertyImage
-        for i, image in enumerate(images):
-            PropertyImage.objects.create(
-                property=property_obj,
-                image=image,
-                caption=captions[i] if i < len(captions) else '',
-                is_main=(i == main_index)
-            )
-
-    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
-    def toggle_compliance(self, request, pk=None):
-        if request.user.user_type != 'ZRA':
-            return Response({'error': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
-        property_obj = self.get_object()
-        property_obj.is_tax_compliant = not property_obj.is_tax_compliant
-        property_obj.save()
-        return Response({'is_tax_compliant': property_obj.is_tax_compliant})
-
-    @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated])
-    def zra_report(self, request):
-        if request.user.user_type != 'ZRA':
-            return Response({'error': 'Unauthorized'}, status=403)
-        landlords = User.objects.filter(user_type='LANDLORD')
-        stats = []
-        for landlord in landlords:
-            props = Property.objects.filter(owner=landlord)
-            stats.append({
-                'landlord_name': landlord.username,
-                'property_count': props.count(),
-                'annual_income_estimate': sum(float(p.price) * 12 for p in props)
-            })
-        return Response({'landlords': stats})
-
-    @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated])
-    def census_report(self, request):
-        if request.user.user_type != 'MINISTRY':
-            return Response({'error': 'Unauthorized'}, status=403)
-        agreements = RentalAgreement.objects.filter(is_active=True)
-        stats = {}
-        for ag in agreements:
-            dist = ag.property.district
-            if dist not in stats:
-                stats[dist] = {'total_population': 0, 'property_count': 0, 'by_category': {}}
-            stats[dist]['total_population'] += ag.number_of_occupants
-            stats[dist]['property_count'] += 1
-            cat = ag.property.category
-            stats[dist]['by_category'][cat] = stats[dist]['by_category'].get(cat, 0) + ag.number_of_occupants
-        return Response(stats)
-
-
-class RentalAgreementViewSet(viewsets.ModelViewSet):
-    queryset = RentalAgreement.objects.all()
-    serializer_class = RentalAgreementSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        user = self.request.user
-        if user.user_type == 'TENANT':
-            return RentalAgreement.objects.filter(tenant=user)
-        elif user.user_type == 'LANDLORD':
-            return RentalAgreement.objects.filter(property__owner=user)
-        return RentalAgreement.objects.all()
-
-    def perform_create(self, serializer):
-        serializer.save(tenant=self.request.user)
-
-    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
-    def approve(self, request, pk=None):
-        agreement = self.get_object()
-        if agreement.property.owner != request.user:
-            return Response({'error': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
-        agreement.status = 'APPROVED'
-        agreement.save()
-        return Response({'status': 'Approved'})
-
-    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
-    def reject(self, request, pk=None):
-        agreement = self.get_object()
-        if agreement.property.owner != request.user:
-            return Response({'error': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
-        agreement.status = 'REJECTED'
-        agreement.save()
-        return Response({'status': 'Rejected'})
-
-
-class ExpenseViewSet(viewsets.ModelViewSet):
-    queryset = Expense.objects.all()
-    serializer_class = ExpenseSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        return Expense.objects.filter(property__owner=self.request.user)
-
-    def perform_create(self, serializer):
-        property_id = self.request.data.get('property')
-        prop = get_object_or_404(Property, id=property_id)
-        if prop.owner != self.request.user:
-            raise permissions.PermissionDenied("You don't own this property.")
-        serializer.save()

@@ -39,17 +39,48 @@ function icon(classes) {
     return ce('i', classes);
 }
 
+// Theme Toggle Handler
+function initTheme() {
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const body = document.body;
+
+    if (!themeToggle || !themeIcon) return;
+
+    // Apply saved theme or default
+    const currentTheme = body.getAttribute('data-theme') || 'dark';
+    updateThemeUI(currentTheme);
+
+    themeToggle.addEventListener('click', () => {
+        const newTheme = body.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        body.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateThemeUI(newTheme);
+    });
+
+    function updateThemeUI(theme) {
+        if (theme === 'light') {
+            themeIcon.className = 'fas fa-sun';
+            themeToggle.title = 'Switch to Dark Mode';
+        } else {
+            themeIcon.className = 'fas fa-moon';
+            themeToggle.title = 'Switch to Light Mode';
+        }
+    }
+}
+
 // Splash Screen Handler
 document.addEventListener('DOMContentLoaded', () => {
+    initTheme();
+
     const splash = document.getElementById('splash-screen');
     if (splash) {
         // Hide after a short delay to allow fonts/assets to load
         setTimeout(() => {
-            splash.style.opacity = '0';
-            splash.style.transition = 'opacity 0.5s ease';
+            splash.classList.add('hidden-splash');
             setTimeout(() => {
                 splash.style.display = 'none';
-            }, 500); // Wait for fade-out to complete
-        }, 1200); // Show splash for 1.2 seconds
+            }, 600);
+        }, 800);
     }
 });

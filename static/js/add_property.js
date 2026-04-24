@@ -18,21 +18,18 @@ document.addEventListener('DOMContentLoaded', () => {
     addImageBtn.addEventListener('click', () => {
         imageCounter++;
         const row = document.createElement('div');
-        row.className = "glass p-4 rounded-xl border border-slate-200 flex flex-col md:flex-row gap-4 items-start image-upload-row fade-in";
+        row.className = "image-upload-row image-row";
         row.innerHTML = `
-            <div class="flex-1 w-full">
-                <input type="file" accept="image/*" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" required>
+            <div class="flex-1" style="min-width:160px">
+                <input type="file" accept="image/*" required class="image-input-file">
             </div>
-            <div class="flex-1 w-full">
-                <input type="text" placeholder="Caption (e.g. Master Bedroom)" class="w-full px-3 py-2 rounded-lg border border-slate-200 outline-none focus:ring-2 focus:ring-indigo-500 text-sm image-caption">
+            <div class="flex-1" style="min-width:140px">
+                <input type="text" placeholder="Caption (e.g. Living Room)" class="image-caption image-input-caption">
             </div>
-            <div class="flex items-center gap-3 w-full md:w-auto mt-2 md:mt-0 pt-2 md:pt-0 border-t md:border-t-0 border-slate-100">
-                <label class="flex items-center text-sm font-medium text-slate-700 cursor-pointer">
-                    <input type="radio" name="main_image" value="${imageCounter}" class="mr-2 text-indigo-600 focus:ring-indigo-500 h-4 w-4">
-                    Main Image
-                </label>
-                <button type="button" class="text-red-500 hover:text-red-700 p-2 remove-image-btn" title="Remove"><i class="fas fa-trash"></i></button>
-            </div>
+            <label class="flex-row items-center gap-2 text-xs font-bold pointer cursor-pointer" style="color:var(--text-secondary);white-space:nowrap">
+                <input type="radio" name="main_image" value="${imageCounter}" style="accent-color:var(--color-primary)"> Cover Photo
+            </label>
+            <button type="button" class="remove-image-btn btn btn-danger btn-sm" style="width:auto;"><i class="fas fa-trash-alt"></i></button>
         `;
 
         row.querySelector('.remove-image-btn').addEventListener('click', () => {

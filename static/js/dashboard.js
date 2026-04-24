@@ -30,33 +30,33 @@ async function fetchApplications() {
 
         container.innerHTML = '';
         data.forEach(app => {
-            const row = ce('div', 'p-6 hover:bg-slate-50 transition');
+            const row = ce('div', 'list-item');
 
             const header = ce('div', 'flex justify-between items-start mb-2');
             const info = ce('div');
-            const title = ce('h4', 'font-bold text-slate-900', app.property_details.title);
-            const applicant = ce('p', 'text-sm text-slate-500');
-            applicant.append(icon('fas fa-user text-indigo-400 mr-1'), document.createTextNode(' Applicant: '));
-            applicant.append(ce('span', 'font-semibold text-slate-700', app.tenant_name));
+            const title = ce('h4', 'font-bold', app.property_details.title);
+            const applicant = ce('p', 'text-sm text-muted');
+            applicant.append(icon('fas fa-user text-primary mr-1'), document.createTextNode(' Applicant: '));
+            applicant.append(ce('span', 'font-semibold text-secondary', app.tenant_name));
             info.append(title, applicant);
             header.append(info);
 
             header.append(getStatusBadge(app.status));
 
-            const details = ce('div', 'grid grid-cols-2 gap-4 mt-4 text-sm bg-white p-3 rounded-lg border border-slate-100');
+            const details = ce('div', 'grid grid-cols-2 gap-4 list-item-inner text-sm');
             const occupantsWrap = ce('div');
-            occupantsWrap.append(ce('span', 'text-slate-500', 'Occupants: '), ce('span', 'font-semibold', parseInt(app.number_of_occupants).toString()));
+            occupantsWrap.append(ce('span', 'text-muted', 'Occupants: '), ce('span', 'font-semibold', parseInt(app.number_of_occupants).toString()));
             const periodWrap = ce('div');
-            periodWrap.append(ce('span', 'text-slate-500', 'Period: '), ce('span', 'font-semibold', `${app.start_date} to ${app.end_date}`));
+            periodWrap.append(ce('span', 'text-muted', 'Period: '), ce('span', 'font-semibold', `${app.start_date} to ${app.end_date}`));
             details.append(occupantsWrap, periodWrap);
 
             row.append(header, details);
 
             if (app.status === 'PENDING') {
                 const actions = ce('div', 'mt-4 flex gap-3');
-                const approveBtn = ce('button', 'flex-1 bg-emerald-50 text-emerald-600 font-bold py-2 rounded-lg hover:bg-emerald-100 transition border border-emerald-200', 'Approve');
+                const approveBtn = ce('button', 'btn btn-success btn-sm btn-full', 'Approve');
                 approveBtn.onclick = () => updateApplicationStatus(parseInt(app.id), 'approve');
-                const rejectBtn = ce('button', 'flex-1 bg-red-50 text-red-600 font-bold py-2 rounded-lg hover:bg-red-100 transition border border-red-200', 'Reject');
+                const rejectBtn = ce('button', 'btn btn-danger btn-sm btn-full', 'Reject');
                 rejectBtn.onclick = () => updateApplicationStatus(parseInt(app.id), 'reject');
                 actions.append(approveBtn, rejectBtn);
                 row.append(actions);
@@ -72,15 +72,15 @@ async function fetchApplications() {
 }
 
 function getStatusBadge(status) {
-    const badge = ce('span', 'px-3 py-1 rounded-full text-xs font-bold uppercase');
+    const badge = ce('span', 'badge');
     if (status === 'APPROVED') {
-        badge.className += ' bg-emerald-100 text-emerald-700';
+        badge.classList.add('badge-success');
         badge.append(icon('fas fa-check mr-1'), document.createTextNode(' Approved'));
     } else if (status === 'REJECTED') {
-        badge.className += ' bg-red-100 text-red-700';
+        badge.classList.add('badge-error');
         badge.append(icon('fas fa-times mr-1'), document.createTextNode(' Rejected'));
     } else {
-        badge.className += ' bg-amber-100 text-amber-700';
+        badge.classList.add('badge-warning');
         badge.append(icon('fas fa-clock mr-1'), document.createTextNode(' Pending'));
     }
     return badge;
@@ -173,16 +173,16 @@ async function fetchExpenses() {
         list.innerHTML = '';
         data.forEach(exp => {
             total += parseFloat(exp.amount);
-            const item = ce('div', 'p-4 hover:bg-slate-50 transition flex justify-between items-center group');
+            const item = ce('div', 'list-item !p-4 flex justify-between items-center group');
 
             const info = ce('div');
-            const desc = ce('p', 'font-semibold text-sm text-slate-800', exp.description);
-            const date = ce('p', 'text-xs text-slate-500 mt-1', new Date(exp.date).toLocaleDateString());
+            const desc = ce('p', 'font-semibold text-sm text-main', exp.description);
+            const date = ce('p', 'text-xs text-muted mt-1', new Date(exp.date).toLocaleDateString());
             info.append(desc, date);
 
             const meta = ce('div', 'text-right');
-            const amt = ce('p', 'font-bold text-slate-900 text-sm', `K${parseFloat(exp.amount).toLocaleString()}`);
-            const delBtn = ce('button', 'text-red-500 text-xs opacity-0 group-hover:opacity-100 transition mt-1', '', {
+            const amt = ce('p', 'font-bold text-main text-sm', `K${parseFloat(exp.amount).toLocaleString()}`);
+            const delBtn = ce('button', 'text-error text-xs opacity-0 group-hover:opacity-100 transition mt-1', '', {
                 onclick: () => deleteExpense(parseInt(exp.id))
             });
             delBtn.append(icon('fas fa-trash'));

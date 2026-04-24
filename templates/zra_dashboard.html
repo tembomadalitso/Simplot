@@ -1,64 +1,518 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block title %}ZRA Tax Portal | Zambia Rentals{% endblock %}
 
+{% block extra_head %}
+<style>
+/* ── SHARED SIDEBAR SYSTEM ── */
+.sb-layout{display:flex;min-height:calc(100vh - 64px);background:var(--bg-body)}
+.sb-sidebar{width:240px;min-height:100%;background:var(--bg-surface-solid);border-right:1px solid var(--border-color);display:flex;flex-direction:column;flex-shrink:0;transition:width .25s cubic-bezier(.4,0,.2,1);position:sticky;top:64px;height:calc(100vh - 64px);overflow:hidden;z-index:40}
+.sb-sidebar.collapsed{width:64px}
+.sb-sidebar-header{padding:20px 16px 16px;border-bottom:1px solid var(--border-color);display:flex;align-items:center;justify-content:space-between;min-height:64px}
+.sb-logo{display:flex;align-items:center;gap:10px;overflow:hidden;white-space:nowrap}
+.sb-logo-icon{width:32px;height:32px;border-radius:10px;background:var(--color-success);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px;color:#fff}
+.sb-logo-text{font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--text-main);opacity:1;transition:opacity .2s}
+.sb-sidebar.collapsed .sb-logo-text{opacity:0;width:0}
+.sb-collapse-btn{width:28px;height:28px;border-radius:8px;background:var(--bg-body);border:1px solid var(--border-color);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted);font-size:11px;flex-shrink:0;transition:all .2s}
+.sb-collapse-btn:hover{background:var(--color-success-bg);color:var(--color-success)}
+.sb-sidebar.collapsed .sb-collapse-btn{margin:0 auto}
+.sb-nav{flex:1;padding:12px 0;overflow-y:auto;overflow-x:hidden}
+.sb-section-label{font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);padding:8px 16px 4px;white-space:nowrap;overflow:hidden;transition:opacity .2s}
+.sb-sidebar.collapsed .sb-section-label{opacity:0}
+.sb-nav-item{display:flex;align-items:center;gap:10px;padding:9px 14px;margin:1px 8px;border-radius:10px;color:var(--text-secondary);text-decoration:none;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;overflow:hidden;transition:all .15s;position:relative}
+.sb-nav-item:hover{background:var(--color-success-bg);color:var(--color-success)}
+.sb-nav-item.active{background:var(--color-success-bg);color:var(--color-success)}
+.sb-nav-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:20px;background:var(--color-success);border-radius:0 3px 3px 0}
+.sb-nav-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.sb-nav-label{flex:1;transition:opacity .2s,width .2s}
+.sb-sidebar.collapsed .sb-nav-label{opacity:0;width:0}
+.sb-nav-badge{background:var(--color-warning-bg);color:var(--color-warning);border:1px solid var(--color-warning);font-size:9px;font-weight:800;padding:2px 6px;border-radius:9999px;flex-shrink:0;transition:opacity .2s}
+.sb-sidebar.collapsed .sb-nav-badge{opacity:0}
+.sb-sidebar-footer{padding:12px 8px;border-top:1px solid var(--border-color)}
+.sb-main{flex:1;min-width:0;padding:28px 32px 60px;overflow-x:auto}
+.sb-sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99}
+.sb-sidebar-overlay.visible{display:block}
+@media(max-width:768px){
+  .sb-sidebar{position:fixed;left:0;top:64px;bottom:0;transform:translateX(-100%);transition:transform .25s;z-index:100;box-shadow:var(--shadow-lg)}
+  .sb-sidebar.mobile-open{transform:translateX(0)}
+  .sb-main{padding:20px 16px 60px}
+}
+
+/* ── KPI CARDS ── */
+.sb-stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:24px}
+.sb-kpi-card{background:var(--bg-surface-solid);border:1px solid var(--border-color);border-radius:14px;padding:18px 20px;transition:all .2s}
+.sb-kpi-card.green{background:linear-gradient(135deg,#10b981,#059669);border-color:transparent;color:#fff}
+.sb-kpi-card.teal{background:linear-gradient(135deg,#0891b2,#0e7490);border-color:transparent;color:#fff}
+.sb-kpi-card.amber{background:linear-gradient(135deg,#f59e0b,#d97706);border-color:transparent;color:#fff}
+.sb-kpi-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.sb-kpi-icon{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff}
+.sb-kpi-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;opacity:.75;margin-bottom:4px}
+.sb-kpi-value{font-size:22px;font-weight:900;letter-spacing:-.04em;line-height:1;margin-bottom:2px}
+.sb-kpi-card:not(.green):not(.teal):not(.amber) .sb-kpi-value{color:var(--text-main)}
+.sb-kpi-sub{font-size:10px;font-weight:600;opacity:.65}
+.zra-progress{height:5px;background:rgba(255,255,255,.2);border-radius:9999px;overflow:hidden;margin-top:8px}
+.zra-progress-fill{height:100%;border-radius:9999px;background:rgba(255,255,255,.7);transition:width .8s}
+
+/* ── FILTER BAR ── */
+.sb-filter-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.sb-filter-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:var(--bg-surface-solid);border:1px solid var(--border-color);border-radius:9px;font-size:12px;font-weight:700;color:var(--text-secondary);cursor:pointer;transition:all .15s;text-decoration:none}
+.sb-filter-btn:hover,.sb-filter-btn.active{background:var(--color-success-bg);border-color:var(--color-success);color:var(--color-success)}
+.sb-filter-btn.export-pdf{background:var(--color-error-bg);border-color:var(--color-error);color:var(--color-error)}
+.sb-filter-btn.export-pdf:hover{background:var(--color-error);color:#fff}
+.sb-filter-btn.export-xl{background:var(--color-success-bg);border-color:var(--color-success);color:var(--color-success)}
+.sb-filter-btn.export-xl:hover{background:var(--color-success);color:#fff}
+.sb-search-wrap{position:relative}
+.sb-search-wrap i{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--text-muted);pointer-events:none}
+.sb-search-input{padding:7px 12px 7px 30px;background:var(--bg-surface-solid);border:1px solid var(--border-color);border-radius:9px;font-size:12px;font-weight:500;color:var(--text-main);outline:none;transition:all .2s;width:220px}
+.sb-search-input:focus{border-color:var(--color-success);box-shadow:0 0 0 3px var(--color-success-bg)}
+.sb-form-select{padding:7px 12px;background:var(--bg-surface-solid);border:1px solid var(--border-color);border-radius:9px;font-size:12px;font-weight:600;color:var(--text-main);outline:none;cursor:pointer}
+
+/* ── TURNOVER TAX TABLE (CRITICAL) ── */
+.zra-table-card{background:var(--bg-surface-solid);border:1px solid var(--border-color);border-radius:14px;overflow:hidden}
+.zra-table-header{padding:14px 20px;border-bottom:1px solid var(--border-color);display:flex;align-items:center;justify-content:space-between;background:var(--bg-body);flex-wrap:wrap;gap:10px}
+.zra-table-header h3{font-size:13px;font-weight:800;color:var(--text-main);display:flex;align-items:center;gap:8px}
+.zra-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.zra-table{width:100%;border-collapse:collapse;font-size:12px;min-width:820px}
+.zra-table thead tr{background:var(--color-success)}
+.zra-table th{padding:11px 14px;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#fff;text-align:left;white-space:nowrap;border-bottom:2px solid var(--color-success-hover)}
+.zra-table th.num{text-align:right}
+.zra-table td{padding:12px 14px;border-bottom:1px solid var(--border-color);color:var(--text-main);vertical-align:middle;font-size:12px;transition:background .1s}
+.zra-table td.num{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.zra-table td.id-cell{font-weight:700;color:var(--text-muted);font-size:11px}
+.zra-table td.landlord{font-weight:700}
+.zra-table td.tax-rate{text-align:center}
+.zra-table tbody tr:nth-child(odd){background:var(--bg-body)}
+.zra-table tbody tr:nth-child(even){background:var(--bg-surface-solid)}
+.zra-table tbody tr:hover td{background:var(--color-success-bg) !important;cursor:default}
+.zra-table tfoot tr{background:linear-gradient(135deg,#064e3b,#065f46)}
+.zra-table tfoot td{padding:12px 14px;font-weight:900;color:#fff;border-top:2px solid var(--color-success);font-size:12px}
+.zra-table tfoot td.num{text-align:right;font-variant-numeric:tabular-nums}
+.zra-table tfoot td.total-label{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;opacity:.8}
+
+/* amount after tax — highlight green */
+.zra-table td.after-tax{color:var(--color-success);font-weight:800}
+.zra-table tfoot td.after-tax{color:#6ee7b7}
+
+/* tax amount — warning amber */
+.zra-table td.tax-amt{color:var(--color-warning);font-weight:700}
+.zra-table tfoot td.tax-amt{color:#fcd34d}
+
+/* status pill in table */
+.tbl-pill{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:9999px;font-size:9px;font-weight:800;letter-spacing:.05em}
+.tbl-pill.verified{background:var(--color-success-bg);color:var(--color-success);border:1px solid rgba(16,185,129,.3)}
+.tbl-pill.pending{background:var(--color-warning-bg);color:var(--color-warning);border:1px solid rgba(245,158,11,.3)}
+
+/* count badge */
+.count-badge{background:var(--color-warning-bg);color:var(--color-warning);border:1px solid var(--color-warning);font-size:9px;font-weight:800;padding:3px 8px;border-radius:9999px}
+
+/* Loading spinner */
+.tbl-loading{padding:48px;text-align:center;color:var(--text-muted)}
+.tbl-loading i{font-size:1.6rem;color:var(--color-success);display:block;margin-bottom:12px}
+
+/* Animations */
+@keyframes sbFadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.sb-fade-1{animation:sbFadeUp .4s ease both .05s}
+.sb-fade-2{animation:sbFadeUp .4s ease both .1s}
+.sb-fade-3{animation:sbFadeUp .4s ease both .15s}
+.sb-fade-4{animation:sbFadeUp .4s ease both .2s}
+
+/* Export toast */
+.export-toast{position:fixed;bottom:24px;right:24px;background:var(--color-success);color:#fff;padding:10px 18px;border-radius:10px;font-size:13px;font-weight:700;z-index:9999;display:flex;align-items:center;gap:8px;box-shadow:0 8px 24px rgba(16,185,129,.4);transform:translateY(80px);opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1)}
+.export-toast.show{transform:translateY(0);opacity:1}
+
+/* Topbar */
+.sb-topbar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;gap:12px;flex-wrap:wrap}
+.sb-topbar h2{font-size:22px;font-weight:900;letter-spacing:-.03em;margin-bottom:2px}
+.sb-topbar p{font-size:13px;color:var(--text-muted);font-weight:500}
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="animate-[fadeIn_0.5s_ease-out]">
-        <header class="mb-10">
-            <h1 class="text-3xl font-bold text-emerald-700"><i class="fas fa-file-invoice-dollar mr-3"></i>ZRA Tax Compliance Portal</h1>
-            <p class="text-slate-500 mt-2">Official Portal for ZRA tracking and tax compliance verification.</p>
-        </header>
+<div class="sb-sidebar-overlay" id="sbOverlay" onclick="closeMobile()"></div>
+<div class="export-toast" id="exportToast">
+    <i class="fas fa-check-circle"></i> <span id="toastMsg">Export ready!</span>
+</div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            <div class="glass-card p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center">
-                <div class="bg-indigo-100 text-indigo-600 p-4 rounded-2xl mr-4">
-                    <i class="fas fa-chart-line text-2xl"></i>
-                </div>
-                <div>
-                    <p class="text-slate-500 text-sm font-semibold uppercase tracking-wider">Potential Tax Rev</p>
-                    <h2 class="text-3xl font-black mt-1 text-indigo-600">K{{ total_tax|floatformat:2 }}</h2>
-                </div>
-            </div>
-            <div class="glass-card p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center">
-                <div class="bg-emerald-100 text-emerald-600 p-4 rounded-2xl mr-4">
-                    <i class="fas fa-check-double text-2xl"></i>
-                </div>
-                <div>
-                    <p class="text-slate-500 text-sm font-semibold uppercase tracking-wider">Compliance Rate</p>
-                    <h2 class="text-3xl font-black mt-1 text-emerald-600">{{ compliance_rate|floatformat:1 }}%</h2>
-                </div>
-            </div>
-            <div class="glass-card p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center">
-                <div class="bg-amber-100 text-amber-600 p-4 rounded-2xl mr-4">
-                    <i class="fas fa-exclamation-triangle text-2xl"></i>
-                </div>
-                <div>
-                    <p class="text-slate-500 text-sm font-semibold uppercase tracking-wider">Pending Verification</p>
-                    <h2 class="text-3xl font-black mt-1 text-amber-600">{{ non_compliant_count }}</h2>
-                </div>
-            </div>
+<div class="sb-layout">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sb-sidebar" id="mainSidebar">
+    <div class="sb-sidebar-header">
+      <div class="sb-logo">
+        <div class="sb-logo-icon"><i class="fas fa-landmark"></i></div>
+        <span class="sb-logo-text">ZRA Portal</span>
+      </div>
+      <button class="sb-collapse-btn" onclick="toggleSidebar()">
+        <i class="fas fa-chevron-left" id="collapseIcon"></i>
+      </button>
+    </div>
+    <nav class="sb-nav">
+      <div class="sb-section-label">ZRA Tools</div>
+      <a class="sb-nav-item active" onclick="sbNav(this)">
+        <div class="sb-nav-icon"><i class="fas fa-th-large"></i></div>
+        <span class="sb-nav-label">Overview</span>
+      </a>
+      <a class="sb-nav-item" onclick="sbNav(this);scrollTo('taxQueueList')">
+        <div class="sb-nav-icon"><i class="fas fa-file-shield"></i></div>
+        <span class="sb-nav-label">Tax Registry</span>
+        <span class="sb-nav-badge">{{ non_compliant_count }}</span>
+      </a>
+      <div class="sb-section-label">Export</div>
+      <a onclick="exportDynamic('pdf')" class="sb-filter-btn export-pdf">
+        <i class="fas fa-file-pdf"></i> Export PDF
+      </a>
+      <a onclick="exportDynamic('excel')" class="sb-filter-btn export-xl">
+        <i class="fas fa-file-excel"></i> Export Excel
+      </a>
+    </nav>
+    <div class="sb-sidebar-footer">
+      <a href="{% url 'index' %}" class="sb-nav-item">
+        <div class="sb-nav-icon"><i class="fas fa-arrow-left"></i></div>
+        <span class="sb-nav-label">Back to Home</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <main class="sb-main">
+
+    <!-- Topbar -->
+    <div class="sb-topbar sb-fade-1">
+      <div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+          <div class="hero-badge" style="margin:0;padding:4px 12px;background:var(--color-success-bg);border-color:var(--color-success);color:var(--color-success)">
+            <i class="fas fa-shield-halved" style="font-size:9px"></i> Revenue Registry
+          </div>
+          <div class="hero-badge" style="margin:0;padding:4px 12px">
+            <i class="fas fa-landmark" style="font-size:9px"></i> ZRA Official Portal
+          </div>
+        </div>
+        <h2>Tax Compliance Interface</h2>
+        <p>Monitor real estate turnover tax collection and property verification queues.</p>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <div class="flex gap-4">
+          <button onclick="exportDynamic('pdf')" class="btn btn-outline">
+              <i class="fas fa-file-pdf mr-2"></i> Export PDF
+          </button>
+          
+          <button onclick="exportDynamic('excel')" class="btn btn-success">
+              <i class="fas fa-file-excel mr-2"></i> Export Excel
+          </button>
+      </div>
+      </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="sb-stat-row sb-fade-2">
+      <div class="sb-kpi-card green">
+        <div class="sb-kpi-top">
+          <div>
+            <div class="sb-kpi-label">Total Revenue</div>
+            <div class="sb-kpi-value">K{{ total_tax|floatformat:2 }}</div>
+          </div>
+          <div class="sb-kpi-icon"><i class="fas fa-money-bill-trend-up"></i></div>
+        </div>
+        <div class="sb-kpi-sub">Aggregate Turnover Tax</div>
+      </div>
+      <div class="sb-kpi-card teal">
+        <div class="sb-kpi-top">
+          <div>
+            <div class="sb-kpi-label">Compliance Rate</div>
+            <div class="sb-kpi-value">{{ compliance_rate|floatformat:1 }}%</div>
+          </div>
+          <div class="sb-kpi-icon"><i class="fas fa-check-double"></i></div>
+        </div>
+        <div class="zra-progress">
+          <div class="zra-progress-fill" style="width:{{ compliance_rate|floatformat:0 }}%"></div>
+        </div>
+      </div>
+      <div class="sb-kpi-card amber">
+        <div class="sb-kpi-top">
+          <div>
+            <div class="sb-kpi-label">Pending</div>
+            <div class="sb-kpi-value">{{ non_compliant_count }}</div>
+          </div>
+          <div class="sb-kpi-icon"><i class="fas fa-list-check"></i></div>
+        </div>
+        <div class="sb-kpi-sub">Awaiting Verification</div>
+      </div>
+      <div class="sb-kpi-card">
+        <div class="sb-kpi-top">
+          <div>
+            <div class="sb-kpi-label">Tax Rate</div>
+            <div class="sb-kpi-value">10%</div>
+          </div>
+          <div class="sb-kpi-icon" style="background:var(--color-primary-light);color:var(--color-primary)">
+            <i class="fas fa-percent"></i>
+          </div>
+        </div>
+        <div class="sb-kpi-sub">Standard Turnover Rate</div>
+      </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="sb-filter-bar sb-fade-3">
+      <div class="sb-search-wrap">
+        <i class="fas fa-search"></i>
+        <input type="text" class="sb-search-input" id="zraSearch"
+               placeholder="Search landlord or ID…"
+               oninput="filterRegistry()">
+      </div>
+      <select class="sb-form-select" id="statusFilter" onchange="filterRegistry()">
+        <option value="">All Properties</option>
+        <option value="pending">Pending Only</option>
+        <option value="compliant">Compliant Only</option>
+      </select>
+      <span style="margin-left:auto;font-size:12px;color:var(--text-muted);font-weight:600">
+        Showing <strong id="registryCount" style="color:var(--text-main)">{{ non_compliant_count }}</strong> records
+      </span>
+    </div>
+
+    <!-- ══ TURNOVER TAX REGISTRY TABLE ══ -->
+    <div class="zra-table-card sb-fade-4" id="taxQueueList">
+      <div class="zra-table-header">
+        <h3>
+          <div style="width:28px;height:28px;border-radius:8px;background:var(--color-success-bg);border:1px solid var(--color-success);display:flex;align-items:center;justify-content:center;color:var(--color-success);font-size:11px">
+            <i class="fas fa-file-shield"></i>
+          </div>
+          Turnover Tax Registry
+        </h3>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span class="count-badge" id="pendingCountBadge">{{ non_compliant_count }} pending</span>
+          <button class="sb-filter-btn export-pdf" onclick="exportDynamic('pdf')" style="padding:5px 12px;font-size:11px">
+            <i class="fas fa-file-pdf"></i> PDF
+          </button>
+          <button class="sb-filter-btn export-xl" onclick="exportDynamic('excel')" style="padding:5px 12px;font-size:11px">
+            <i class="fas fa-file-excel"></i> Excel
+          </button>
+        </div>
+      </div>
+
+      <div class="zra-table-wrap">
+        <!-- Loading state (replaced by JS) -->
+        <div class="tbl-loading" id="tblLoader">
+          <i class="fas fa-circle-notch fa-spin"></i>
+          <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em">Synchronizing Registry…</p>
         </div>
 
-        <div class="mt-8">
-            <section>
-                <h2 class="text-xl font-bold text-emerald-600 mb-6 uppercase flex items-center">
-                    <i class="fas fa-clipboard-check mr-2"></i> ZRA Tax Verification Queue
-                </h2>
-                <div class="glass-card rounded-3xl overflow-hidden border border-slate-200 shadow-sm">
-                    <div class="bg-slate-50 px-6 py-4 border-b border-slate-100 flex justify-between items-center">
-                        <h3 class="font-bold text-sm text-slate-700 uppercase tracking-wider">Properties Pending Verification</h3>
-                        <span class="bg-amber-100 text-amber-700 px-2 py-1 rounded text-xs font-bold">{{ non_compliant_count }} Total</span>
-                    </div>
-                    <div id="taxQueueList" class="divide-y divide-slate-100 max-h-[600px] overflow-y-auto">
-                        <div class="p-8 text-center text-slate-500"><i class="fas fa-spinner fa-spin mr-2"></i> Loading queue...</div>
-                    </div>
-                </div>
-            </section>
-        </div>
+        <!-- Actual table (hidden until loaded) -->
+        <table class="zra-table" id="registryTable" style="display:none">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Landlord Name</th>
+              <th class="num">Apartments</th>
+              <th style="text-align:center">TPIN</th> 
+              <th style="text-align:center">NRC</th>
+              <th class="num">Rent Amount (K)</th>
+              <th class="num">Total Amount (K)</th>
+              <th style="text-align:center">Tax Rate</th>
+              <th class="num">Tax Amount (K)</th>
+              <th class="num">Amount after Tax (K)</th>
+              <th style="text-align:center">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="registryBody">
+            <!-- Populated by JS -->
+          </tbody>
+          <tfoot id="registryFoot">
+            <tr>
+              <td class="total-label" colspan="2">TOTALS</td>
+              <td class="num" id="ft-apts">—</td>
+              <td colspan="2"></td>
+              <td class="num">—</td>
+              <td class="num" id="ft-total">—</td>
+              <td></td>
+              <td class="num tax-amt" id="ft-tax">—</td>
+              <td class="num after-tax" id="ft-after">—</td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+  </main>
 </div>
 {% endblock %}
 
 {% block extra_scripts %}
-<script src="{% static 'js/official_dashboard.js' %}"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>document.body.classList.add('zra-page'));</script>
+<script src="{% static 'js/main.js' %}"></script>
+<script>
+// ─── Sidebar ───────────────────────────────────────────────────
+function toggleSidebar(){
+  const sb=document.getElementById('mainSidebar');
+  const ic=document.getElementById('collapseIcon');
+  if(window.innerWidth<=768){
+    sb.classList.toggle('mobile-open');
+    document.getElementById('sbOverlay').classList.toggle('visible',sb.classList.contains('mobile-open'));
+  }else{
+    sb.classList.toggle('collapsed');
+    ic.className=sb.classList.contains('collapsed')?'fas fa-chevron-right':'fas fa-chevron-left';
+  }
+}
+function closeMobile(){
+  document.getElementById('mainSidebar').classList.remove('mobile-open');
+  document.getElementById('sbOverlay').classList.remove('visible');
+}
+function sbNav(el){
+  document.querySelectorAll('.sb-nav-item').forEach(i=>i.classList.remove('active'));
+  el.classList.add('active');
+}
+function scrollTo(id){
+  document.getElementById(id)?.scrollIntoView({behavior:'smooth'});
+}
+
+// ─── Auth ──────────────────────────────────────────────────────
+const token = localStorage.getItem('auth_token');
+async function authFetch(url, opts={}){
+  return fetch(url,{...opts,headers:{'Content-Type':'application/json','Authorization':`Token ${token}`}});
+}
+
+// ─── Data store (populated after fetch) ────────────────────────
+let allProperties = [];
+let filteredProperties = [];
+
+// ─── Registry load ─────────────────────────────────────────────
+async function loadRegistry(){
+  try{
+    const q = document.getElementById('zraSearch').value;
+    const status = document.getElementById('statusFilter').value;
+    const url = new URL(window.URLS.apiProperties, window.location.origin);
+    if(q) url.searchParams.append('search', q);
+    if(status) url.searchParams.append('status', status);
+
+    const res = await authFetch(url.toString());
+    if(!res.ok) throw new Error();
+    const data = await res.json();
+
+    // Build enriched rows (adding turnover tax fields)
+    filteredProperties = data.map((p,i) => ({
+      id:        p.id,
+      landlord:  p.owner_name || 'Unknown',
+      tpin:      p.owner_tpin || 'N/A',
+      nrc:       p.owner_nrc || 'N/A',
+      apartments:p.apartment_count || 1,
+      rent:      parseFloat(p.price)||0,
+      total:     (parseFloat(p.price)||0) * (p.apartment_count || 1),
+      rate:      0.10,
+      tax:       parseFloat(p.estimated_tax)||0,
+      after_tax: ((parseFloat(p.price)||0) * (p.apartment_count || 1)) - (parseFloat(p.estimated_tax)||0),
+      compliant: p.is_tax_compliant,
+      prop_id:   p.id,
+      title:     p.title,
+    }));
+
+    renderTable(filteredProperties);
+  }catch(e){
+    document.getElementById('tblLoader').innerHTML=
+      '<i class="fas fa-exclamation-triangle" style="color:var(--color-error);font-size:1.4rem;display:block;margin-bottom:8px"></i><p style="color:var(--color-error);font-size:12px;font-weight:700">Error loading registry.</p>';
+  }
+}
+
+function fmt(n){return Number(n).toLocaleString('en-ZM',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+function renderTable(rows){
+  document.getElementById('tblLoader').style.display='none';
+  const tbl = document.getElementById('registryTable');
+  tbl.style.display='';
+  const body = document.getElementById('registryBody');
+  body.innerHTML='';
+
+  if(rows.length===0){
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td colspan="11" style="text-align:center;padding:48px;color:var(--text-muted)"><i class="fas fa-check-circle" style="font-size:1.8rem;color:var(--color-success);display:block;margin-bottom:10px"></i><p style="font-weight:700">No properties found.</p></td>`;
+    body.appendChild(tr);
+    clearFooter();
+    document.getElementById('registryCount').textContent=0;
+    return;
+  }
+
+  let sumApts=0,sumTotal=0,sumTax=0,sumAfter=0;
+  rows.forEach(r=>{
+    sumApts  +=r.apartments;
+    sumTotal +=r.total;
+    sumTax   +=r.tax;
+    sumAfter +=r.after_tax;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td class="id-cell">#${r.id}</td>
+      <td class="landlord">${escHTML(r.landlord)}</td>
+      <td class="num">${r.apartments}</td>
+      <td class="num">${escHTML(r.tpin)}</td>
+      <td class="num">${escHTML(r.nrc)}</td>
+      <td class="num">K${fmt(r.rent)}</td>
+      <td class="num">K${fmt(r.total)}</td>
+      <td class="tax-rate"><span style="font-weight:700;color:var(--color-primary)">${(r.rate*100).toFixed(1)}%</span></td>
+      <td class="num tax-amt">K${fmt(r.tax)}</td>
+      <td class="num after-tax">K${fmt(r.after_tax)}</td>
+      <td style="text-align:center">
+        ${!r.compliant
+          ? `<button class="btn btn-success btn-sm" onclick="verifyCompliance(${r.prop_id},this)" style="font-size:10px;padding:4px 10px">
+               <i class="fas fa-check"></i> Verify
+             </button>`
+          : `<span class="tbl-pill verified"><i class="fas fa-check-circle"></i> Verified</span>`
+        }
+      </td>`;
+    body.appendChild(tr);
+  });
+
+  document.getElementById('ft-apts').textContent  = sumApts;
+  document.getElementById('ft-total').textContent = 'K'+fmt(sumTotal);
+  document.getElementById('ft-tax').textContent   = 'K'+fmt(sumTax);
+  document.getElementById('ft-after').textContent = 'K'+fmt(sumAfter);
+  document.getElementById('registryCount').textContent = rows.length;
+}
+
+function clearFooter(){
+  ['ft-apts','ft-total','ft-tax','ft-after'].forEach(id=>{
+    document.getElementById(id).textContent='—';
+  });
+}
+
+function escHTML(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+
+// ─── Filtering ─────────────────────────────────────────────────
+function filterRegistry(){
+  loadRegistry();
+}
+
+// ─── Verify Compliance ─────────────────────────────────────────
+async function verifyCompliance(id, btn){
+  if(!confirm('Mark this property as tax compliant?')) return;
+  btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i>';
+  try{
+    const url=`${window.URLS.apiProperties}${id}/toggle_compliance/`;
+    const res=await authFetch(url,{method:'POST'});
+    if(res.ok) loadRegistry();
+    else{btn.disabled=false;btn.innerHTML='<i class="fas fa-check"></i> Verify';alert('Failed.');}
+  }catch{btn.disabled=false;btn.innerHTML='<i class="fas fa-check"></i> Verify';}
+}
+
+// ─── Dynamic Export ─────────────────────────────────────────────
+function exportDynamic(type){
+  const q = document.getElementById('zraSearch').value;
+  const status = document.getElementById('statusFilter').value;
+  const baseUrl = type === 'pdf' ? "{% url 'zra-export-pdf' %}" : "{% url 'zra-export-excel' %}";
+  const url = new URL(baseUrl, window.location.origin);
+  if(q) url.searchParams.append('search', q);
+  if(status) url.searchParams.append('status', status);
+
+  window.location.href = url.toString();
+  showToast(`${type.toUpperCase()} export started...`);
+}
+
+// ─── Toast ─────────────────────────────────────────────────────
+function showToast(msg){
+  const t=document.getElementById('exportToast');
+  document.getElementById('toastMsg').textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+// ─── Init ──────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded',loadRegistry);
+</script>
 {% endblock %}

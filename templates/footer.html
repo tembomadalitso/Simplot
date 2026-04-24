@@ -1,16 +1,61 @@
-<footer class="mt-auto py-8 bg-white border-t border-slate-200 fade-in">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center text-sm text-slate-500">
-        <div class="mb-4 md:mb-0">
-            <span class="text-indigo-600 font-bold text-lg">ZAMBIA RENTALS</span>
-            <p class="mt-1">Modern housing and real estate in Zambia.</p>
+<footer>
+    <div class="footer-container">
+
+        <!-- Top row -->
+        <div class="footer-grid">
+
+            <!-- Brand -->
+            <div>
+                <div class="nav-logo" style="margin-bottom:16px">
+                    <div class="nav-logo-icon">
+                        <i class="fas fa-home" style="color:#fff;font-size:14px"></i>
+                    </div>
+                    <div class="nav-logo-text">
+                        <span class="nav-logo-main">ZAMBIA</span>
+                        <span class="nav-logo-sub">RENTALS</span>
+                    </div>
+                </div>
+                <p class="footer-brand-p">
+                    Setting the standard for verified, compliant rental discovery across Zambia.
+                </p>
+                <!-- Social links -->
+                <div class="footer-social">
+                    <a href="#" class="footer-social-link"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="footer-social-link"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="footer-social-link"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+
+            <!-- Platform links -->
+            <div>
+                <h4 class="footer-heading">Platform</h4>
+                <ul class="footer-links">
+                    <li><a href="{% url 'index' %}" class="footer-link">Find a Home</a></li>
+                    <li><a href="{% url 'login' %}" class="footer-link">List a Property</a></li>
+                    <li><a href="#" class="footer-link">How it Works</a></li>
+                </ul>
+            </div>
+
+            <!-- Support links -->
+            <div>
+                <h4 class="footer-heading">Support</h4>
+                <ul class="footer-links">
+                    <li><a href="#" class="footer-link">Help Center</a></li>
+                    <li><a href="#" class="footer-link">Terms of Service</a></li>
+                    <li><a href="#" class="footer-link">Privacy Policy</a></li>
+                </ul>
+            </div>
         </div>
-        <div class="flex space-x-6">
-            <a href="#" class="hover:text-indigo-600 transition-colors"><i class="fab fa-twitter text-xl"></i></a>
-            <a href="#" class="hover:text-indigo-600 transition-colors"><i class="fab fa-facebook text-xl"></i></a>
-            <a href="#" class="hover:text-indigo-600 transition-colors"><i class="fab fa-instagram text-xl"></i></a>
-        </div>
-        <div class="mt-4 md:mt-0">
-            <p>&copy; 2026 Zambia Rentals. All rights reserved.</p>
+
+        <!-- Bottom row -->
+        <div class="footer-bottom">
+            <p class="footer-copy">
+                &copy; 2026 Zambia Rentals. All rights reserved. Built for the future of Zambian housing.
+            </p>
+            <div class="footer-status">
+                <div class="footer-status-dot"></div>
+                <span class="footer-status-text">All Systems Operational</span>
+            </div>
         </div>
     </div>
 </footer>

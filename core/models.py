@@ -59,10 +59,11 @@ class Property(models.Model):
     street_address = models.CharField(max_length=255, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     is_tax_compliant = models.BooleanField(default=False)
+    apartment_count = models.PositiveIntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def estimated_annual_tax(self):
-        annual_income = self.price * 12
+        annual_income = self.price * self.apartment_count * 12
         policy = TaxPolicy.objects.first()
         if not policy: return 0.00
         return round((annual_income * policy.percentage) / 100, 2)

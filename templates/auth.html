@@ -1,57 +1,124 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Access Zambia Rentals{% endblock %}
+{% block title %}Sign In | Zambia Rentals{% endblock %}
 
 {% block content %}
-<div class="flex items-center justify-center min-h-[70vh] animate-[fadeIn_0.5s_ease-out]">
-    <div class="glass-card w-full max-w-md p-8 rounded-3xl mx-auto shadow-xl">
-        <div class="text-center mb-8">
-            <h2 id="authTitle" class="text-3xl font-bold text-slate-900">Welcome Back</h2>
-            <p id="authSubtitle" class="text-slate-500 mt-2">Enter your details to access your account</p>
-        </div>
+<div class="auth-bg-container">
+    <div class="auth-bg-img"></div>
+    <div class="auth-bg-overlay"></div>
 
-        <form id="authForm" class="space-y-4">
-            <div>
-                <label class="block text-sm font-medium text-slate-700 ml-1 mb-1">Username</label>
-                <input type="text" id="username" required class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-indigo-500 transition">
-            </div>
+    <div class="auth-card-wrapper fade-up delay-1">
+        <div class="auth-glass-card">
 
-            <div id="extraFields" class="hidden space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 ml-1 mb-1">Email Address</label>
-                    <input type="email" id="email" class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-indigo-500 transition">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <div class="auth-logo-box">
+                    <i class="fas fa-home" style="color:#fff;font-size:21px"></i>
                 </div>
+                <h2 id="authTitle" class="text-2xl font-black tracking-tighter mb-1">Welcome Back</h2>
+                <p id="authSubtitle" class="text-xs font-medium" style="color:var(--text-secondary);">Sign in to manage your property journey</p>
+            </div>
+
+            <!-- Form -->
+            <form id="authForm" class="flex-column gap-4">
+
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 ml-1 mb-1">Account Type</label>
-                    <select id="user_type" class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-indigo-500 transition">
-                        <option value="TENANT">Tenant/Seeker</option>
-                        <option value="LANDLORD">Landlord/Property Owner</option>
-                    </select>
+                    <label class="auth-label">Username</label>
+                    <div class="auth-input-wrap">
+                        <i class="fas fa-user auth-input-icon"></i>
+                        <input type="text" id="username" required class="auth-input" placeholder="your_username">
+                    </div>
                 </div>
+
+                <div id="extraFields" class="flex-column gap-4" style="display:none;">
+                    <div>
+                        <label class="auth-label">Email Address</label>
+                        <div class="auth-input-wrap">
+                            <i class="fas fa-envelope auth-input-icon"></i>
+                            <input type="email" id="email" class="auth-input" placeholder="you@example.com">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="auth-label">Account Type</label>
+                        <div class="auth-input-wrap">
+                            <i class="fas fa-id-badge auth-input-icon"></i>
+                            <select id="user_type" class="auth-select">
+                                <option value="TENANT">Tenant / Seeker</option>
+                                <option value="LANDLORD">Landlord / Owner</option>
+                                <option value="ZRA">ZRA Official</option>
+                                <option value="MINISTRY">Ministry Official</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="auth-label">Password</label>
+                    <div class="auth-input-wrap">
+                        <i class="fas fa-lock auth-input-icon"></i>
+                        <input type="password" id="password" required class="auth-input" placeholder="••••••••">
+                    </div>
+                </div>
+
+                <button type="submit" class="auth-btn" style="margin-top:6px">
+                    <span id="btnText">Continue to Platform</span>
+                    <i class="fas fa-arrow-right text-xs"></i>
+                </button>
+            </form>
+
+            <div class="text-center mt-6">
+                <button id="toggleAuth" class="auth-toggle">
+                    Don't have an account? Sign Up
+                </button>
             </div>
 
-            <div>
-                <label class="block text-sm font-medium text-slate-700 ml-1 mb-1">Password</label>
-                <input type="password" id="password" required class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-indigo-500 transition">
-            </div>
-
-            <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl hover:bg-indigo-700 transition transform active:scale-95 shadow-lg shadow-indigo-200">
-                <span id="btnText">Sign In</span>
-            </button>
-        </form>
-
-        <div class="mt-8 text-center">
-            <button id="toggleAuth" class="text-indigo-600 font-semibold text-sm hover:underline">
-                Don't have an account? Create one
-            </button>
+            <div id="authMessage" style="display:none"></div>
         </div>
-        
-        <div id="authMessage" class="mt-4 text-center text-sm font-medium hidden"></div>
     </div>
 </div>
 {% endblock %}
 
 {% block extra_scripts %}
 <script src="{% static 'js/auth.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    document.body.classList.add('auth-page');
+
+    const extraFields = document.getElementById('extraFields');
+    const authTitle   = document.getElementById('authTitle');
+    const authSubtitle= document.getElementById('authSubtitle');
+    const btnText     = document.getElementById('btnText');
+    const toggleAuth  = document.getElementById('toggleAuth');
+    const msgDiv      = document.getElementById('authMessage');
+
+    // Override auth.js message styling to match glass theme
+    const origInnerText = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'innerText');
+    const observer = new MutationObserver(() => {
+        if (msgDiv.style.display !== 'none' && msgDiv.innerText) {
+            const isSuccess = msgDiv.classList.contains('text-emerald-500');
+            msgDiv.className = isSuccess ? 'auth-alert auth-alert-success' : 'auth-alert auth-alert-error';
+            msgDiv.style.display = 'block';
+        }
+    });
+    observer.observe(msgDiv, { attributes: true, childList: true, subtree: true });
+
+    toggleAuth.addEventListener('click', () => {
+        const isLogin = extraFields.style.display === 'none' || extraFields.style.display === '';
+        if (isLogin) {
+            extraFields.style.display = 'flex';
+            authTitle.textContent    = 'Join the Platform';
+            authSubtitle.textContent = 'Start your premium real estate experience';
+            btnText.textContent      = 'Create Account';
+            toggleAuth.textContent   = 'Already have an account? Sign In';
+        } else {
+            extraFields.style.display = 'none';
+            authTitle.textContent    = 'Welcome Back';
+            authSubtitle.textContent = 'Sign in to manage your property journey';
+            btnText.textContent      = 'Continue to Platform';
+            toggleAuth.textContent   = "Don't have an account? Sign Up";
+        }
+    });
+});
+</script>
 {% endblock %}

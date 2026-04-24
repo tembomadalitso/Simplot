@@ -2,41 +2,128 @@
 {% load static %}
 
 {% block content %}
-<header class="glass-card rounded-3xl p-10 mb-12 text-center animate-[fadeIn_0.8s_ease-out]">
-    <h1 class="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-indigo-600 via-indigo-500 to-emerald-500 bg-clip-text text-transparent pb-2">
-        Find Your Next Home in Zambia
-    </h1>
-    <p class="mt-4 text-slate-600 text-lg max-w-2xl mx-auto">Secure, compliant, and modern rental listings at your fingertips.</p>
-</header>
 
-<section class="glass p-6 rounded-2xl mb-12 shadow-sm animate-[fadeIn_1s_ease-out]">
-    <div class="flex flex-col md:flex-row gap-4">
-        <div class="relative flex-1 group">
-            <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors"></i>
-            <input type="text" id="searchInput" placeholder="Search by district or area..."
-                   class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 focus:border-indigo-300 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all text-slate-700 font-medium">
-        </div>
-        <div class="relative min-w-[200px] group">
-            <i class="fas fa-filter absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors pointer-events-none"></i>
-            <select id="categoryFilter" class="w-full pl-10 pr-10 py-3.5 rounded-xl border border-slate-200 focus:border-indigo-300 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all appearance-none bg-white text-slate-700 font-medium cursor-pointer">
-                <option value="">All Categories</option>
-                <option value="RESIDENTIAL">Residential</option>
-                <option value="BOARDING">Boarding</option>
-                <option value="LODGE">Lodge</option>
-            </select>
-            <i class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-sm"></i>
-        </div>
-    </div>
-</section>
+<!-- Fixed full-page background -->
+<div class="index-bg-container">
+    <div class="index-bg-img"></div>
+    <div class="index-bg-overlay"></div>
+    <div class="index-bg-noise"></div>
+</div>
 
-<div id="property-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-    <div class="text-center col-span-full py-20 text-slate-500">
-        <i class="fas fa-spinner fa-spin text-4xl mb-4 text-indigo-400"></i>
-        <p class="text-lg animate-pulse">Loading the latest listings...</p>
+<!-- Page wrapper -->
+<div class="page-wrapper">
+    <div class="container-px">
+
+        <!-- ── HERO ── -->
+        <div class="text-center mb-8 fade-up delay-1" style="margin-bottom:52px;">
+            <div class="hero-badge">
+                <i class="fas fa-shield-alt text-xs"></i>
+                Verified &amp; Compliant Rentals
+            </div>
+            <h1 class="hero-title">
+                Your Search for the<br>
+                <span class="hero-title-gradient">
+                    Perfect Home
+                </span> Starts Here.
+            </h1>
+            <p class="hero-subtitle">
+                Discover premium rental listings across Zambia — transparent, legally compliant,
+                and tailored to every tenant.
+            </p>
+        </div>
+
+        <!-- ── SEARCH BAR ── -->
+        <div class="search-container fade-up delay-2">
+            <div class="glass-search">
+                <!-- Search input -->
+                <div class="search-input-wrap">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="searchInput" placeholder="Search district, area, or property…" class="glass-input-hero">
+                </div>
+                <div class="search-divider"></div>
+                <!-- Category -->
+                <div class="flex-row items-center" style="position:relative;">
+                    <i class="fas fa-map-pin search-icon" style="left:14px;font-size:12px"></i>
+                    <select id="categoryFilter" class="glass-select-hero">
+                        <option value="">All Types</option>
+                        <option value="RESIDENTIAL">Residential</option>
+                        <option value="BOARDING">Boarding</option>
+                        <option value="LODGE">Lodge</option>
+                    </select>
+                </div>
+                <!-- Search button -->
+                <button onclick="fetchProperties()" class="search-btn">
+                    <i class="fas fa-search text-xs"></i> Search
+                </button>
+            </div>
+        </div>
+
+        <!-- ── SECTION HEADING ── -->
+        <div class="justify-between items-end mb-6 fade-up delay-3 flex-row" style="display:flex;">
+            <div>
+                <div class="section-label">Featured Properties</div>
+                <h3 class="text-2xl font-extrabold tracking-tight">Recently Verified Listings</h3>
+            </div>
+            <div class="flex-row gap-2">
+                <button class="theme-toggle" style="width:36px;height:36px;">
+                    <i class="fas fa-chevron-left text-xs"></i>
+                </button>
+                <button class="theme-toggle" style="width:36px;height:36px;">
+                    <i class="fas fa-chevron-right text-xs"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ── PROPERTY GRID ── -->
+        <div id="property-list" class="property-grid fade-up delay-4">
+            <!-- Skeleton 1 -->
+            <div class="glass-prop-card">
+                <div class="skel-card-img"></div>
+                <div class="p-4">
+                    <div class="skel-line w-full" style="width:60%"></div>
+                    <div class="skel-line w-full" style="width:38%;margin-bottom:20px"></div>
+                    <div class="flex-row justify-between">
+                        <div class="skel-line" style="width:30%;height:18px"></div>
+                        <div class="skel-line" style="width:22%;height:18px"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Skeleton 2 -->
+            <div class="glass-prop-card">
+                <div class="skel-card-img"></div>
+                <div class="p-4">
+                    <div class="skel-line w-full" style="width:70%"></div>
+                    <div class="skel-line w-full" style="width:42%;margin-bottom:20px"></div>
+                    <div class="flex-row justify-between">
+                        <div class="skel-line" style="width:30%;height:18px"></div>
+                        <div class="skel-line" style="width:22%;height:18px"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Skeleton 3 -->
+            <div class="glass-prop-card">
+                <div class="skel-card-img"></div>
+                <div class="p-4">
+                    <div class="skel-line w-full" style="width:55%"></div>
+                    <div class="skel-line w-full" style="width:33%;margin-bottom:20px"></div>
+                    <div class="flex-row justify-between">
+                        <div class="skel-line" style="width:30%;height:18px"></div>
+                        <div class="skel-line" style="width:22%;height:18px"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
+
 {% endblock %}
 
 {% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    document.body.classList.add('index-page');
+});
+</script>
 <script src="{% static 'js/app.js' %}"></script>
 {% endblock %}
