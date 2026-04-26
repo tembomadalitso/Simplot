@@ -647,38 +647,6 @@
                 </a>
             </div>
         </div>
-    </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div class="lg:col-span-2 space-y-8">
-            <section>
-                <div class="flex items-center justify-between mb-6">
-                    <h3 class="text-xl font-bold flex items-center">
-                        <i class="fas fa-home text-indigo-500 mr-2"></i> Your Properties
-                    </h3>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {% for prop in properties %}
-                    <div
-                        class="glass-card rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition overflow-hidden">
-                        <div class="h-40 bg-slate-200 relative">
-                            {% if prop.main_image_url %}
-                            <img src="{{ prop.main_image_url }}" class="w-full h-full object-cover">
-                            {% else %}
-                            <img src="https://via.placeholder.com/400x300?text={{ prop.title|urlencode }}"
-                                class="w-full h-full object-cover">
-                            {% endif %}
-                            <span class="absolute top-4 right-4 bg-white/90 text-slate-600 px-2 py-1 rounded shadow-sm text-xs font-bold uppercase">{{ prop.get_category_display }}</span>
-                        </div>
-                        <div class="p-6">
-                            <div class="flex justify-between items-start mb-4">
-                                <div>
-                                    <h4 class="font-bold text-lg text-slate-800">{{ prop.title }}</h4>
-                                    <p class="text-slate-500 text-sm mt-1"><i
-                                            class="fas fa-map-marker-alt text-slate-400 mr-1"></i>{{ prop.district }},
-                                        {{ prop.area_name }}</p>
-                                </div>
-                            </div>
 
         <!-- KPI Cards -->
         <div class="sb-stat-row sb-fade-2">
@@ -742,16 +710,84 @@
                         </a>
                     </div>
                 </div>
-                <div class="glass-card p-6 rounded-3xl border border-slate-200 mb-6">
-                    <form id="expenseForm" class="space-y-4">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Property</label>
-                            <select id="expenseProperty" required
-                                class="w-full px-3 py-2 rounded-lg border border-slate-200 outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
-                                <option value="">Select property...</option>
-                                {% for prop in user_properties %}
-                                <option value="{{ prop.id }}">{{ prop.title }}</option>
-                                {% endfor %}
+                <div class="sb-table-wrap">
+                    <table class="sb-table" id="listingsTable">
+                        <thead>
+                            <tr>
+                                <th>Property</th>
+                                <th>District</th>
+                                <th>Category</th>
+                                <th>Price/mo</th>
+                                <th>Tax Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for prop in properties %}
+                            <tr>
+                                <td>
+                                    <div style="display:flex;align-items:center;gap:10px">
+                                        <div class="sb-prop-thumb">
+                                            {% if prop.main_image_url %}
+                                            <img src="{{ prop.main_image_url }}" alt="">
+                                            {% else %}
+                                            <i class="fas fa-home" style="font-size:14px"></i>
+                                            {% endif %}
+                                        </div>
+                                        <span style="font-weight:700">{{ prop.title }}</span>
+                                    </div>
+                                </td>
+                                <td style="color:var(--text-secondary);font-weight:600">{{ prop.district }}, {{ prop.area_name }}</td>
+                                <td>
+                                    <span class="badge badge-neutral">{{ prop.get_category_display }}</span>
+                                </td>
+                                <td>
+                                    <span style="font-weight:800;color:var(--color-primary)">K{{ prop.price }}</span>
+                                </td>
+                                <td>
+                                    {% if prop.is_tax_compliant %}
+                                    <span class="badge badge-success"><i class="fas fa-check-circle mr-1"></i>Verified</span>
+                                    {% else %}
+                                    <span class="badge badge-warning"><i class="fas fa-clock mr-1"></i>Pending</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div style="display:flex;gap:6px">
+                                        <a href="{% url 'property-detail' prop.id %}" class="btn btn-ghost btn-sm">View</a>
+                                        <button onclick="deleteProperty({{ prop.id }})" class="btn btn-danger btn-sm" style="width:auto"><i class="fas fa-trash-alt"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" style="text-align:center;padding:48px">
+                                    <i class="fas fa-home" style="font-size:2rem;color:var(--text-muted);display:block;margin-bottom:12px"></i>
+                                    <p style="color:var(--text-muted);font-weight:700;margin-bottom:12px">No listings yet</p>
+                                    <a href="{% url 'add-property' %}" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-plus"></i> Create Listing
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── APPLICATIONS + FINANCE ── -->
+        <div class="sb-content-grid sb-fade-4">
+            <!-- Applications -->
+            <div id="section-applications">
+                <div class="sb-table-card">
+                    <div class="sb-table-header">
+                        <h3><i class="fas fa-file-contract" style="color:var(--color-primary);margin-right:8px"></i> Rental Applications</h3>
+                        <div style="display:flex;gap:8px;align-items:center">
+                            <select class="sb-form-select" style="width:auto;font-size:11px;padding:5px 10px" id="appStatusFilter" onchange="filterApplications()">
+                                <option value="">All Status</option>
+                                <option value="PENDING">Pending</option>
+                                <option value="APPROVED">Approved</option>
+                                <option value="REJECTED">Rejected</option>
                             </select>
                         </div>
                     </div>
@@ -823,4 +859,115 @@
 {% block extra_scripts %}
 <script>document.addEventListener('DOMContentLoaded',()=>document.body.classList.add('dashboard-page'));</script>
 <script src="{% static 'js/dashboard.js' %}"></script>
+<script>
+// ── Sidebar collapse ──
+let sidebarCollapsed = false;
+
+function toggleSidebar() {
+    const sb = document.getElementById('mainSidebar');
+    const icon = document.getElementById('collapseBtnIcon');
+    if (window.innerWidth <= 768) {
+        sb.classList.remove('collapsed');
+        sb.classList.toggle('mobile-open');
+        document.getElementById('sbOverlay').classList.toggle('visible', sb.classList.contains('mobile-open'));
+    } else {
+        sidebarCollapsed = !sidebarCollapsed;
+        sb.classList.toggle('collapsed', sidebarCollapsed);
+        icon.className = sidebarCollapsed ? 'fas fa-chevron-right' : 'fas fa-chevron-left';
+    }
+}
+
+function openMobileSidebar() {
+    const sb = document.getElementById('mainSidebar');
+    sb.classList.add('mobile-open');
+    document.getElementById('sbOverlay').classList.add('visible');
+}
+
+// ── Active nav ──
+function sbNav(el) {
+    document.querySelectorAll('.sb-nav-item').forEach(i => i.classList.remove('active'));
+    el.classList.add('active');
+    const target = el.getAttribute('href');
+    if (target && target.startsWith('#')) {
+        const sec = document.querySelector(target);
+        if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
+// Show mobile menu btn on small screens
+function checkMobile() {
+    const btn = document.getElementById('mobileMenuBtn');
+    if (btn) btn.style.display = window.innerWidth <= 768 ? 'inline-flex' : 'none';
+}
+window.addEventListener('resize', checkMobile);
+checkMobile();
+
+// ── Filter listings table ──
+function filterListings(q) {
+    const rows = document.querySelectorAll('#listingsTable tbody tr');
+    rows.forEach(row => {
+        row.style.display = row.textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none';
+    });
+}
+
+// ── Filter applications by status ──
+let allApplicationsData = [];
+
+function filterApplications() {
+    const filter = document.getElementById('appStatusFilter').value;
+    const filtered = filter ? allApplicationsData.filter(a => a.status === filter) : allApplicationsData;
+    renderApplications(filtered);
+}
+
+// Hook into dashboard.js fetchApplications
+const _origFetch = window.fetchApplications;
+
+// Override to capture data + update badge
+document.addEventListener('DOMContentLoaded', () => {
+    const origFetchApps = window.fetchApplications;
+
+    // Patch: after loading count pending
+    const observer = new MutationObserver(() => {
+        const pendingRows = document.querySelectorAll('#applicationsContainer .badge-warning');
+        const count = pendingRows.length;
+        if (count > 0) {
+            document.getElementById('pendingBadge').textContent = count;
+            document.getElementById('pendingAppsCount').textContent = count;
+        }
+    });
+    const container = document.getElementById('applicationsContainer');
+    if (container) observer.observe(container, { childList: true, subtree: true });
+});
+
+// ── Export expenses ──
+function exportExpenses() {
+    const rows = document.querySelectorAll('#expensesList .list-item, #expensesList > div');
+    let csv = 'Description,Amount,Date\n';
+    rows.forEach(row => {
+        const desc = row.querySelector('p')?.textContent || '';
+        const amt = row.querySelector('.font-bold')?.textContent || '';
+        const date = row.querySelector('.text-xs')?.textContent || '';
+        if (desc) csv += `"${desc}","${amt}","${date}"\n`;
+    });
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'expenses.csv';
+    a.click();
+}
+
+// Sync totalExpenses between panels
+const origTotalEl = document.getElementById('totalExpenses');
+if (origTotalEl) {
+    const panelTotal = document.getElementById('totalExpensesPanel');
+    const mo = new MutationObserver(() => {
+        if (panelTotal) panelTotal.textContent = origTotalEl.textContent;
+    });
+    mo.observe(origTotalEl, { characterData: true, childList: true, subtree: true });
+}
+
+function exportDashboard() {
+    alert('Export functionality: integrate your PDF/Excel library here.');
+}
+</script>
 {% endblock %}

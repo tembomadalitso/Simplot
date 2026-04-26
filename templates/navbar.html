@@ -1,16 +1,12 @@
-{% load static %} 
-<nav class="glass sticky top-0 z-50 p-4 border-b border-white/20 shadow-sm transition-all duration-300">
-    <div class="max-w-7xl mx-auto flex justify-between items-center px-4 sm:px-6 lg:px-8">
-        <a href="{% url 'index' %}" class="text-2xl font-black bg-gradient-to-r from-indigo-600 to-indigo-800 bg-clip-text text-transparent flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <i class="fas fa-home text-indigo-600"></i> ZAMBIA RENTALS
-        </a>
-        <div class="hidden md:flex space-x-8 items-center text-sm font-medium text-slate-600" id="desktopNavLinks">
-            <a href="{% url 'index' %}" class="hover:text-indigo-600 transition-colors">Find Homes</a>
-       </div>
-        <div class="flex items-center space-x-4" id="authSection">
-            <div id="userProfileBadge" class="hidden items-center gap-3 mr-4">
-                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-100 to-indigo-200 border-2 border-indigo-500 flex items-center justify-center shadow-sm">
-                    <span id="userInitials" class="text-indigo-700 font-bold text-sm"></span>
+{% load static %}
+<nav id="main-nav">
+    <div class="nav-container">
+        <div class="nav-content">
+
+            <!-- Logo -->
+            <a href="{% url 'index' %}" class="nav-logo">
+                <div class="nav-logo-icon">
+                    <i class="fas fa-home" style="color:#fff;font-size:15px"></i>
                 </div>
                 <div class="nav-logo-text">
                     <span class="nav-logo-main">ZAMBIA</span>
@@ -31,13 +27,31 @@
                     <i class="fas fa-moon" id="themeIcon"></i>
                 </button>
 
-            <a href="#" id="dashboardBtn" class="hidden px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md transition-all hover:-translate-y-0.5 items-center gap-2">
-                <!-- Content set by JS -->
-            </a>
+                <!-- Profile badge -->
+                <div id="userProfileBadge" class="nav-profile" style="display:none;">
+                    <div class="nav-profile-avatar">
+                        <span id="userInitials" class="nav-profile-initials"></span>
+                    </div>
+                    <div class="hidden sm:flex nav-profile-info">
+                        <span id="userName" class="nav-profile-name"></span>
+                        <span id="userRoleBadge" class="nav-profile-role"></span>
+                    </div>
+                </div>
 
-            <button id="logoutBtn" class="hidden text-slate-500 hover:text-red-500 p-2 rounded-lg hover:bg-red-50 transition-colors font-bold text-sm flex items-center gap-2" title="Logout">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </button>
+                <!-- Dashboard button -->
+                <a href="#" id="dashboardBtn" style="display:none;"></a>
+
+                <!-- Login -->
+                <a href="{% url 'login' %}" id="authBtn" class="nav-btn">
+                    <i class="fas fa-sign-in-alt" style="font-size:11px"></i> Sign In
+                </a>
+
+                <!-- Logout -->
+                <button id="logoutBtn" class="btn btn-ghost btn-sm" style="display:none;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span class="hidden sm:inline">Logout</span>
+                </button>
+            </div>
         </div>
     </div>
 </nav>

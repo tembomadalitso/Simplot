@@ -33,6 +33,8 @@ class PropertySerializer(serializers.ModelSerializer):
             'is_tax_compliant', 'apartment_count', 'estimated_tax', 'tax_rate', 'total_annual_rent', 'amount_after_tax', 'created_at', 'images'
         ]
 
+        read_only_fields = ['owner', 'is_tax_compliant', 'created_at']
+
     def get_tax_rate(self, obj):
         policy = TaxPolicy.objects.first()
         return float(policy.percentage) if policy else 0.0
