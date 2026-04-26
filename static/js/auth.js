@@ -10,6 +10,8 @@
 let currentRole   = null;   // 'TENANT' | 'LANDLORD'
 let currentStep   = 'login'; // 'login' | 1 | 2 | 3 | 'forgot'
 let resendTimerId = null;
+let signupEmail   = null;
+let signupPassword = null;
 
 // ─────────────────────────────────────────────────────────────────
 // PANEL VISIBILITY
@@ -243,8 +245,9 @@ document.getElementById('signupStep2').addEventListener('submit', async (e) => {
     const data = await res.json();
 
     if (res.ok) {
-      // Request email verification code
-      await requestVerificationCode(email);
+      // Store credentials for auto-login after verification
+      signupEmail = email;
+      signupPassword = password;
       document.getElementById('verifyEmailDisplay').textContent = email;
       goToStep(3);
       startOtpInputs();
@@ -306,13 +309,14 @@ function getOtpValue() {
 // ─────────────────────────────────────────────────────────────────
 async function submitVerification() {
   const code  = getOtpValue();
-  const email = document.getElementById('verifyEmailDisplay').textContent;
+  const email = document.getElementById('verifyEmailDisplay').textContent.trim().toLowerCase();
   if (code.length !== 6) {
     showMessage('Please enter all 6 digits.', 'error');
     return;
   }
   clearMessage();
 
+  setBtnLoading('signupStep3', true);
   try {
     const res  = await fetch(window.URLS.authVerify, {
       method : 'POST',
@@ -322,13 +326,71 @@ async function submitVerification() {
     const data = await res.json();
 
     if (res.ok) {
-      showMessage('✓ Email verified! Redirecting to sign in…', 'success');
-      setTimeout(() => showLogin(), 1800);
+      showMessage('✓ Email verified! Signing you in…', 'success');
+      // Auto-login after verification
+      setTimeout(async () => {
+        await performLogin(signupEmail, signupPassword);
+      }, 1500);
     } else {
       showMessage(data.error || 'Invalid code. Please try again.', 'error');
     }
   } catch {
     showMessage('Connection failed. Please try again.', 'error');
+  } finally {
+    setBtnLoading('signupStep3', false);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// AUTO LOGIN AFTER VERIFICATION
+// ─────────────────────────────────────────────────────────────────
+async function performLogin(email, password) {
+  clearMessage();
+
+  const payload = {
+    username: email,
+    password: password,
+  };
+
+  try {
+    const res  = await fetch(window.URLS.authLogin, {
+      method : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body   : JSON.stringify(payload),
+    });
+    const data = await res.json();
+
+    if (res.ok) {
+      localStorage.setItem('auth_token', data.auth_token);
+      document.cookie = `auth_token=${data.auth_token}; path=/; max-age=86400; SameSite=Lax`;
+      showMessage('✓ Welcome! Redirecting…', 'success');
+
+      // Fetch user info for role-based redirect
+      try {
+        const meRes = await fetch(window.URLS.authMe, {
+          headers: { 'Authorization': `Token ${data.auth_token}` },
+        });
+        if (meRes.ok) {
+          const user = await meRes.json();
+
+          let redirectUrl = window.URLS.index;
+          if (user.user_type === 'LANDLORD')  redirectUrl = window.URLS.dashboard;
+          if (user.user_type === 'ZRA')        redirectUrl = window.URLS.zraDashboard;
+          if (user.user_type === 'MINISTRY')   redirectUrl = window.URLS.occupancyDashboard;
+          setTimeout(() => window.location.href = redirectUrl, 1000);
+          return;
+        }
+      } catch {}
+      setTimeout(() => window.location.href = window.URLS.index, 1000);
+    } else {
+      // If auto-login fails, show login form
+      showMessage('Verification successful. Please sign in.', 'success');
+      setTimeout(() => showLogin(), 1500);
+    }
+  } catch {
+    // If auto-login fails, show login form
+    showMessage('Verification successful. Please sign in.', 'success');
+    setTimeout(() => showLogin(), 1500);
   }
 }
 

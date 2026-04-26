@@ -11,11 +11,13 @@ Custom auth endpoints:
 
 import random
 import string
-from django.core.mail import send_mail
+import smtplib
+from django.core.mail import send_mail, EmailMessage
 from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
+from django.core.cache import cache
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
@@ -40,13 +42,22 @@ def _send_otp_email(email, code):
         f"This code expires in 10 minutes.\n"
         f"If you did not request this, please ignore this email."
     )
-    send_mail(
+    email_msg = EmailMessage(
         subject,
         message,
         settings.DEFAULT_FROM_EMAIL,
         [email],
-        fail_silently=False,
+        headers={'Reply-To': settings.DEFAULT_FROM_EMAIL},
     )
+    try:
+        email_msg.send(fail_silently=False)
+    except smtplib.SMTPAuthenticationError:
+        raise Exception(
+            "Gmail authentication failed. Check EMAIL_HOST_USER and EMAIL_HOST_PASSWORD in your .env. "
+            "Make sure the app password has no spaces (e.g. 'fgdurdksgcrdfled' not 'fgdu rdks gcrd fled')."
+        )
+    except smtplib.SMTPException as e:
+        raise Exception(f"SMTP error: {e}")
 
 
 def _send_reset_email(email, uid, token):
@@ -58,13 +69,14 @@ def _send_reset_email(email, uid, token):
         f"This link is valid for 1 hour.\n"
         f"If you did not request a password reset, please ignore this email."
     )
-    send_mail(
+    email_msg = EmailMessage(
         subject,
         message,
         settings.DEFAULT_FROM_EMAIL,
         [email],
-        fail_silently=False,
+        headers={'Reply-To': settings.DEFAULT_FROM_EMAIL},
     )
+    email_msg.send(fail_silently=False)
 
 
 # ─────────────────────────────────────────────────────────────────
@@ -74,15 +86,30 @@ def _send_reset_email(email, uid, token):
 @permission_classes([AllowAny])
 def register_user(request):
     """
-    Create a new user account. The user is inactive (is_verified=False)
-    until they confirm their email via /auth/verify-email/.
+    Validate user data and send verification code.
+    User is not created until email is verified.
     """
     serializer = UserCreateSerializer(data=request.data)
     if serializer.is_valid():
-        user = serializer.save()
+        # Store validated data in cache for 10 minutes
+        email = serializer.validated_data['email'].lower()
+        cache.set(f'registration_{email}', serializer.validated_data, timeout=600)
+        
+        # Send verification code
+        otp = _generate_otp()
+        cache.set(f'verify_{email}', otp, timeout=600)
+        
+        try:
+            _send_otp_email(email, otp)
+        except Exception as exc:
+            return Response(
+                {'error': f'Failed to send email: {str(exc)}'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+        
         return Response(
-            {'message': 'Account created. Please verify your email.'},
-            status=status.HTTP_201_CREATED,
+            {'message': 'Verification code sent. Please check your email.'},
+            status=status.HTTP_200_OK,
         )
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -94,25 +121,20 @@ def register_user(request):
 @permission_classes([AllowAny])
 def send_verification_code(request):
     """
-    Generate a 6-digit OTP, store it on the user, and email it.
+    Resend verification code for pending registration.
     Body: { "email": "..." }
     """
     email = request.data.get('email', '').strip().lower()
     if not email:
         return Response({'error': 'Email is required.'}, status=status.HTTP_400_BAD_REQUEST)
 
-    try:
-        user = User.objects.get(email__iexact=email)
-    except User.DoesNotExist:
-        # Don't reveal whether the email exists
-        return Response({'message': 'If that email exists, a code has been sent.'})
-
-    if user.is_verified:
-        return Response({'error': 'This email is already verified.'}, status=status.HTTP_400_BAD_REQUEST)
+    # Check if registration data exists
+    registration_data = cache.get(f'registration_{email}')
+    if not registration_data:
+        return Response({'error': 'No pending registration for this email.'}, status=status.HTTP_400_BAD_REQUEST)
 
     otp = _generate_otp()
-    user.verification_code = otp
-    user.save(update_fields=['verification_code'])
+    cache.set(f'verify_{email}', otp, timeout=600)
 
     try:
         _send_otp_email(email, otp)
@@ -132,8 +154,7 @@ def send_verification_code(request):
 @permission_classes([AllowAny])
 def verify_email(request):
     """
-    Confirm the OTP. On success, mark the user as verified.
-    Body: { "email": "...", "code": "123456" }
+    Confirm the OTP and create the user account.
     """
     email = request.data.get('email', '').strip().lower()
     code  = request.data.get('code', '').strip()
@@ -141,19 +162,30 @@ def verify_email(request):
     if not email or not code:
         return Response({'error': 'Email and code are required.'}, status=status.HTTP_400_BAD_REQUEST)
 
-    try:
-        user = User.objects.get(email__iexact=email)
-    except User.DoesNotExist:
-        return Response({'error': 'Invalid code.'}, status=status.HTTP_400_BAD_REQUEST)
+    # Check if registration data exists
+    registration_data = cache.get(f'registration_{email}')
+    if not registration_data:
+        return Response({'error': 'Registration session expired. Please register again.'}, status=status.HTTP_400_BAD_REQUEST)
 
-    if user.verification_code != code:
+    # Check verification code
+    stored_code = cache.get(f'verify_{email}')
+    if stored_code != code:
         return Response({'error': 'Invalid or expired code.'}, status=status.HTTP_400_BAD_REQUEST)
 
-    user.is_verified       = True
-    user.verification_code = None     # Invalidate after use
-    user.save(update_fields=['is_verified', 'verification_code'])
-
-    return Response({'message': 'Email verified successfully. You can now sign in.'})
+    # Create the user
+    serializer = UserCreateSerializer(data=registration_data)
+    if serializer.is_valid():
+        user = serializer.save()
+        user.is_verified = True
+        user.save()
+        
+        # Clean up cache
+        cache.delete(f'registration_{email}')
+        cache.delete(f'verify_{email}')
+        
+        return Response({'message': 'Email verified successfully. You can now sign in.'})
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 # ─────────────────────────────────────────────────────────────────

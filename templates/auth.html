@@ -232,17 +232,6 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     document.body.classList.add('auth-page');
-
-    // Intercept authMessage mutations from auth.js and re-style them
-    const msgDiv = document.getElementById('authMessage');
-    new MutationObserver(() => {
-        if (msgDiv.style.display !== 'none' && msgDiv.innerText) {
-            const isSuccess = msgDiv.classList.contains('text-emerald-500');
-            msgDiv.className = isSuccess ? 'auth-alert auth-alert-success' : 'auth-alert auth-alert-error';
-            msgDiv.style.display = 'block';
-        }
-    }).observe(msgDiv, { attributes: true, childList: true, subtree: true });
-
     document.getElementById('toggleAuth').addEventListener('click', () => {
         showSignup();
     });

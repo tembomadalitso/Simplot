@@ -18,6 +18,7 @@ from core.views import (
     landlord_export_pdf,
     landlord_export_excel,
 )
+from core.urls import auth_urlpatterns
 
 
 urlpatterns = [
@@ -26,6 +27,7 @@ urlpatterns = [
     path('api/', include('core.urls')),
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.authtoken')),
+    path('auth/', include(auth_urlpatterns)),
     path('auth/login/', auth_page, name='login'),
     path('properties/add/', add_property_page, name='add-property'),
     path('dashboard/', dashboard_page, name='dashboard'),

@@ -2,6 +2,10 @@
 
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -10,7 +14,7 @@ WSGI_APPLICATION  = 'main.wsgi.application'
 
 # ─── SECURITY ─────────────────────────────────────────────────────
 # IMPORTANT: Move SECRET_KEY to an environment variable before going to production.
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-CHANGE-ME-IN-PRODUCTION')
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
@@ -112,21 +116,16 @@ DJOSER = {
 # ─── EMAIL ────────────────────────────────────────────────────────
 # PythonAnywhere: set EMAIL_* via environment variables or directly here.
 # For development you can use the console backend to print emails to stdout.
+# Or use Mailtrap: https://mailtrap.io/ for testing email delivery.
 
-EMAIL_BACKEND       = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
-
-# ── SMTP settings (used when EMAIL_BACKEND = smtp) ─────────────────
-EMAIL_HOST          = os.environ.get('EMAIL_HOST',     'smtp.gmail.com')
-EMAIL_PORT          = int(os.environ.get('EMAIL_PORT', 587))
+# Always use real Gmail SMTP — no console backend.
+# Set EMAIL_HOST_USER and EMAIL_HOST_PASSWORD in your .env file.
+EMAIL_BACKEND       = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST          = 'smtp.gmail.com'
+EMAIL_PORT          = 587
 EMAIL_USE_TLS       = True
-EMAIL_HOST_USER     = os.environ.get('EMAIL_HOST_USER', '')    # your Gmail address
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '') # app password (not your login password)
-DEFAULT_FROM_EMAIL  = os.environ.get('DEFAULT_FROM_EMAIL', 'noreply@zambiarentals.com')
-
-# ── PythonAnywhere quick-start ──────────────────────────────────────
-# In your PA bash console run:
-#   export EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
-#   export EMAIL_HOST_USER=you@gmail.com
-#   export EMAIL_HOST_PASSWORD=your_app_password
-#   export DEFAULT_FROM_EMAIL="Zambia Rentals <you@gmail.com>"
-#   export SITE_URL=https://mysit3.pythonanywhere.com
+EMAIL_USE_SSL       = False   # Must be False when USE_TLS is True
+EMAIL_HOST_USER     = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL  = os.environ.get('DEFAULT_FROM_EMAIL', os.environ.get('EMAIL_HOST_USER', ''))
+EMAIL_TIMEOUT       = 10  # seconds — fail fast instead of hanging"
