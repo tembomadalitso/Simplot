@@ -11,6 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/global.css' %}">
+    <link rel="stylesheet" href="{% static 'css/auth_additions.css' %}">
     {% block extra_head %}{% endblock %}
 
     <script>
@@ -25,9 +26,13 @@
             apiRentals: "/api/rentals/",
             apiExpenses: "/api/expenses/",
             authLogin: "/auth/token/login/",
+            authRegister: "/register/",
             authUsers: "/auth/users/",
             authMe: "/auth/users/me/",
             authLogout: "/auth/token/logout/",
+            authSendCode: "/send-code/",
+            authVerify: "/verify-email/",
+            authPasswordReset: "/password-reset/",
             propertyDetail: "{% url 'property-detail' 0 %}",
         };
     </script>
