@@ -1,0 +1,319 @@
+/* ================================================================
+   AUTH PAGE ADDITIONS
+   Add these rules to global.css (or auth.css loaded on auth pages)
+   ================================================================ */
+
+/* ── Step Indicator ──────────────────────────────────────────── */
+.auth-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: 24px;
+}
+
+.auth-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 600;
+    transition: var(--transition-base);
+}
+
+.auth-step span {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid var(--border-strong);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    background: var(--bg-surface);
+    transition: var(--transition-base);
+}
+
+.auth-step.active span {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #fff;
+    box-shadow: 0 0 0 4px var(--color-primary-soft);
+}
+
+.auth-step.active {
+    color: var(--text-main);
+}
+
+.auth-step.complete span {
+    background: var(--color-success);
+    border-color: var(--color-success);
+    color: #fff;
+}
+
+.auth-step.complete {
+    color: var(--color-success);
+}
+
+.auth-step-line {
+    flex: 1;
+    height: 2px;
+    background: var(--border-color);
+    min-width: 36px;
+    margin: 0 4px;
+    margin-bottom: 14px;
+}
+
+/* ── Role Cards ──────────────────────────────────────────────── */
+.auth-role-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.auth-role-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 20px 12px;
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--border-color);
+    background: var(--bg-surface);
+    color: var(--text-main);
+    cursor: pointer;
+    transition: var(--transition-base);
+    text-align: center;
+}
+
+.auth-role-card i {
+    font-size: 28px;
+    color: var(--color-primary);
+    margin-bottom: 4px;
+}
+
+.auth-role-card strong {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.auth-role-card small {
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+.auth-role-card:hover {
+    border-color: var(--color-primary);
+    background: var(--color-primary-soft);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.auth-role-card.selected {
+    border-color: var(--color-primary);
+    background: var(--color-primary-soft);
+    box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+/* ── Password Strength Meter ─────────────────────────────────── */
+.pw-strength-bar {
+    height: 4px;
+    border-radius: 99px;
+    background: var(--border-color);
+    margin-top: 8px;
+    overflow: hidden;
+}
+
+.pw-bar-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 99px;
+    transition: width 0.4s ease, background-color 0.4s ease;
+    background: var(--color-error);
+}
+
+.pw-bar-fill.weak   { background: var(--color-error); }
+.pw-bar-fill.fair   { background: var(--color-warning); }
+.pw-bar-fill.good   { background: #3b82f6; }
+.pw-bar-fill.strong { background: var(--color-success); }
+
+.pw-rules {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.pw-rule {
+    font-size: 10.5px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: color 0.25s ease;
+}
+
+.pw-rule i {
+    font-size: 7px;
+}
+
+.pw-rule.passed {
+    color: var(--color-success);
+}
+
+/* ── OTP Grid ────────────────────────────────────────────────── */
+.auth-otp-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+}
+
+.auth-otp-input {
+    width: 100%;
+    aspect-ratio: 1;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 700;
+    border-radius: var(--radius-md);
+    border: 2px solid var(--border-strong);
+    background: var(--bg-surface);
+    color: var(--text-main);
+    outline: none;
+    caret-color: var(--color-primary);
+    transition: var(--transition-base);
+    font-family: var(--font-sans);
+}
+
+.auth-otp-input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-soft);
+}
+
+/* ── Verify Info Box ─────────────────────────────────────────── */
+.auth-verify-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 16px;
+    border-radius: var(--radius-md);
+    background: var(--color-primary-soft);
+    border: 1px solid var(--color-primary-light);
+    text-align: center;
+}
+
+.auth-verify-info i {
+    font-size: 24px;
+    color: var(--color-primary);
+}
+
+.auth-verify-info p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.auth-verify-info strong {
+    color: var(--text-main);
+}
+
+/* ── Timer & Resend ──────────────────────────────────────────── */
+.auth-timer {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+/* ── Field-level Error ───────────────────────────────────────── */
+.auth-field-error {
+    font-size: 11.5px;
+    color: var(--color-error);
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.auth-field-error::before {
+    content: '⚠';
+    font-size: 10px;
+}
+
+/* ── Hint text ───────────────────────────────────────────────── */
+.auth-hint {
+    font-size: 10px;
+    color: var(--text-muted);
+    font-weight: 400;
+    margin-left: 6px;
+}
+
+/* ── Back Button ─────────────────────────────────────────────── */
+.auth-back-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px;
+    border-radius: var(--radius-sm);
+    transition: var(--transition-base);
+    font-family: var(--font-sans);
+    width: 100%;
+}
+
+.auth-back-btn:hover {
+    color: var(--text-main);
+    background: var(--bg-surface);
+}
+
+/* ── Eye (toggle password) Button ───────────────────────────── */
+.auth-eye-btn {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px;
+    font-size: 14px;
+    transition: color 0.2s;
+    font-family: var(--font-sans);
+}
+
+.auth-eye-btn:hover {
+    color: var(--text-main);
+}
+
+/* ── Link Button (inline, no border) ────────────────────────── */
+.auth-link-btn {
+    background: none;
+    border: none;
+    color: var(--color-primary);
+    font-size: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    padding: 0;
+    font-family: var(--font-sans);
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 3px;
+    transition: color 0.2s;
+}
+
+.auth-link-btn:hover {
+    color: var(--color-primary-hover);
+}
+
+/* ── Ensure auth-input-wrap is relative so eye btn positions correctly ── */
+.auth-input-wrap {
+    position: relative;
+}
