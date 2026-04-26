@@ -1070,3 +1070,11 @@ class ExpenseViewSet(viewsets.ModelViewSet):
         if prop.owner != self.request.user:
             raise permissions.PermissionDenied("You don't own this property.")
         serializer.save()
+
+def password_reset_confirm_page(request):
+    """
+    Serves the password-reset confirm HTML page.
+    The page reads uid + token from the URL query string via JS
+    and POSTs to /auth/password-reset/confirm/ API endpoint.
+    """
+    return render(request, 'password_reset_confirm.html')
