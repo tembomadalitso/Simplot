@@ -240,7 +240,7 @@ def _send_otp_email(email, code):
 
 def _send_reset_email(email, uid, token):
     reset_link = (
-        f"{settings.SITE_URL}/auth/password-reset/confirm/"
+        f"{settings.SITE_URL}/reset-password/"
         f"?uid={uid}&token={token}"
     )
     subject   = "Zambia Rentals \u2014 Password Reset"

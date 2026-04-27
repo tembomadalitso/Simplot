@@ -31,7 +31,7 @@ urlpatterns = [
     # our HTML page sits at /auth/password-reset/confirm/ (note the hyphen).
     # Declaring it first ensures Django matches our view before djoser's.
     path('auth/login/', auth_page, name='auth-login-page'),
-    path('auth/password-reset/confirm/', password_reset_confirm_page, name='password-reset-confirm-page'),
+    path('reset-password/', password_reset_confirm_page, name='password-reset-confirm-page'),
     path('signup/', auth_page, name='signup'),
     # ── API ───────────────────────────────────────────────────────────
     path('api/', include('core.urls')),
