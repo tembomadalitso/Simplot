@@ -30,9 +30,9 @@ urlpatterns = [
     # djoser registers /auth/password/reset/confirm/ at a similar path;
     # our HTML page sits at /auth/password-reset/confirm/ (note the hyphen).
     # Declaring it first ensures Django matches our view before djoser's.
-    path('auth/login/', auth_page, name='login'),
+    path('auth/login/', auth_page, name='auth-login-page'),
     path('auth/password-reset/confirm/', password_reset_confirm_page, name='password-reset-confirm-page'),
-
+    path('signup/', auth_page, name='signup'),
     # ── API ───────────────────────────────────────────────────────────
     path('api/', include('core.urls')),
 
@@ -50,6 +50,7 @@ urlpatterns = [
     path('gov/zra/', zra_dashboard_page, name='zra-dashboard'),
     path('gov/occupancy/', occupancy_dashboard_page, name='occupancy-dashboard'),
     path('property/<int:pk>/apply/', apply_page, name='apply-property'),
+    
 
     # ZRA exports
     path('zra/export/pdf/',         zra_export_pdf,        name='zra-export-pdf'),

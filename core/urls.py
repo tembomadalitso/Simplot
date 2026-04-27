@@ -22,4 +22,4 @@ auth_urlpatterns = [
     path('verify-email/',            auth_views.verify_email,           name='auth-verify-email'),
     path('password-reset/',          auth_views.password_reset_request, name='auth-password-reset'),
     path('password-reset/confirm/',  auth_views.password_reset_confirm, name='auth-password-reset-confirm'),
-]
+] 
